@@ -12,9 +12,7 @@ import (
 	tmpl "github.com/mskasa/declog/internal/template"
 )
 
-// filePattern matches primary decision files (e.g. 0001-use-go.md) but not
-// locale variants (e.g. 0001-use-go.ja.md) by disallowing dots in the slug.
-var filePattern = regexp.MustCompile(`^(\d{4})-[^.]+\.md$`)
+var filePattern = regexp.MustCompile(`^(\d{4})-.*\.md$`)
 
 // NextID returns the next available 4-digit ID by scanning the decisions directory.
 func NextID(dir string) (int, error) {

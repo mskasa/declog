@@ -120,7 +120,9 @@ e.g. 0001-use-go-over-shell-script.md
 - `NNNN`: 4-digit zero-padded sequential number (auto-incremented from the current maximum)
 - kebab-case: title is automatically converted to lowercase with hyphens
 - Saved under: `docs/decisions/` (relative to the repository root)
-- For dogfooding ADRs in this repository, create both English and Japanese versions of each file (e.g. `0001-use-go-over-shell-script.md` and `0001-use-go-over-shell-script.ja.md`)
+- For dogfooding ADRs in this repository, create both English and Japanese versions of each file:
+  - English: `docs/decisions/0001-use-go-over-shell-script.md`
+  - Japanese: `docs/decisions/ja/0001-use-go-over-shell-script.md`
 
 ---
 

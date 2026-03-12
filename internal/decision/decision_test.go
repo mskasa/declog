@@ -164,6 +164,33 @@ func TestList(t *testing.T) {
 	}
 }
 
+func TestFindByID(t *testing.T) {
+	dir := t.TempDir()
+	content := "# 0002: Use Cobra\n\n- Date: 2026-03-12\n- Status: Accepted\n- Author: alice\n"
+	if err := os.WriteFile(filepath.Join(dir, "0002-use-cobra.md"), []byte(content), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	d, err := FindByID(dir, 2)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if d.ID != 2 {
+		t.Errorf("ID = %d, want 2", d.ID)
+	}
+	if d.Title != "Use Cobra" {
+		t.Errorf("Title = %q, want %q", d.Title, "Use Cobra")
+	}
+}
+
+func TestFindByID_NotFound(t *testing.T) {
+	dir := t.TempDir()
+	_, err := FindByID(dir, 99)
+	if err == nil {
+		t.Error("expected error for missing ID, got nil")
+	}
+}
+
 func contains(s, substr string) bool {
 	return len(s) >= len(substr) && (s == substr || len(s) > 0 && containsStr(s, substr))
 }

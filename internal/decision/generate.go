@@ -12,7 +12,9 @@ import (
 	tmpl "github.com/mskasa/declog/internal/template"
 )
 
-var filePattern = regexp.MustCompile(`^(\d{4})-.*\.md$`)
+// filePattern matches primary decision files (e.g. 0001-use-go.md) but not
+// locale variants (e.g. 0001-use-go.ja.md) by disallowing dots in the slug.
+var filePattern = regexp.MustCompile(`^(\d{4})-[^.]+\.md$`)
 
 // NextID returns the next available 4-digit ID by scanning the decisions directory.
 func NextID(dir string) (int, error) {
@@ -54,6 +56,39 @@ func AuthorFromGit() string {
 		return "unknown"
 	}
 	return strings.TrimSpace(string(out))
+}
+
+// List returns all decisions in dir sorted by ID descending.
+func List(dir string) ([]*Decision, error) {
+	entries, err := os.ReadDir(dir)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return nil, nil
+		}
+		return nil, fmt.Errorf("reading decisions dir: %w", err)
+	}
+
+	var decisions []*Decision
+	for _, e := range entries {
+		if !filePattern.MatchString(e.Name()) {
+			continue
+		}
+		d, err := Parse(filepath.Join(dir, e.Name()))
+		if err != nil {
+			return nil, err
+		}
+		decisions = append(decisions, d)
+	}
+
+	// Sort by ID descending.
+	for i := 0; i < len(decisions)-1; i++ {
+		for j := i + 1; j < len(decisions); j++ {
+			if decisions[i].ID < decisions[j].ID {
+				decisions[i], decisions[j] = decisions[j], decisions[i]
+			}
+		}
+	}
+	return decisions, nil
 }
 
 // Create generates a new ADR file and returns its path.

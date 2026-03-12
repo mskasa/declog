@@ -371,7 +371,7 @@ Claude:
 - [x] internal/template/template.go (Markdown template)
 - [x] cmd/log.go (`why log`)
 - [x] cmd/list.go (`why list`)
-- [ ] cmd/search.go (`why search`)
+- [x] cmd/search.go (`why search`)
 - [ ] cmd/show.go (`why show`)
 - [ ] cmd/status.go (`why status`)
 - [ ] docs/decisions/ initial ADRs (0001–0006)

@@ -27,3 +27,8 @@ Go compiles to a single static binary, supports all target platforms, and provid
 - **Shell script (Bash):** Simple to write but not portable to Windows and harder to test reliably
 - **Python:** Cross-platform but requires a Python runtime on the user's machine; packaging is more complex
 - **Node.js:** Cross-platform but requires Node.js runtime; binary distribution requires bundling (e.g., pkg)
+
+## Related Files
+
+- `go.mod`
+- `main.go`

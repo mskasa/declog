@@ -108,6 +108,10 @@ Template generated when running `why log`:
 ## Alternatives Considered
 
 <!-- Options that were considered but not adopted, and why. (Optional) -->
+
+## Related Files
+
+<!-- List files related to this decision (e.g. internal/search/search.go). -->
 ```
 
 ### File Naming Convention

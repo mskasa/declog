@@ -28,3 +28,9 @@ No database, no binary format, no additional metadata files.
 - **SQLite database:** Enables structured queries but breaks portability and produces binary diffs
 - **JSON/YAML files:** Machine-readable but less pleasant to write and read directly
 - **Dedicated ADR service (e.g., external SaaS):** Centralized but creates an external dependency and separates decisions from the codebase
+
+## Related Files
+
+- `internal/decision/decision.go`
+- `internal/decision/generate.go`
+- `internal/template/template.go`

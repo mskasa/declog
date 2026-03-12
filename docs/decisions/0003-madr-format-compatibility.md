@@ -27,3 +27,7 @@ The template includes sections for Context, Decision, Consequences, and Alternat
 - **Nygard format (original ADR format):** Simpler (Context, Decision, Status, Consequences) but less expressive; no Alternatives section
 - **Custom format:** Maximum flexibility but no interoperability with existing tooling
 - **YAML/TOML front matter:** Machine-readable metadata but less readable inline; adds parsing complexity
+
+## Related Files
+
+- `internal/template/template.go`

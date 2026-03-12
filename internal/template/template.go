@@ -29,5 +29,9 @@ func Render(id int, title, author string) string {
 ## Alternatives Considered
 
 <!-- Options that were considered but not adopted, and why. (Optional) -->
+
+## Related Files
+
+<!-- List files related to this decision (e.g. internal/search/search.go). -->
 `, id, title, date, author)
 }

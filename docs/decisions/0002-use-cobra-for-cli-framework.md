@@ -27,3 +27,12 @@ Cobra is the de facto standard for Go CLI applications and provides subcommand m
 - **`flag` (stdlib):** No subcommand support; too low-level for a multi-command CLI
 - **`urfave/cli`:** A valid alternative but less widely adopted than cobra in the Go ecosystem
 - **Manual routing:** Simple `switch` on `os.Args` — sufficient for a few commands but does not scale and lacks help/completion generation
+
+## Related Files
+
+- `cmd/root.go`
+- `cmd/log.go`
+- `cmd/list.go`
+- `cmd/search.go`
+- `cmd/show.go`
+- `cmd/status.go`

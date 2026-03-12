@@ -29,3 +29,8 @@ Name the CLI command `why` instead of `dec`, `declog`, or `adr`.
 - **`dec`:** Short but ambiguous (decimal? declare?)
 - **`adr`:** Describes the artifact type but not the action; also conflicts with the existing `adr-tools` project
 - **`record`:** Descriptive but too generic and likely to conflict with other tools
+
+## Related Files
+
+- `main.go`
+- `.goreleaser.yaml`

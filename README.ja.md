@@ -44,6 +44,16 @@ curl -L https://github.com/mskasa/declog/releases/latest/download/why_linux_amd6
 mv why /usr/local/bin/
 ```
 
+**Windows (PowerShell)**
+
+```powershell
+# amd64
+Invoke-WebRequest -Uri https://github.com/mskasa/declog/releases/latest/download/why_windows_amd64.zip -OutFile why.zip
+Expand-Archive why.zip -DestinationPath why_bin
+Move-Item why_bin\why.exe C:\Windows\System32\why.exe
+Remove-Item why.zip, why_bin -Recurse
+```
+
 ### go install
 
 ```bash

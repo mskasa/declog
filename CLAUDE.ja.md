@@ -120,7 +120,9 @@ NNNN-kebab-case-title.md
 - `NNNN`：4桁ゼロ埋め連番（既存ファイルの最大値＋1で自動採番）
 - kebab-case：タイトルを小文字・ハイフン区切りに自動変換
 - 保存先：`docs/decisions/`（リポジトリルートからの相対パス）
-- このリポジトリのドッグフーディング用ADRは、英語版と日本語版の両方を作成する（例：`0001-use-go-over-shell-script.md` と `0001-use-go-over-shell-script.ja.md`）
+- このリポジトリのドッグフーディング用ADRは、英語版と日本語版の両方を作成する：
+  - 英語版：`docs/decisions/0001-use-go-over-shell-script.md`
+  - 日本語版：`docs/decisions/ja/0001-use-go-over-shell-script.md`
 
 ---
 
@@ -328,19 +330,42 @@ Claude:
 
 <!-- 作業が進むたびにここを更新する -->
 
+### MVP (v0.1.0) ✅
+
 - [x] .github/workflows/ci.yml（PR毎にgo test + go vet）
-- [ ] go.mod + cobraセットアップ（`module github.com/yourname/declog`）
-- [ ] cmd/root.go（`why` コマンドのルート）
-- [ ] internal/decision/generate.go（自動採番・ファイル生成）
-- [ ] internal/template/template.go（Markdownテンプレート）
-- [ ] cmd/log.go（`why log`）
-- [ ] cmd/list.go（`why list`）
-- [ ] cmd/search.go（`why search`）
-- [ ] cmd/show.go（`why show`）
-- [ ] cmd/status.go（`why status`）
-- [ ] docs/decisions/ 初期ADR（0001〜0006）
-- [ ] README.md（デモGIF含む）
-- [ ] GoReleaser設定
+- [x] go.mod + cobraセットアップ（`module github.com/mskasa/declog`）
+- [x] cmd/root.go（`why` コマンドのルート）
+- [x] internal/decision/generate.go（自動採番・ファイル生成）
+- [x] internal/template/template.go（Markdownテンプレート）
+- [x] cmd/log.go（`why log`）
+- [x] cmd/list.go（`why list`）
+- [x] cmd/search.go（`why search`）
+- [x] cmd/show.go（`why show`）
+- [x] cmd/status.go（`why status`）
+- [x] docs/decisions/ 初期ADR（0001〜0006）
+- [x] README.md
+- [x] GoReleaser設定
+
+### 近いうち（v0.1.x）
+
+- [ ] デモGIF（README掲載）
+- [ ] cmd/blame.go（`why blame <file>` — ADR内のファイルパス記述を全文検索）
+- [ ] cmd/edit.go（`why edit <id>` — 既存ADRを `$EDITOR` で開く）
+- [ ] `why list --status <status>` — ステータスでフィルタリング
+- [ ] `why search -i` — 大文字小文字を区別しない検索フラグ
+- [ ] `why --version` — バージョン表示
+- [ ] `cmd/` パッケージのテスト追加
+
+### v0.2.0
+
+- [ ] Homebrew formula
+- [ ] Scoop manifest（Windows）
+- [ ] カスタム decisions ディレクトリ（`--dir` フラグまたは設定ファイル）
+
+### MVP後の改善
+
+- [ ] `why list` / `why search` のカラー出力
+- [ ] CIへの golangci-lint 追加
 
 ---
 

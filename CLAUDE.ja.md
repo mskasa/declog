@@ -328,7 +328,7 @@ Claude:
 
 <!-- 作業が進むたびにここを更新する -->
 
-- [ ] .github/workflows/ci.yml（PR毎にgo test + go vet）
+- [x] .github/workflows/ci.yml（PR毎にgo test + go vet）
 - [ ] go.mod + cobraセットアップ（`module github.com/yourname/declog`）
 - [ ] cmd/root.go（`why` コマンドのルート）
 - [ ] internal/decision/generate.go（自動採番・ファイル生成）

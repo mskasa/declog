@@ -372,7 +372,7 @@ Claude:
 - [x] cmd/log.go (`why log`)
 - [x] cmd/list.go (`why list`)
 - [x] cmd/search.go (`why search`)
-- [ ] cmd/show.go (`why show`)
+- [x] cmd/show.go (`why show`)
 - [ ] cmd/status.go (`why status`)
 - [ ] docs/decisions/ initial ADRs (0001–0006)
 - [ ] README.md (including demo GIF)

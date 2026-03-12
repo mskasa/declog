@@ -364,6 +364,8 @@ Claude:
 
 <!-- Update this checklist as work proceeds -->
 
+### MVP (v0.1.0) ✅
+
 - [x] .github/workflows/ci.yml (go test + go vet on every PR)
 - [x] go.mod + cobra setup (`module github.com/mskasa/declog`)
 - [x] cmd/root.go (root `why` command)
@@ -375,8 +377,29 @@ Claude:
 - [x] cmd/show.go (`why show`)
 - [x] cmd/status.go (`why status`)
 - [x] docs/decisions/ initial ADRs (0001–0006)
-- [x] README.md (including demo GIF)
+- [x] README.md
 - [x] GoReleaser configuration
+
+### Near-term (v0.1.x)
+
+- [ ] Demo GIF in README
+- [ ] cmd/blame.go (`why blame <file>` — full-text search for file path mentions in ADRs)
+- [ ] cmd/edit.go (`why edit <id>` — open an existing ADR in `$EDITOR`)
+- [ ] `why list --status <status>` — filter list by status
+- [ ] `why search -i` — case-insensitive search flag
+- [ ] `why --version` — print version string
+- [ ] Tests for `cmd/` package
+
+### v0.2.0
+
+- [ ] Homebrew formula
+- [ ] Scoop manifest (Windows)
+- [ ] Custom decisions directory (`--dir` flag or config file)
+
+### Post-MVP improvements
+
+- [ ] Color output for `why list` and `why search`
+- [ ] golangci-lint in CI
 
 ---
 

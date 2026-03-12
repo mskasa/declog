@@ -363,8 +363,8 @@ Claude:
 <!-- Update this checklist as work proceeds -->
 
 - [x] .github/workflows/ci.yml (go test + go vet on every PR)
-- [ ] go.mod + cobra setup (`module github.com/yourname/declog`)
-- [ ] cmd/root.go (root `why` command)
+- [x] go.mod + cobra setup (`module github.com/mskasa/declog`)
+- [x] cmd/root.go (root `why` command)
 - [ ] internal/decision/generate.go (auto-numbering and file generation)
 - [ ] internal/template/template.go (Markdown template)
 - [ ] cmd/log.go (`why log`)

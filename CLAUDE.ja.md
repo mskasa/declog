@@ -120,6 +120,7 @@ NNNN-kebab-case-title.md
 - `NNNN`：4桁ゼロ埋め連番（既存ファイルの最大値＋1で自動採番）
 - kebab-case：タイトルを小文字・ハイフン区切りに自動変換
 - 保存先：`docs/decisions/`（リポジトリルートからの相対パス）
+- このリポジトリのドッグフーディング用ADRは、英語版と日本語版の両方を作成する（例：`0001-use-go-over-shell-script.md` と `0001-use-go-over-shell-script.ja.md`）
 
 ---
 

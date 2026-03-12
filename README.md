@@ -26,9 +26,17 @@ docs/decisions/0007-use-postgresql-over-sqlite.md:1: # 0007: use PostgreSQL over
 
 ## Installation
 
-### Download binary (recommended)
+### go install (recommended if you have Go)
+
+```bash
+go install github.com/mskasa/declog@latest
+```
+
+### Download binary
 
 Download the latest binary for your platform from the [Releases page](https://github.com/mskasa/declog/releases).
+
+**macOS / Linux**
 
 ```bash
 # macOS (Apple Silicon)
@@ -44,7 +52,7 @@ curl -L https://github.com/mskasa/declog/releases/latest/download/why_linux_amd6
 mv why /usr/local/bin/
 ```
 
-**Windows (PowerShell)**
+**Windows (PowerShell, requires administrator)**
 
 ```powershell
 # amd64
@@ -52,12 +60,6 @@ Invoke-WebRequest -Uri https://github.com/mskasa/declog/releases/latest/download
 Expand-Archive why.zip -DestinationPath why_bin
 Move-Item why_bin\why.exe C:\Windows\System32\why.exe
 Remove-Item why.zip, why_bin -Recurse
-```
-
-### go install
-
-```bash
-go install github.com/mskasa/declog@latest
 ```
 
 ## Quick Start

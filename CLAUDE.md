@@ -373,8 +373,8 @@ Claude:
 - [x] cmd/list.go (`why list`)
 - [x] cmd/search.go (`why search`)
 - [x] cmd/show.go (`why show`)
-- [ ] cmd/status.go (`why status`)
-- [ ] docs/decisions/ initial ADRs (0001–0006)
+- [x] cmd/status.go (`why status`)
+- [x] docs/decisions/ initial ADRs (0001–0006)
 - [ ] README.md (including demo GIF)
 - [ ] GoReleaser configuration
 

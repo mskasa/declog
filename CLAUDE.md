@@ -375,7 +375,7 @@ Claude:
 - [x] cmd/show.go (`why show`)
 - [x] cmd/status.go (`why status`)
 - [x] docs/decisions/ initial ADRs (0001–0006)
-- [ ] README.md (including demo GIF)
+- [x] README.md (including demo GIF)
 - [x] GoReleaser configuration
 
 ---

@@ -368,7 +368,7 @@ Claude:
 - [x] internal/decision/generate.go (auto-numbering and file generation)
 - [x] internal/template/template.go (Markdown template)
 - [x] cmd/log.go (`why log`)
-- [ ] cmd/list.go (`why list`)
+- [x] cmd/list.go (`why list`)
 - [ ] cmd/search.go (`why search`)
 - [ ] cmd/show.go (`why show`)
 - [ ] cmd/status.go (`why status`)

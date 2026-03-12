@@ -89,6 +89,25 @@ func List(dir string) ([]*Decision, error) {
 	return decisions, nil
 }
 
+// FindByID returns the decision with the given ID, or an error if not found.
+func FindByID(dir string, id int) (*Decision, error) {
+	entries, err := os.ReadDir(dir)
+	if err != nil {
+		return nil, fmt.Errorf("reading decisions dir: %w", err)
+	}
+
+	prefix := fmt.Sprintf("%04d-", id)
+	for _, e := range entries {
+		if !filePattern.MatchString(e.Name()) {
+			continue
+		}
+		if strings.HasPrefix(e.Name(), prefix) {
+			return Parse(filepath.Join(dir, e.Name()))
+		}
+	}
+	return nil, fmt.Errorf("decision %04d not found", id)
+}
+
 // Create generates a new ADR file and returns its path.
 func Create(dir, title string) (string, error) {
 	if err := os.MkdirAll(dir, 0o755); err != nil {

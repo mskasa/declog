@@ -11,7 +11,7 @@ func Render(id int, title, author string) string {
 	return fmt.Sprintf(`# %04d: %s
 
 - Date: %s
-- Status: Proposed
+- Status: Active
 - Author: %s
 
 ## Context

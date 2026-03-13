@@ -73,12 +73,16 @@ why blame <file>               # 指定ファイルに関連するDecisionを逆
 
 ### ステータス定義
 
-| ステータス   | 意味                         |
-| ------------ | ---------------------------- |
-| `Proposed`   | 提案中（デフォルト）         |
-| `Accepted`   | 承認済み・採用               |
-| `Superseded` | 別のDecisionに置き換えられた |
-| `Deprecated` | 廃止                         |
+| ステータス           | 意味                               | 使うタイミング                             |
+| -------------------- | ---------------------------------- | ------------------------------------------ |
+| `Active`             | 現在有効な判断（デフォルト）       | コード変更と同時にコミット                 |
+| `Inactive`           | 単純に無効になった                 | 置き換え先のADRが存在しない場合            |
+| `Superseded by NNNN` | 別のADRに置き換えられた            | 新しいADRを作成した場合                    |
+
+**ステータス運用方針：**
+- デフォルトは `Active`（コード変更と同時にコミットする運用のため、作成時点で意思決定済みとみなす）
+- 設計を覆す新しいADRを作成した場合は既存ADRを `Superseded by NNNN` にする
+- 置き換え先のADRが存在しない場合は `Inactive` にする
 
 ---
 
@@ -90,7 +94,7 @@ why blame <file>               # 指定ファイルに関連するDecisionを逆
 # {NNNN}: {Title}
 
 - Date: {YYYY-MM-DD}
-- Status: Proposed
+- Status: Active
 - Author: {git config user.name}
 
 ## Context

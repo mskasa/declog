@@ -407,7 +407,7 @@ Claude:
 
 - [x] ロゴ画像作成
 - [x] cmd/blame.go（`why blame <file>` — ADR内のファイルパス記述を全文検索）
-- [ ] why --version
+- [x] why --version
 
 ### v0.2.0
 

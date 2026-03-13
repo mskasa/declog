@@ -441,7 +441,7 @@ Claude:
 
 - [x] Logo image for README
 - [x] cmd/blame.go (`why blame <file>` — full-text search for file path mentions in ADRs)
-- [ ] `why --version` — print version string
+- [x] `why --version` — print version string
 
 ### v0.2.0
 

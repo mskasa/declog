@@ -161,6 +161,38 @@ e.g. 0001-use-go-over-shell-script.md
 "This design choice is worth preserving in docs/decisions/."
 ```
 
+### ADR Granularity Guidelines
+
+**Decisions worth recording as an ADR:**
+
+- Design decisions that affect multiple files or multiple components
+- Decisions driven by external factors (load testing, incidents, performance measurements, etc.)
+- Decisions that a future developer would want to understand ("why is it done this way?")
+
+**Decisions that do NOT warrant an ADR:**
+
+- Small-scale changes such as variable or function names
+- Self-evident implementation details
+- Reasons that are fully contained within a single file (write a code comment instead)
+
+**ADR vs. Code Comment:**
+
+| Scope | Where to document |
+| ----- | ----------------- |
+| Reasoning contained within a single file | Code comment |
+| Reasoning that spans multiple files | ADR |
+| Both | Write both; leave a link to the ADR in the comment |
+
+Example — referencing an ADR from a code comment:
+
+```go
+// AuthorFromGit reads the author name from git config.
+// Decision to use git config instead of an environment variable: docs/decisions/0009-author-source.md
+func AuthorFromGit() string {
+    ...
+}
+```
+
 ### Initial ADRs to Create at Project Start
 
 Before writing any code, manually create the following ADRs:

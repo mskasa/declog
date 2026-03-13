@@ -6,6 +6,10 @@
 
 ---
 
+![demo](docs/demo.gif)
+
+---
+
 Design decisions tend to get scattered across Issues, PRs, and Slack — and eventually lost.
 `why` saves them as Markdown files alongside your code, so the reasoning behind every choice stays in the repository forever.
 

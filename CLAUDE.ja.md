@@ -389,7 +389,7 @@ Claude:
 ### 近いうち（v0.1.x）
 
 - [ ] デモGIF（README掲載）
-- [ ] cmd/blame.go（`why blame <file>` — ADR内のファイルパス記述を全文検索）
+- [x] cmd/blame.go（`why blame <file>` — ADR内のファイルパス記述を全文検索）
 - [ ] cmd/edit.go（`why edit <id>` — 既存ADRを `$EDITOR` で開く）
 - [ ] `why list --status <status>` — ステータスでフィルタリング
 - [ ] `why search -i` — 大文字小文字を区別しない検索フラグ

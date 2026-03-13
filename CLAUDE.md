@@ -423,7 +423,7 @@ Claude:
 ### Near-term (v0.1.x)
 
 - [ ] Demo GIF in README
-- [ ] cmd/blame.go (`why blame <file>` — full-text search for file path mentions in ADRs)
+- [x] cmd/blame.go (`why blame <file>` — full-text search for file path mentions in ADRs)
 - [ ] cmd/edit.go (`why edit <id>` — open an existing ADR in `$EDITOR`)
 - [ ] `why list --status <status>` — filter list by status
 - [ ] `why search -i` — case-insensitive search flag

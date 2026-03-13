@@ -6,9 +6,9 @@
 
 ## Context
 
-The original four statuses (`Proposed`, `Accepted`, `Superseded`, `Deprecated`) were inherited from conventional ADR tooling designed for team workflows where decisions go through a review and approval cycle.
+The original four statuses (`Proposed`, `Accepted`, `Superseded`, `Deprecated`) were inherited from conventional ADR tooling designed for workflows where decisions go through a review and approval cycle.
 
-In a solo development context where ADRs are committed alongside the code change, `Proposed` and `Accepted` are redundant — a decision is already final at the time it is written. `Deprecated` does not distinguish between a decision that was simply invalidated and one that was replaced by a newer ADR, making it harder to trace the evolution of design choices.
+In declog's workflow, ADRs are committed alongside the code change. This means a decision is already final at the time it is written, and there is no Proposed → Accepted transition. `Proposed` and `Accepted` therefore become meaningless placeholders. `Deprecated` does not distinguish between a decision that was simply invalidated and one that was replaced by a newer ADR, making it harder to trace the evolution of design choices.
 
 Two distinct invalidation scenarios need to be represented:
 1. A decision is replaced by a new ADR (traceability to the replacement is valuable)
@@ -30,12 +30,12 @@ The default status is `Active`. ADRs are committed at the same time as the code 
 
 - The status field is always meaningful; no "placeholder" statuses exist
 - `Superseded by NNNN` embeds the replacement ADR ID directly, making design evolution traceable without a separate lookup
-- Simpler mental model for solo developers
+- Simpler mental model; every status has a clear, unambiguous meaning
 - Existing ADRs (0001–0007) use `Accepted`; these should be treated as equivalent to `Active` and updated opportunistically
 
 ## Alternatives Considered
 
-- **Keep the original four statuses:** Compatible with MADR tooling but introduces statuses that are never meaningfully used in a solo commit-alongside-code workflow
+- **Keep the original four statuses:** Compatible with MADR tooling but introduces statuses that are never meaningfully used when ADRs are committed alongside code
 - **Two statuses (Active / Inactive):** Simpler, but loses the traceability of which ADR replaced which
 - **Free-form status field:** Maximum flexibility but no consistent semantics across ADRs
 

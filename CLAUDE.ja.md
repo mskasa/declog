@@ -80,7 +80,7 @@ why blame <file>               # 指定ファイルに関連するDecisionを逆
 | `Superseded by NNNN` | 別のADRに置き換えられた            | 新しいADRを作成した場合                    |
 
 **ステータス運用方針：**
-- デフォルトは `Active`（コード変更と同時にコミットする運用のため、作成時点で意思決定済みとみなす）
+- デフォルトは `Active`。ADRはコード変更と同時にコミットする運用のため作成時点で意思決定済みとみなす。Proposed → Accepted のレビューサイクルは存在しない
 - 設計を覆す新しいADRを作成した場合は既存ADRを `Superseded by NNNN` にする
 - 置き換え先のADRが存在しない場合は `Inactive` にする
 

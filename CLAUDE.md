@@ -80,7 +80,7 @@ why blame <file>               # Find decisions related to a given file (planned
 | `Superseded by NNNN` | Replaced by another decision         | When a new ADR is created to replace this one    |
 
 **Status policy:**
-- Default is `Active` — ADRs are committed alongside code changes, so the decision is considered final at creation time; there is no Proposed → Accepted review cycle
+- Default is `Active` — ADRs are committed alongside code changes, so the decision is considered final at creation time
 - When a new ADR replaces an existing one, mark the old ADR as `Superseded by NNNN`
 - When a decision becomes invalid without a replacement, mark it as `Inactive`
 

@@ -8,7 +8,7 @@
 
 The original four statuses (`Proposed`, `Accepted`, `Superseded`, `Deprecated`) were inherited from conventional ADR tooling designed for workflows where decisions go through a review and approval cycle.
 
-In declog's workflow, ADRs are committed alongside the code change. This means a decision is already final at the time it is written, and there is no Proposed → Accepted transition. `Proposed` and `Accepted` therefore become meaningless placeholders. `Deprecated` does not distinguish between a decision that was simply invalidated and one that was replaced by a newer ADR, making it harder to trace the evolution of design choices.
+In declog's workflow, ADRs are committed alongside the code change. This means a decision is already final at the time it is written, making `Proposed` and `Accepted` meaningless placeholders. `Deprecated` does not distinguish between a decision that was simply invalidated and one that was replaced by a newer ADR, making it harder to trace the evolution of design choices.
 
 Two distinct invalidation scenarios need to be represented:
 1. A decision is replaced by a new ADR (traceability to the replacement is valuable)

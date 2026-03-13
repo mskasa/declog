@@ -108,6 +108,10 @@ why blame <file>               # 指定ファイルに関連するDecisionを逆
 ## Alternatives Considered
 
 <!-- 検討したが採用しなかった選択肢とその理由（省略可） -->
+
+## Related Files
+
+<!-- このDecisionに関連するファイルを列挙する（例: internal/search/search.go）。 -->
 ```
 
 ### ファイル命名規則

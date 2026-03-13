@@ -26,3 +26,8 @@ Use ripgrep (`rg`) as the primary search backend when it is available on `PATH`,
 - **Hard dependency on ripgrep:** Simpler code but breaks for users who have not installed it
 - **Pure Go stdlib only:** Maximum portability but slower for large repositories; misses `.gitignore` awareness
 - **Embed a search library (e.g., `blevesearch`):** Powerful but significantly increases binary size and complexity for a simple use case
+
+## Related Files
+
+- `internal/search/search.go`
+- `internal/search/search_test.go`

@@ -29,3 +29,8 @@ CLIコマンド名を`dec`・`declog`・`adr`ではなく`why`にする。
 - **`dec`：** 短いが意味が曖昧（decimal? declare?）
 - **`adr`：** 成果物の種類を表すが行動を表さない。また既存の`adr-tools`プロジェクトと衝突する
 - **`record`：** 説明的だが汎用的すぎて他のツールと衝突しやすい
+
+## Related Files
+
+- `main.go`
+- `.goreleaser.yaml`

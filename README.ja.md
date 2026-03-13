@@ -1,5 +1,9 @@
 # declog
 
+<p align="center">
+  <img src="docs/assets/logo.svg" alt="declog" width="400">
+</p>
+
 **`why`** — アーキテクチャ上の意思決定を記録・検索するための最小限のCLIツールです。
 
 [English README](README.md)

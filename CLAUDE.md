@@ -193,6 +193,23 @@ func AuthorFromGit() string {
 }
 ```
 
+### ADR Update Policy
+
+**ADRs are immutable by default.** Keeping the original text intact preserves an accurate record of *why a decision was made at that point in time.*
+
+**Permitted changes:**
+- Updating Status: `Active` → `Inactive` or `Superseded by NNNN`
+- Fixing typos
+- Appending entries to the Related Files section
+
+**Not permitted:**
+- Rewriting the body (Context, Decision, Consequences)
+  → Doing so erases the historical record of the original decision
+
+When a design decision is reversed or replaced, follow this process instead of editing the existing ADR:
+1. Create a new ADR describing the new decision
+2. Update the old ADR's Status to `Superseded by NNNN`
+
 ### Initial ADRs to Create at Project Start
 
 Before writing any code, manually create the following ADRs:

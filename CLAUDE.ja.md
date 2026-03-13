@@ -161,6 +161,38 @@ NNNN-kebab-case-title.md
 「この設計判断はdocs/decisions/に残す価値があります」
 ```
 
+### ADRの粒度ガイドライン
+
+**ADRに記録すべき判断：**
+
+- 複数ファイル／複数コンポーネントに影響する設計判断
+- 外部要因（負荷試験・障害対応・パフォーマンス計測など）を伴う判断
+- 将来の開発者が「なぜこうなっているか」を知りたくなる判断
+
+**ADRに記録しなくてよい判断：**
+
+- 変数名・関数名などの小粒な変更
+- 自明な実装詳細
+- 1ファイル内で完結する理由（コードコメントに書く）
+
+**コードコメントとの使い分け：**
+
+| スコープ | 記録する場所 |
+| -------- | ------------ |
+| 1ファイル内で完結する理由 | コードコメント |
+| 複数ファイルにまたがる理由 | ADR |
+| 両方に該当する | 両方に書き、コメントにADRへのリンクを残す |
+
+例 — コードコメントからADRへのリンク：
+
+```go
+// AuthorFromGit reads the author name from git config.
+// Decision to use git config instead of an environment variable: docs/decisions/0009-author-source.md
+func AuthorFromGit() string {
+    ...
+}
+```
+
 ### 開発開始時点で作成すべき初期ADR
 
 コードを1行も書く前に、以下のADRを手動で作成しておくこと：

@@ -73,12 +73,16 @@ why blame <file>               # Find decisions related to a given file (planned
 
 ### Status Definitions
 
-| Status       | Meaning                       |
-| ------------ | ----------------------------- |
-| `Proposed`   | Under consideration (default) |
-| `Accepted`   | Approved and adopted          |
-| `Superseded` | Replaced by another decision  |
-| `Deprecated` | No longer applicable          |
+| Status               | Meaning                              | When to use                                      |
+| -------------------- | ------------------------------------ | ------------------------------------------------ |
+| `Active`             | Currently valid decision (default)   | Commit together with the code change             |
+| `Inactive`           | Simply no longer valid               | When no replacement ADR exists                   |
+| `Superseded by NNNN` | Replaced by another decision         | When a new ADR is created to replace this one    |
+
+**Status policy:**
+- Default is `Active` — ADRs are committed alongside code changes, so the decision is considered final at creation time
+- When a new ADR replaces an existing one, mark the old ADR as `Superseded by NNNN`
+- When a decision becomes invalid without a replacement, mark it as `Inactive`
 
 ---
 
@@ -90,7 +94,7 @@ Template generated when running `why log`:
 # {NNNN}: {Title}
 
 - Date: {YYYY-MM-DD}
-- Status: Proposed
+- Status: Active
 - Author: {git config user.name}
 
 ## Context

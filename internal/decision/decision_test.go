@@ -91,7 +91,7 @@ func TestCreate(t *testing.T) {
 	if !contains(body, "# 0001: Use PostgreSQL") {
 		t.Errorf("file missing title header, got:\n%s", body)
 	}
-	if !contains(body, "Status: Proposed") {
+	if !contains(body, "Status: Active") {
 		t.Errorf("file missing status, got:\n%s", body)
 	}
 }

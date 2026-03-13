@@ -8,6 +8,8 @@ builds:
   - binary: why
     env:
       - CGO_ENABLED=0
+    ldflags:
+      - -X github.com/mskasa/declog/cmd.Version={{.Version}}
     goos:
       - linux
       - darwin

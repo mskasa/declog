@@ -1,5 +1,9 @@
 # declog
 
+<p align="center">
+  <img src="docs/assets/logo.svg" alt="declog" width="400">
+</p>
+
 **`why`** — A minimal CLI tool to record and search architectural design decisions.
 
 [日本語版 README はこちら](README.ja.md)

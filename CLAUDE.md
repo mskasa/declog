@@ -439,7 +439,7 @@ Claude:
 
 ### v0.1.0 (remaining)
 
-- [ ] Demo GIF in README
+- [ ] Logo image for README
 - [x] cmd/blame.go (`why blame <file>` — full-text search for file path mentions in ADRs)
 - [ ] `why --version` — print version string
 

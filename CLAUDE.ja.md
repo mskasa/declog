@@ -403,26 +403,42 @@ Claude:
 - [x] README.md
 - [x] GoReleaser設定
 
-### 近いうち（v0.1.x）
+### v0.1.0（残り）
 
-- [ ] デモGIF（README掲載）
+- [ ] デモGIF
 - [x] cmd/blame.go（`why blame <file>` — ADR内のファイルパス記述を全文検索）
-- [ ] cmd/edit.go（`why edit <id>` — 既存ADRを `$EDITOR` で開く）
-- [ ] `why list --status <status>` — ステータスでフィルタリング
-- [ ] `why search -i` — 大文字小文字を区別しない検索フラグ
-- [ ] `why --version` — バージョン表示
-- [ ] `cmd/` パッケージのテスト追加
+- [ ] why --version
 
 ### v0.2.0
 
+- [ ] why init
+- [ ] why log のエディタ自動起動
+- [ ] why log 実行時にgit logの直近コミットをContextに自動挿入
+- [ ] why log 実行時の類似ADR提示（キーワード部分一致）
+- [ ] why list --status
+- [ ] why supersede
+- [ ] why review（長期未更新ADRの検出）
+- [ ] git diff --staged による関連ファイル候補の自動提示
+- [ ] git hookでADR追加を促す仕組み
+- [ ] GitHub Actions連携（why init でワークフロー生成）
+
+### v0.3.0
+
+- [ ] why audit（Related Filesのコードとの乖離検出）
+- [ ] why audit のCI定期実行（週次・GitHub Issue自動作成）
+- [ ] LLM連携によるADRドラフト自動生成
+
+### v0.4.0以降
+
+- [ ] why search -i
+- [ ] why edit
+- [ ] cmd/ パッケージのテスト追加
+- [ ] golangci-lint をCIに追加
 - [ ] Homebrew formula
-- [ ] Scoop manifest（Windows）
-- [ ] カスタム decisions ディレクトリ（`--dir` フラグまたは設定ファイル）
-
-### MVP後の改善
-
-- [ ] `why list` / `why search` のカラー出力
-- [ ] CIへの golangci-lint 追加
+- [ ] カラー出力
+- [ ] MADR既存ファイルのインポート
+- [ ] why stats
+- [ ] GitHub Actions Marketplace公開
 
 ---
 

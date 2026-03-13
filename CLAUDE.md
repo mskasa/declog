@@ -437,26 +437,42 @@ Claude:
 - [x] README.md
 - [x] GoReleaser configuration
 
-### Near-term (v0.1.x)
+### v0.1.0 (remaining)
 
 - [ ] Demo GIF in README
 - [x] cmd/blame.go (`why blame <file>` — full-text search for file path mentions in ADRs)
-- [ ] cmd/edit.go (`why edit <id>` — open an existing ADR in `$EDITOR`)
-- [ ] `why list --status <status>` — filter list by status
-- [ ] `why search -i` — case-insensitive search flag
 - [ ] `why --version` — print version string
-- [ ] Tests for `cmd/` package
 
 ### v0.2.0
 
-- [ ] Homebrew formula
-- [ ] Scoop manifest (Windows)
-- [ ] Custom decisions directory (`--dir` flag or config file)
+- [ ] `why init` — initialize decisions directory
+- [ ] Auto-open editor after `why log`
+- [ ] Auto-insert recent git log commits into Context on `why log`
+- [ ] Show similar ADR suggestions on `why log` (keyword partial match)
+- [ ] `why list --status <status>` — filter list by status
+- [ ] `why supersede` — mark an ADR as superseded
+- [ ] `why review` — detect long-stale ADRs
+- [ ] Auto-suggest related files from `git diff --staged`
+- [ ] Git hook to prompt ADR creation
+- [ ] GitHub Actions integration (`why init` generates workflow)
 
-### Post-MVP improvements
+### v0.3.0
 
-- [ ] Color output for `why list` and `why search`
+- [ ] `why audit` — detect drift between Related Files and actual code
+- [ ] Scheduled CI run of `why audit` (weekly + auto GitHub Issue creation)
+- [ ] LLM-assisted ADR draft generation
+
+### v0.4.0+
+
+- [ ] `why search -i` — case-insensitive search flag
+- [ ] `why edit <id>` — open an existing ADR in `$EDITOR`
+- [ ] Tests for `cmd/` package
 - [ ] golangci-lint in CI
+- [ ] Homebrew formula
+- [ ] Color output for `why list` and `why search`
+- [ ] Import existing MADR files
+- [ ] `why stats`
+- [ ] GitHub Actions Marketplace release
 
 ---
 

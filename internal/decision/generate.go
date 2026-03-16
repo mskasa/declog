@@ -124,7 +124,8 @@ func Create(dir, title string) (string, error) {
 	path := filepath.Join(dir, filename)
 
 	author := AuthorFromGit()
-	content := tmpl.Render(id, title, author)
+	relatedFiles := tmpl.ChangedFiles(dir)
+	content := tmpl.Render(id, title, author, relatedFiles)
 
 	if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
 		return "", fmt.Errorf("writing file: %w", err)

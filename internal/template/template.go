@@ -46,13 +46,18 @@ func gitDiffFiles(dir, flag string) []string {
 
 // Render returns the MADR Markdown template filled with the given values.
 // relatedFiles is inserted into the Related Files section; pass nil for an empty section.
-func Render(id int, title, author string, relatedFiles []string) string {
+// supersededBy, if > 0, adds a "- Supersedes: NNNN" line after the Author line.
+func Render(id int, title, author string, relatedFiles []string, supersededBy int) string {
 	date := time.Now().Format("2006-01-02")
+	supersedes := ""
+	if supersededBy > 0 {
+		supersedes = fmt.Sprintf("\n- Supersedes: %04d", supersededBy)
+	}
 	return fmt.Sprintf(`# %04d: %s
 
 - Date: %s
 - Status: Active
-- Author: %s
+- Author: %s`+supersedes+`
 
 ## Context
 

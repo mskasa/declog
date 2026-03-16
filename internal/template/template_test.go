@@ -155,7 +155,7 @@ func TestChangedFiles_OutsideGitRepo(t *testing.T) {
 }
 
 func TestRender_WithRelatedFiles(t *testing.T) {
-	out := Render(1, "Test Decision", "alice", []string{"internal/foo.go", "cmd/bar.go"})
+	out := Render(1, "Test Decision", "alice", []string{"internal/foo.go", "cmd/bar.go"}, 0)
 
 	if !strings.Contains(out, "- `internal/foo.go`") {
 		t.Errorf("missing internal/foo.go in output:\n%s", out)
@@ -169,9 +169,25 @@ func TestRender_WithRelatedFiles(t *testing.T) {
 }
 
 func TestRender_WithoutRelatedFiles(t *testing.T) {
-	out := Render(1, "Test Decision", "alice", nil)
+	out := Render(1, "Test Decision", "alice", nil, 0)
 
 	if !strings.Contains(out, "<!-- List files related to this decision") {
 		t.Errorf("expected placeholder comment in output:\n%s", out)
+	}
+}
+
+func TestRender_WithSupersedes(t *testing.T) {
+	out := Render(9, "New Decision", "alice", nil, 3)
+
+	if !strings.Contains(out, "- Supersedes: 0003") {
+		t.Errorf("missing Supersedes line in output:\n%s", out)
+	}
+}
+
+func TestRender_WithoutSupersedes(t *testing.T) {
+	out := Render(9, "New Decision", "alice", nil, 0)
+
+	if strings.Contains(out, "Supersedes") {
+		t.Errorf("unexpected Supersedes line in output:\n%s", out)
 	}
 }

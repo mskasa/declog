@@ -452,7 +452,7 @@ Claude:
 - [x] `why init` — initialize decisions directory
 - [x] Auto-open editor after `why log`
 - [x] Suggest changed files (staged and unstaged) as Related Files candidates on `why log`
-- [ ] Show similar ADR suggestions on `why log` (keyword partial match)
+- [x] Show similar ADR suggestions on `why log` (keyword partial match)
 - [x] `why list --status <status>` — filter list by status
 - [ ] `why supersede` — mark an ADR as superseded
 - [ ] `why review` — detect long-stale ADRs

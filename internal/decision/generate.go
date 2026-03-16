@@ -109,7 +109,8 @@ func FindByID(dir string, id int) (*Decision, error) {
 }
 
 // Create generates a new ADR file and returns its path.
-func Create(dir, title string) (string, error) {
+// supersededBy, if > 0, adds a "- Supersedes: NNNN" line to the template.
+func Create(dir, title string, supersededBy int) (string, error) {
 	if err := os.MkdirAll(dir, 0o755); err != nil {
 		return "", fmt.Errorf("creating decisions dir: %w", err)
 	}
@@ -125,7 +126,7 @@ func Create(dir, title string) (string, error) {
 
 	author := AuthorFromGit()
 	relatedFiles := tmpl.ChangedFiles(dir)
-	content := tmpl.Render(id, title, author, relatedFiles)
+	content := tmpl.Render(id, title, author, relatedFiles, supersededBy)
 
 	if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
 		return "", fmt.Errorf("writing file: %w", err)

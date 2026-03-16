@@ -72,7 +72,7 @@ func TestNextID_WithExistingFiles(t *testing.T) {
 
 func TestCreate(t *testing.T) {
 	dir := t.TempDir()
-	path, err := Create(dir, "Use PostgreSQL")
+	path, err := Create(dir, "Use PostgreSQL", 0)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}

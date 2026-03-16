@@ -2,6 +2,7 @@ package initializer
 
 import (
 	"bufio"
+	_ "embed"
 	"fmt"
 	"io"
 	"os"
@@ -9,44 +10,8 @@ import (
 	"strings"
 )
 
-const adrCheckWorkflow = `name: ADR Check
-
-on:
-  pull_request:
-    types: [opened, edited, synchronize]
-
-jobs:
-  adr-check:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Check for ADR
-        env:
-          PR_TITLE: ${{ github.event.pull_request.title }}
-          PR_BODY: ${{ github.event.pull_request.body }}
-          BASE_SHA: ${{ github.event.pull_request.base.sha }}
-          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
-        run: |
-          if echo "$PR_TITLE" | grep -qF '[skip-adr]'; then
-            echo "✅ [skip-adr] found in PR title. Skipping ADR check."
-            exit 0
-          fi
-
-          if echo "$PR_BODY" | grep -qF 'docs/decisions/'; then
-            echo "✅ docs/decisions/ referenced in PR body."
-            exit 0
-          fi
-
-          if git diff --name-only "$BASE_SHA" "$HEAD_SHA" | grep -q '^docs/decisions/.*\.md$'; then
-            echo "✅ ADR file found in changed files."
-            exit 0
-          fi
-
-          echo "::warning::No ADR found. Consider adding a decision record to docs/decisions/ or include [skip-adr] in the PR title."
-`
+//go:embed templates/adr-check.yml
+var adrCheckWorkflow string
 
 // Initializer handles the declog initialization process.
 type Initializer struct {

@@ -420,7 +420,7 @@ Claude:
 - [x] why log 実行時にステージング済み・未ステージングの両方の変更ファイルを候補としてRelated Filesに提示する
 - [x] why log 実行時の類似ADR提示（キーワード部分一致）
 - [x] why list --status
-- [ ] why supersede
+- [x] why supersede
 - [ ] why review（長期未更新ADRの検出）
 - [ ] git hookでADR追加を促す仕組み
 - [x] GitHub Actions連携（why init でワークフロー生成）

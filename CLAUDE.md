@@ -450,7 +450,7 @@ Claude:
 ### v0.2.0
 
 - [x] `why init` — initialize decisions directory
-- [ ] Auto-open editor after `why log`
+- [x] Auto-open editor after `why log`
 - [ ] Auto-insert recent git log commits into Context on `why log`
 - [ ] Show similar ADR suggestions on `why log` (keyword partial match)
 - [ ] `why list --status <status>` — filter list by status

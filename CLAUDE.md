@@ -458,7 +458,7 @@ Claude:
 - [ ] `why review` — detect long-stale ADRs
 - [ ] Auto-suggest related files from `git diff --staged`
 - [ ] Git hook to prompt ADR creation
-- [ ] GitHub Actions integration (`why init` generates workflow)
+- [x] GitHub Actions integration (`why init` generates workflow)
 
 ### v0.3.0
 

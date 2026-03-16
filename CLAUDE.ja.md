@@ -424,7 +424,7 @@ Claude:
 - [ ] why review（長期未更新ADRの検出）
 - [ ] git diff --staged による関連ファイル候補の自動提示
 - [ ] git hookでADR追加を促す仕組み
-- [ ] GitHub Actions連携（why init でワークフロー生成）
+- [x] GitHub Actions連携（why init でワークフロー生成）
 
 ### v0.3.0
 

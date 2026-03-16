@@ -4,11 +4,14 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 	"text/tabwriter"
 
 	"github.com/mskasa/declog/internal/decision"
 	"github.com/spf13/cobra"
 )
+
+var statusFilter string
 
 var listCmd = &cobra.Command{
 	Use:   "list",
@@ -25,6 +28,18 @@ var listCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
+
+		if statusFilter != "" {
+			filter := strings.ToLower(statusFilter)
+			filtered := decisions[:0]
+			for _, d := range decisions {
+				if strings.HasPrefix(strings.ToLower(d.Status), filter) {
+					filtered = append(filtered, d)
+				}
+			}
+			decisions = filtered
+		}
+
 		if len(decisions) == 0 {
 			fmt.Fprintln(os.Stdout, "No decisions found.")
 			return nil
@@ -41,5 +56,6 @@ var listCmd = &cobra.Command{
 }
 
 func init() {
+	listCmd.Flags().StringVar(&statusFilter, "status", "", "Filter by status (e.g. active, inactive, superseded)")
 	rootCmd.AddCommand(listCmd)
 }

@@ -456,7 +456,6 @@ Claude:
 - [x] `why list --status <status>` — filter list by status
 - [ ] `why supersede` — mark an ADR as superseded
 - [ ] `why review` — detect long-stale ADRs
-- [ ] Auto-suggest related files from `git diff --staged`
 - [ ] Git hook to prompt ADR creation
 - [x] GitHub Actions integration (`why init` generates workflow)
 

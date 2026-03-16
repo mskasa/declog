@@ -422,7 +422,6 @@ Claude:
 - [x] why list --status
 - [ ] why supersede
 - [ ] why review（長期未更新ADRの検出）
-- [ ] git diff --staged による関連ファイル候補の自動提示
 - [ ] git hookでADR追加を促す仕組み
 - [x] GitHub Actions連携（why init でワークフロー生成）
 

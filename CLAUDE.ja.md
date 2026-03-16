@@ -417,7 +417,7 @@ Claude:
 
 - [x] why init
 - [x] why log のエディタ自動起動
-- [ ] why log 実行時にステージング済み・未ステージングの両方の変更ファイルを候補としてRelated Filesに提示する
+- [x] why log 実行時にステージング済み・未ステージングの両方の変更ファイルを候補としてRelated Filesに提示する
 - [ ] why log 実行時の類似ADR提示（キーワード部分一致）
 - [x] why list --status
 - [ ] why supersede

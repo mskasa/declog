@@ -2,11 +2,51 @@ package template
 
 import (
 	"fmt"
+	"os/exec"
+	"strings"
 	"time"
 )
 
+// ChangedFiles returns a deduplicated list of staged and unstaged changed files
+// by running git in dir. Returns nil if not in a git repository or no files are changed.
+func ChangedFiles(dir string) []string {
+	staged := gitDiffFiles(dir, "--staged")
+	unstaged := gitDiffFiles(dir, "")
+
+	seen := make(map[string]struct{}, len(staged)+len(unstaged))
+	var result []string
+	for _, f := range append(staged, unstaged...) {
+		if _, ok := seen[f]; !ok {
+			seen[f] = struct{}{}
+			result = append(result, f)
+		}
+	}
+	return result
+}
+
+func gitDiffFiles(dir, flag string) []string {
+	args := []string{"diff", "--name-only"}
+	if flag != "" {
+		args = []string{"diff", flag, "--name-only"}
+	}
+	cmd := exec.Command("git", args...)
+	cmd.Dir = dir
+	out, err := cmd.Output()
+	if err != nil {
+		return nil
+	}
+	var files []string
+	for _, line := range strings.Split(strings.TrimSpace(string(out)), "\n") {
+		if line != "" {
+			files = append(files, line)
+		}
+	}
+	return files
+}
+
 // Render returns the MADR Markdown template filled with the given values.
-func Render(id int, title, author string) string {
+// relatedFiles is inserted into the Related Files section; pass nil for an empty section.
+func Render(id int, title, author string, relatedFiles []string) string {
 	date := time.Now().Format("2006-01-02")
 	return fmt.Sprintf(`# %04d: %s
 
@@ -32,6 +72,18 @@ func Render(id int, title, author string) string {
 
 ## Related Files
 
-<!-- List files related to this decision (e.g. internal/search/search.go). -->
-`, id, title, date, author)
+%s`, id, title, date, author, renderRelatedFiles(relatedFiles))
+}
+
+func renderRelatedFiles(files []string) string {
+	if len(files) == 0 {
+		return "<!-- List files related to this decision (e.g. internal/search/search.go). -->\n"
+	}
+	var sb strings.Builder
+	for _, f := range files {
+		sb.WriteString("- `")
+		sb.WriteString(f)
+		sb.WriteString("`\n")
+	}
+	return sb.String()
 }

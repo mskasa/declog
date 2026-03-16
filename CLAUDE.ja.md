@@ -195,20 +195,24 @@ func AuthorFromGit() string {
 
 ### ADRの更新原則
 
-**ADRはイミュータブル（不変）が原則。** 過去の内容をそのまま残すことで、「あの時点でなぜそう決めたか」が正確に記録される。
+**ADRはGitで履歴管理されるため、直接更新して構わない。**
+**変更履歴はgit logで追跡できる。**
 
 **許容される操作：**
+- 同じ判断の内容が変わった場合はADRを直接更新する
+  → git diffで何が変わったか、git logでなぜ変えたかが追跡できる
 - StatusをActive → Inactive または Superseded by NNNN に変更する
 - 誤字脱字の修正
 - Related Filesへの追記
 
-**許容されない操作：**
-- ADRの本文（Context・Decision・Consequences）を書き換える
-  → 過去の判断が失われるため
+**Supersededを使うケース：**
+- 判断の方向性ごと変わった場合は新しいADRを作成してSupersededにする
+- 同じ判断の修正・更新であれば直接更新で構わない
 
-設計判断を覆す変更が発生した場合は、既存ADRの内容を書き換えるのではなく、以下の手順を踏むこと：
-1. 新しいADRを作成する
-2. 既存ADRのStatusを `Superseded by NNNN` に変更する
+**ADR更新時のコミットメッセージ：**
+- 何をなぜ変えたかを明記する
+- 例：`docs: update ADR 0003 - increase pool size from 10 to 20 based on load test`
+- 悪い例：`update adr`
 
 ### 開発開始時点で作成すべき初期ADR
 

@@ -195,20 +195,24 @@ func AuthorFromGit() string {
 
 ### ADR Update Policy
 
-**ADRs are immutable by default.** Keeping the original text intact preserves an accurate record of *why a decision was made at that point in time.*
+**ADRs can be updated directly, as Git manages the history.**
+**Change history is tracked via `git log`.**
 
 **Permitted changes:**
+- Directly updating the content when the same decision is revised
+  → `git diff` shows what changed; `git log` shows why
 - Updating Status: `Active` → `Inactive` or `Superseded by NNNN`
 - Fixing typos
 - Appending entries to the Related Files section
 
-**Not permitted:**
-- Rewriting the body (Context, Decision, Consequences)
-  → Doing so erases the historical record of the original decision
+**When to use Superseded:**
+- When the direction of the decision changes entirely, create a new ADR and mark the old one as `Superseded by NNNN`
+- When revising or refining the same decision, a direct update is sufficient
 
-When a design decision is reversed or replaced, follow this process instead of editing the existing ADR:
-1. Create a new ADR describing the new decision
-2. Update the old ADR's Status to `Superseded by NNNN`
+**Commit messages when updating an ADR:**
+- Clearly state what was changed and why
+- Good: `docs: update ADR 0003 - increase pool size from 10 to 20 based on load test`
+- Bad: `update adr`
 
 ### Initial ADRs to Create at Project Start
 

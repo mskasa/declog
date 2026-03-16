@@ -1,14 +1,17 @@
 package cmd
 
 import (
+	"bufio"
 	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"runtime"
+	"strconv"
 	"strings"
 
 	"github.com/mskasa/declog/internal/decision"
+	"github.com/mskasa/declog/internal/search"
 	"github.com/spf13/cobra"
 )
 
@@ -23,14 +26,77 @@ var logCmd = &cobra.Command{
 		}
 		dir := filepath.Join(root, "docs", "decisions")
 
-		path, err := decision.Create(dir, args[0])
+		supersededID, err := promptSimilar(dir, args[0])
 		if err != nil {
 			return err
 		}
-		fmt.Fprintf(os.Stdout, "Created: %s\n", path)
 
+		newID, err := decision.NextID(dir)
+		if err != nil {
+			return err
+		}
+
+		path, err := decision.Create(dir, args[0], supersededID)
+		if err != nil {
+			return err
+		}
+
+		if supersededID > 0 {
+			old, err := decision.FindByID(dir, supersededID)
+			if err != nil {
+				return err
+			}
+			status := fmt.Sprintf("Superseded by %04d", newID)
+			if err := decision.UpdateStatus(old.File, status, 0); err != nil {
+				return err
+			}
+			fmt.Fprintf(os.Stdout, "Updated: %s\n  Status: %s\n\n", old.File, status)
+		}
+
+		fmt.Fprintf(os.Stdout, "Creating new ADR...\nCreated: %s\n", path)
 		return openEditor(path)
 	},
+}
+
+// promptSimilar searches for similar ADRs and asks the user if any should be superseded.
+// Returns the ID to supersede (0 if none).
+func promptSimilar(dir, title string) (int, error) {
+	fmt.Fprintln(os.Stdout, "Searching for similar decisions...")
+
+	similar, err := search.Similar(dir, title)
+	if err != nil {
+		// Non-fatal: skip if search fails (e.g. docs/decisions doesn't exist yet).
+		fmt.Fprintf(os.Stdout, "No similar decisions found.\n\n")
+		return 0, nil
+	}
+	if len(similar) == 0 {
+		fmt.Fprintf(os.Stdout, "No similar decisions found.\n\n")
+		return 0, nil
+	}
+
+	fmt.Fprintln(os.Stdout, "Similar decisions found:")
+	for _, d := range similar {
+		fmt.Fprintf(os.Stdout, "  [%04d] %s | %s\n  Title: %s\n\n", d.ID, d.Date, d.Status, d.Title)
+	}
+
+	fmt.Fprintln(os.Stdout, "Does this supersede any of the above?")
+	fmt.Fprint(os.Stdout, "Enter ID to supersede (or press Enter to skip): ")
+
+	reader := bufio.NewReader(os.Stdin)
+	line, err := reader.ReadString('\n')
+	if err != nil {
+		return 0, nil
+	}
+	line = strings.TrimSpace(line)
+	if line == "" {
+		return 0, nil
+	}
+
+	id, err := strconv.Atoi(line)
+	if err != nil || id < 1 {
+		return 0, fmt.Errorf("invalid ID: %q", line)
+	}
+	return id, nil
 }
 
 func init() {

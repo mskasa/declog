@@ -28,7 +28,13 @@ func (i *Initializer) Run() error {
 		return err
 	}
 
-	if err := i.setupWorkflow(); err != nil {
+	scanner := bufio.NewScanner(i.Input)
+
+	if err := i.setupWorkflow(scanner); err != nil {
+		return err
+	}
+
+	if err := i.setupHook(scanner); err != nil {
 		return err
 	}
 
@@ -50,10 +56,9 @@ func (i *Initializer) createDecisionsDir() error {
 	return nil
 }
 
-func (i *Initializer) setupWorkflow() error {
+func (i *Initializer) setupWorkflow(scanner *bufio.Scanner) error {
 	fmt.Fprintf(i.Output, "Add GitHub Actions ADR check workflow? (y/n): ")
 
-	scanner := bufio.NewScanner(i.Input)
 	if !scanner.Scan() {
 		return nil
 	}
@@ -72,4 +77,17 @@ func (i *Initializer) setupWorkflow() error {
 	}
 	fmt.Fprintf(i.Output, "  ✅ Created .github/workflows/adr-check.yml\n")
 	return nil
+}
+
+func (i *Initializer) setupHook(scanner *bufio.Scanner) error {
+	fmt.Fprintf(i.Output, "Add pre-commit hook to prompt ADR creation? (y/n): ")
+
+	if !scanner.Scan() {
+		return nil
+	}
+	if strings.TrimSpace(strings.ToLower(scanner.Text())) != "y" {
+		return nil
+	}
+
+	return InstallHook(i.Root, i.Output)
 }

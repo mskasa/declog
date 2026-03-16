@@ -422,7 +422,7 @@ Claude:
 - [x] why list --status
 - [x] why supersede
 - [x] why review（長期未更新ADRの検出）
-- [ ] git hookでADR追加を促す仕組み
+- [x] git hookでADR追加を促す仕組み
 - [x] GitHub Actions連携（why init でワークフロー生成）
 
 ### v0.3.0

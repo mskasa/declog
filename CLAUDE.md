@@ -456,7 +456,7 @@ Claude:
 - [x] `why list --status <status>` — filter list by status
 - [x] `why supersede` — mark an ADR as superseded
 - [x] `why review` — detect long-stale ADRs
-- [ ] Git hook to prompt ADR creation
+- [x] Git hook to prompt ADR creation
 - [x] GitHub Actions integration (`why init` generates workflow)
 
 ### v0.3.0

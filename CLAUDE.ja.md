@@ -415,7 +415,7 @@ Claude:
 
 ### v0.2.0
 
-- [ ] why init
+- [x] why init
 - [ ] why log のエディタ自動起動
 - [ ] why log 実行時にgit logの直近コミットをContextに自動挿入
 - [ ] why log 実行時の類似ADR提示（キーワード部分一致）

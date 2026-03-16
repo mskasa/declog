@@ -454,7 +454,7 @@ Claude:
 - [x] Suggest changed files (staged and unstaged) as Related Files candidates on `why log`
 - [x] Show similar ADR suggestions on `why log` (keyword partial match)
 - [x] `why list --status <status>` — filter list by status
-- [ ] `why supersede` — mark an ADR as superseded
+- [x] `why supersede` — mark an ADR as superseded
 - [ ] `why review` — detect long-stale ADRs
 - [ ] Git hook to prompt ADR creation
 - [x] GitHub Actions integration (`why init` generates workflow)

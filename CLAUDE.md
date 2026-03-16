@@ -455,7 +455,7 @@ Claude:
 - [x] Show similar ADR suggestions on `why log` (keyword partial match)
 - [x] `why list --status <status>` — filter list by status
 - [x] `why supersede` — mark an ADR as superseded
-- [ ] `why review` — detect long-stale ADRs
+- [x] `why review` — detect long-stale ADRs
 - [ ] Git hook to prompt ADR creation
 - [x] GitHub Actions integration (`why init` generates workflow)
 

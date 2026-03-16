@@ -419,7 +419,7 @@ Claude:
 - [x] why log のエディタ自動起動
 - [ ] why log 実行時にgit logの直近コミットをContextに自動挿入
 - [ ] why log 実行時の類似ADR提示（キーワード部分一致）
-- [ ] why list --status
+- [x] why list --status
 - [ ] why supersede
 - [ ] why review（長期未更新ADRの検出）
 - [ ] git diff --staged による関連ファイル候補の自動提示

@@ -453,7 +453,7 @@ Claude:
 - [x] Auto-open editor after `why log`
 - [ ] Auto-insert recent git log commits into Context on `why log`
 - [ ] Show similar ADR suggestions on `why log` (keyword partial match)
-- [ ] `why list --status <status>` — filter list by status
+- [x] `why list --status <status>` — filter list by status
 - [ ] `why supersede` — mark an ADR as superseded
 - [ ] `why review` — detect long-stale ADRs
 - [ ] Auto-suggest related files from `git diff --staged`

@@ -45,6 +45,12 @@ too narrow for the expanded scope and makes the tool feel ADR-specific to new us
 
 The `## Related Files` mechanism and Git-native philosophy are preserved as-is.
 
+The tool addresses document drift through two complementary mechanisms:
+- **Proactive:** the pre-commit hook prompts developers to create or update documents
+  at the moment of committing code changes
+- **Reactive:** `kizami audit` detects drift periodically (or in CI) by verifying
+  that files listed in `## Related Files` sections still exist in the repository
+
 ## Consequences
 
 - The tool gains a unique, internet-searchable name with no naming conflicts

@@ -1,11 +1,18 @@
 # declog — CLAUDE.md
 
+> **Renaming in progress:** This tool is being renamed to **kizami** and its scope expanded.
+> See `docs/decisions/0010-rename-to-kizami-and-expand-scope.md` for the decision record.
+
 ## Project Overview
 
-A Go-based CLI tool to record and search architectural design decisions ("Why") with minimal friction.
-Invoked as `why`, decisions are saved as Markdown files under `docs/decisions/` and managed with Git.
+A Go-based CLI tool to maintain living documentation alongside code, with automatic drift detection.
+Currently invoked as `why` (renaming to `kizami`), documents are saved as Markdown files under `docs/decisions/` and managed with Git.
 
-The goal is to make the reasoning behind design choices traceable — consolidating what tends to get scattered across Issues, PRs, and Slack into the repository itself.
+The core value: **the `## Related Files` section in any Markdown document links it to source files.
+`kizami audit` detects when those source files are deleted or moved — keeping documentation honest.**
+
+Originally focused on ADRs (Architecture Decision Records), the tool is expanding to support
+any living document: design docs, API specs, architecture overviews, and more.
 
 ---
 
@@ -466,16 +473,38 @@ Claude:
 - [x] LLM-assisted ADR draft generation
 - [x] `why init` generates `~/.config/declog/config.toml` with default values
 
-### v0.4.0+
+### Rename to kizami (next — before any new features)
 
-- [ ] `why search -i` — case-insensitive search flag
-- [ ] `why edit <id>` — open an existing ADR in `$EDITOR`
-- [ ] Tests for `cmd/` package
-- [ ] golangci-lint in CI
+- [ ] Rename GitHub repository: `mskasa/declog` → `mskasa/kizami`
+- [ ] Update `go.mod` module path: `github.com/mskasa/declog` → `github.com/mskasa/kizami`
+- [ ] Update all import paths across the codebase
+- [ ] Rename binary: `why` → `kizami` (cmd/root.go, .goreleaser.yaml)
+- [ ] Update config path: `~/.config/declog/` → `~/.config/kizami/`
+- [ ] Update README.md and README.ja.md
+- [ ] Update CLAUDE.md and CLAUDE.ja.md (remove rename notice, reflect new identity)
+- [ ] Update existing ADRs that reference `why` command
+
+### v0.4.0 (scope expansion)
+
+- [ ] `kizami audit` supports multiple directories (`audit.dirs` in config)
+- [ ] `kizami log --type <type>` — document type selection (adr, design, api, ...)
+- [ ] Design document template
+- [ ] Remove ADR-specific language from generic output messages
+
+### v0.5.0 (audit enhancement)
+
+- [ ] Drift detection beyond file existence (function/symbol level references)
+- [ ] `kizami log --ai --type design` — AI draft for design documents
+- [ ] `kizami sync` — interactively update Related Files in existing documents
+
+### v1.0.0 (public release)
+
+- [ ] Documentation site (GitHub Pages)
 - [ ] Homebrew formula
-- [ ] Color output for `why list` and `why search`
-- [ ] Import existing MADR files
-- [ ] `why stats`
+- [ ] golangci-lint in CI
+- [ ] Tests for `cmd/` package
+- [ ] Color output for `kizami list` and `kizami search`
+- [ ] `kizami stats`
 - [ ] GitHub Actions Marketplace release
 
 ---

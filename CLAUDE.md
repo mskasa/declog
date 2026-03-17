@@ -482,9 +482,12 @@ Claude:
 
 ### v0.4.0 (scope expansion)
 
+- [ ] `kizami log --type <type>` — document type selection (`adr` / `design`)
+- [ ] Design document template (saved under `docs/design/`, default `Status: Draft`)
+- [ ] Change ADR template default from `Status: Active` to `Status: Draft`
+- [ ] `kizami audit` skips `Draft` documents (only checks `Active`)
+- [ ] `kizami init` generates optional auto-promote workflow (`kizami-promote.yml`): auto-promotes `Draft` → `Active` on push to main, with inline comments for customization
 - [ ] `kizami audit` supports multiple directories (`audit.dirs` in config)
-- [ ] `kizami log --type <type>` — document type selection (adr, design, api, ...)
-- [ ] Design document template
 - [ ] Remove ADR-specific language from generic output messages
 
 ### v0.5.0 (audit enhancement)

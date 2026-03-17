@@ -449,9 +449,12 @@ Claude:
 
 ### v0.4.0（スコープ拡張）
 
+- [ ] `kizami log --type <type>` — ドキュメント種別の選択（`adr` / `design`）
+- [ ] 設計書テンプレートの追加（保存先 `docs/design/`、デフォルト `Status: Draft`）
+- [ ] ADR テンプレートのデフォルトを `Status: Active` → `Status: Draft` に変更
+- [ ] `kizami audit` で `Draft` ドキュメントをスキップ（`Active` のみ対象）
+- [ ] `kizami init` にオプションで auto-promote ワークフロー（`kizami-promote.yml`）を生成する機能を追加：main へのプッシュ時に `Draft` → `Active` へ自動昇格、カスタマイズ用コメント付き
 - [ ] `kizami audit` で複数ディレクトリをスキャン可能に（config の `audit.dirs`）
-- [ ] `kizami log --type <type>` — ドキュメント種別の選択（adr, design, api, ...）
-- [ ] 設計書テンプレートの追加
 - [ ] 汎用メッセージから ADR 固有の表現を除去
 
 ### v0.5.0（監査強化）

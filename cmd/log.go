@@ -10,9 +10,17 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/mskasa/declog/internal/ai"
+	"github.com/mskasa/declog/internal/config"
 	"github.com/mskasa/declog/internal/decision"
 	"github.com/mskasa/declog/internal/search"
 	"github.com/spf13/cobra"
+)
+
+var (
+	aiFlag     bool
+	modelFlag  string
+	dryRunFlag bool
 )
 
 var logCmd = &cobra.Command{
@@ -36,7 +44,12 @@ var logCmd = &cobra.Command{
 			return err
 		}
 
-		path, err := decision.Create(dir, args[0], supersededID)
+		var path string
+		if aiFlag {
+			path, err = runWithAI(dir, root, args[0], supersededID)
+		} else {
+			path, err = decision.Create(dir, args[0], supersededID)
+		}
 		if err != nil {
 			return err
 		}
@@ -56,6 +69,37 @@ var logCmd = &cobra.Command{
 		fmt.Fprintf(os.Stdout, "Creating new ADR...\nCreated: %s\n", path)
 		return openEditor(path)
 	},
+}
+
+// runWithAI generates an ADR draft via the Anthropic API and writes the file.
+func runWithAI(dir, root, title string, supersededID int) (string, error) {
+	apiKey := os.Getenv("ANTHROPIC_API_KEY")
+	if apiKey == "" {
+		return "", fmt.Errorf("ANTHROPIC_API_KEY is not set.\nPlease set the environment variable and try again.\n\n  export ANTHROPIC_API_KEY=your-api-key")
+	}
+
+	cfg, err := config.Load()
+	if err != nil {
+		return "", fmt.Errorf("loading config: %w", err)
+	}
+	model := config.ResolveModel(modelFlag, cfg)
+
+	input := ai.GatherInput(root, title)
+	prompt := ai.BuildPrompt(input)
+
+	if dryRunFlag {
+		if !ai.DryRun(prompt, os.Stdin, os.Stdout) {
+			return "", fmt.Errorf("aborted")
+		}
+	}
+
+	fmt.Fprintln(os.Stdout, "Generating ADR draft with AI...")
+	draft, err := ai.GenerateDraft(prompt, model, apiKey)
+	if err != nil {
+		return "", err
+	}
+
+	return decision.CreateFromDraft(dir, title, draft, supersededID)
 }
 
 // promptSimilar searches for similar ADRs and asks the user if any should be superseded.
@@ -101,6 +145,9 @@ func promptSimilar(dir, title string) (int, error) {
 
 func init() {
 	rootCmd.AddCommand(logCmd)
+	logCmd.Flags().BoolVar(&aiFlag, "ai", false, "Generate ADR draft using Anthropic API")
+	logCmd.Flags().StringVar(&modelFlag, "model", "", "Anthropic model to use (overrides config file)")
+	logCmd.Flags().BoolVar(&dryRunFlag, "dry-run", false, "Show the prompt to be sent to the API without calling it")
 }
 
 func gitRepoRoot() (string, error) {

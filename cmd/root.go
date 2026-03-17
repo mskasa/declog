@@ -4,7 +4,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/mskasa/declog/internal/config"
+	"github.com/mskasa/kizami/internal/config"
 	"github.com/spf13/cobra"
 )
 
@@ -12,12 +12,13 @@ import (
 var Version = "dev"
 
 var rootCmd = &cobra.Command{
-	Use:     "why",
+	Use:     "kizami",
 	Version: Version,
-	Short:   "Record and search architectural design decisions",
-	Long: `why is a CLI tool to record and search architectural design decisions (ADRs).
+	Short:   "Maintain living documentation alongside code, with automatic drift detection",
+	Long: `kizami is a CLI tool to maintain living documentation (ADRs, design docs, API specs)
+alongside your code, with automatic detection of document-code drift.
 
-Decisions are saved as Markdown files under docs/decisions/ and managed with Git.`,
+Documents are saved as Markdown files and managed with Git.`,
 }
 
 // loadCfg loads the user config, returning an empty Config on error.

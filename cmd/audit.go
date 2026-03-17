@@ -5,7 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/mskasa/declog/internal/decision"
+	"github.com/mskasa/kizami/internal/decision"
 	"github.com/spf13/cobra"
 )
 

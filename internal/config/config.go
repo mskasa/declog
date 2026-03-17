@@ -12,7 +12,7 @@ import (
 
 const DefaultModel = "claude-sonnet-4-20250514"
 
-// Config holds declog configuration.
+// Config holds kizami configuration.
 type Config struct {
 	AI        AIConfig
 	Decisions DecisionsConfig
@@ -40,7 +40,7 @@ type EditorConfig struct {
 	Command string
 }
 
-// Load reads the config from ~/.config/declog/config.toml.
+// Load reads the config from ~/.config/kizami/config.toml.
 // Returns a default Config if the file does not exist.
 func Load() (*Config, error) {
 	path := configPath()
@@ -69,7 +69,7 @@ func ResolveModel(flagModel string, cfg *Config) string {
 
 func configPath() string {
 	home, _ := os.UserHomeDir()
-	return filepath.Join(home, ".config", "declog", "config.toml")
+	return filepath.Join(home, ".config", "kizami", "config.toml")
 }
 
 func parse(r io.Reader) (*Config, error) {

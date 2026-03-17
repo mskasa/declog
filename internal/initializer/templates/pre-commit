@@ -1,5 +1,5 @@
 #!/bin/sh
-# Added by declog — https://github.com/mskasa/declog
+# Added by kizami — https://github.com/mskasa/kizami
 # Warns when a commit contains no ADR in docs/decisions/.
 
 # Skip if ADR files are included in this commit.
@@ -16,4 +16,4 @@ fi
 
 printf "\n⚠️  No ADR found in this commit.\n"
 printf "    If this change involves a significant design decision,\n"
-printf "    consider running: why log \"<title>\"\n\n"
+printf "    consider running: kizami log \"<title>\"\n\n"

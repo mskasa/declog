@@ -29,17 +29,17 @@ months_threshold = 6
 command = "code --wait"
 `
 
-// Initializer handles the declog initialization process.
+// Initializer handles the kizami initialization process.
 type Initializer struct {
 	Root      string
 	Input     io.Reader
 	Output    io.Writer
-	ConfigDir string // overrides ~/.config/declog for testing
+	ConfigDir string // overrides ~/.config/kizami for testing
 }
 
 // Run performs the initialization steps sequentially.
 func (i *Initializer) Run() error {
-	fmt.Fprintln(i.Output, "Initializing declog...")
+	fmt.Fprintln(i.Output, "Initializing kizami...")
 
 	if err := i.createDecisionsDir(); err != nil {
 		return err
@@ -64,7 +64,7 @@ func (i *Initializer) Run() error {
 	}
 
 	fmt.Fprintln(i.Output)
-	fmt.Fprintln(i.Output, `Done! Run `+"`"+`why log "<title>"`+"`"+` to create your first decision.`)
+	fmt.Fprintln(i.Output, `Done! Run `+"`"+`kizami log "<title>"`+"`"+` to create your first decision.`)
 	return nil
 }
 
@@ -125,7 +125,7 @@ func (i *Initializer) configDir() (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("finding home directory: %w", err)
 	}
-	return filepath.Join(home, ".config", "declog"), nil
+	return filepath.Join(home, ".config", "kizami"), nil
 }
 
 func (i *Initializer) setupConfig() error {
@@ -136,18 +136,18 @@ func (i *Initializer) setupConfig() error {
 
 	configPath := filepath.Join(dir, "config.toml")
 	if _, err := os.Stat(configPath); err == nil {
-		fmt.Fprintf(i.Output, "  ⚠️  ~/.config/declog/config.toml already exists. Skipping.\n")
+		fmt.Fprintf(i.Output, "  ⚠️  ~/.config/kizami/config.toml already exists. Skipping.\n")
 		return nil
 	}
 
 	if err := os.MkdirAll(dir, 0o755); err != nil {
-		return fmt.Errorf("creating ~/.config/declog/: %w", err)
+		return fmt.Errorf("creating ~/.config/kizami/: %w", err)
 	}
 
 	if err := os.WriteFile(configPath, []byte(defaultConfigContent), 0o644); err != nil {
 		return fmt.Errorf("writing config.toml: %w", err)
 	}
-	fmt.Fprintf(i.Output, "  ✅ Created ~/.config/declog/config.toml\n")
+	fmt.Fprintf(i.Output, "  ✅ Created ~/.config/kizami/config.toml\n")
 	return nil
 }
 

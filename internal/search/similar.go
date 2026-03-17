@@ -4,7 +4,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/mskasa/declog/internal/decision"
+	"github.com/mskasa/kizami/internal/decision"
 )
 
 // stopWords are common English words excluded from keyword matching.

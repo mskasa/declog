@@ -1,32 +1,28 @@
-# declog — CLAUDE.md
-
-> **Renaming in progress:** This tool is being renamed to **kizami** and its scope expanded.
-> See `docs/decisions/0010-rename-to-kizami-and-expand-scope.md` for the decision record.
+# kizami — CLAUDE.md
 
 ## Project Overview
 
-A Go-based CLI tool to maintain living documentation alongside code, with automatic drift detection.
-Currently invoked as `why` (renaming to `kizami`), documents are saved as Markdown files under `docs/decisions/` and managed with Git.
+A Go-based CLI tool (`kizami`) to maintain living documentation alongside code, with automatic drift detection.
+Documents are saved as Markdown files under `docs/decisions/` (configurable) and managed with Git.
 
 The core value: **the `## Related Files` section in any Markdown document links it to source files.
 `kizami audit` detects when those source files are deleted or moved — keeping documentation honest.**
 
-Originally focused on ADRs (Architecture Decision Records), the tool is expanding to support
-any living document: design docs, API specs, architecture overviews, and more.
+Supports any living document: ADRs, design docs, API specs, architecture overviews, and more.
 
 ---
 
 ## Directory Structure
 
 ```
-declog/
+kizami/
 ├── cmd/
-│   ├── root.go         # Root command (why)
-│   ├── log.go          # why log
-│   ├── list.go         # why list
-│   ├── search.go       # why search
-│   ├── show.go         # why show
-│   └── status.go       # why status
+│   ├── root.go         # Root command (kizami)
+│   ├── log.go          # kizami log
+│   ├── list.go         # kizami list
+│   ├── search.go       # kizami search
+│   ├── show.go         # kizami show
+│   └── status.go       # kizami status
 ├── internal/
 │   ├── decision/
 │   │   ├── decision.go     # Decision type definition and parsing
@@ -46,7 +42,7 @@ declog/
 │       └── 0005-ripgrep-fallback-strategy.md
 ├── CLAUDE.md
 ├── CLAUDE.ja.md
-├── go.mod              # module github.com/yourname/declog
+├── go.mod              # module github.com/mskasa/kizami
 ├── go.sum
 └── main.go
 ```
@@ -70,12 +66,12 @@ declog/
 ## Command Specification (MVP)
 
 ```bash
-why log "<title>"              # Generate a template Markdown file and open it in an editor
-why list                       # List decisions in reverse chronological order (ID, date, status, title)
-why search <keyword>           # Search decisions by keyword
-why show <id>                  # Display a single decision (e.g. why show 3)
-why status <id> <status>       # Update the status (e.g. why status 3 superseded --by 5)
-why blame <file>               # Find decisions related to a given file (planned for future release)
+kizami log "<title>"              # Generate a template Markdown file and open it in an editor
+kizami list                       # List decisions in reverse chronological order (ID, date, status, title)
+kizami search <keyword>           # Search decisions by keyword
+kizami show <id>                  # Display a single decision (e.g. kizami show 3)
+kizami status <id> <status>       # Update the status (e.g. kizami status 3 superseded --by 5)
+kizami blame <file>               # Find decisions related to a given file
 ```
 
 ### Status Definitions
@@ -95,7 +91,7 @@ why blame <file>               # Find decisions related to a given file (planned
 
 ## Markdown Template (MADR-compatible)
 
-Template generated when running `why log`:
+Template generated when running `kizami log`:
 
 ```markdown
 # {NNNN}: {Title}
@@ -143,7 +139,7 @@ e.g. 0001-use-go-over-shell-script.md
 
 ## 🐕 Dogfooding Policy (Critical)
 
-**This repository uses declog itself to record its own design decisions.**
+**This repository uses kizami itself to record its own design decisions.**
 
 ### Why Dogfooding Matters
 
@@ -232,7 +228,7 @@ Before writing any code, manually create the following ADRs:
 | 0003 | madr-format-compatibility   | Why MADR format was adopted (compatibility with existing ADR tooling)             |
 | 0004 | plaintext-markdown-only     | Why plain Markdown was chosen over a database (Git-friendly, portable)            |
 | 0005 | ripgrep-fallback-strategy   | The decision around ripgrep dependency and fallback design                        |
-| 0006 | command-name-why            | Why the CLI command was named `why` instead of `dec` or `declog`                  |
+| 0006 | command-name-why            | Why the CLI command was originally named `why` (now superseded by 0010)           |
 
 ---
 
@@ -271,7 +267,7 @@ Types:
   chore    Build or dependency changes
 
 Examples:
-  feat: implement why log command with auto-numbering
+  feat: implement kizami log command with auto-numbering
   docs: add ADR 0003 for MADR format compatibility
 ```
 
@@ -293,8 +289,8 @@ No `develop` branch. It adds complexity without benefit for a solo project.
 ### Branch Naming
 
 ```bash
-feature/why-log-command
-feature/why-list-command
+feature/kizami-log-command
+feature/kizami-list-command
 feature/auto-numbering
 docs/initial-adrs           # ADR additions also get their own branch
 fix/slug-generation-bug
@@ -356,14 +352,14 @@ Claude handles implementation. The owner handles judgment and approval.
 ```
 Owner:
 "Please read CLAUDE.md and understand the current state.
- Create branch feature/why-log-command and implement the why log command.
+ Create branch feature/kizami-log-command and implement the kizami log command.
  Confirm with me at each step before proceeding."
 
 Claude:
 "Understood. I've read CLAUDE.md.
- Creating branch feature/why-log-command now.
+ Creating branch feature/kizami-log-command now.
  [creates branch]
- Starting implementation of why log...
+ Starting implementation of kizami log...
  [implements]
  Done. The auto-numbering logic required a design choice.
  Shall I create an ADR before committing?"
@@ -380,7 +376,7 @@ Owner:
 "Yes."
 
 Claude:
-"PR opened: https://github.com/yourname/declog/pull/1
+"PR opened: https://github.com/mskasa/kizami/pull/1
  Please review and merge when ready."
 ```
 
@@ -420,7 +416,7 @@ Claude:
 ```
 # Good — specific and bounded
 "Implement only the auto-numbering logic in internal/decision/generate.go"
-"Format the why list output using tabwriter"
+"Format the kizami list output using tabwriter"
 
 # Avoid — too broad for a single session
 "Implement the entire MVP"
@@ -435,15 +431,15 @@ Claude:
 ### MVP (v0.1.0) ✅
 
 - [x] .github/workflows/ci.yml (go test + go vet on every PR)
-- [x] go.mod + cobra setup (`module github.com/mskasa/declog`)
-- [x] cmd/root.go (root `why` command)
+- [x] go.mod + cobra setup (`module github.com/mskasa/kizami`)
+- [x] cmd/root.go (root `kizami` command)
 - [x] internal/decision/generate.go (auto-numbering and file generation)
 - [x] internal/template/template.go (Markdown template)
-- [x] cmd/log.go (`why log`)
-- [x] cmd/list.go (`why list`)
-- [x] cmd/search.go (`why search`)
-- [x] cmd/show.go (`why show`)
-- [x] cmd/status.go (`why status`)
+- [x] cmd/log.go (`kizami log`)
+- [x] cmd/list.go (`kizami list`)
+- [x] cmd/search.go (`kizami search`)
+- [x] cmd/show.go (`kizami show`)
+- [x] cmd/status.go (`kizami status`)
 - [x] docs/decisions/ initial ADRs (0001–0006)
 - [x] README.md
 - [x] GoReleaser configuration
@@ -451,38 +447,38 @@ Claude:
 ### v0.1.0 (remaining)
 
 - [x] Logo image for README
-- [x] cmd/blame.go (`why blame <file>` — full-text search for file path mentions in ADRs)
-- [x] `why --version` — print version string
+- [x] cmd/blame.go (`kizami blame <file>` — full-text search for file path mentions in ADRs)
+- [x] `kizami --version` — print version string
 
 ### v0.2.0
 
-- [x] `why init` — initialize decisions directory
-- [x] Auto-open editor after `why log`
-- [x] Suggest changed files (staged and unstaged) as Related Files candidates on `why log`
-- [x] Show similar ADR suggestions on `why log` (keyword partial match)
-- [x] `why list --status <status>` — filter list by status
-- [x] `why supersede` — mark an ADR as superseded
-- [x] `why review` — detect long-stale ADRs
+- [x] `kizami init` — initialize decisions directory
+- [x] Auto-open editor after `kizami log`
+- [x] Suggest changed files (staged and unstaged) as Related Files candidates on `kizami log`
+- [x] Show similar ADR suggestions on `kizami log` (keyword partial match)
+- [x] `kizami list --status <status>` — filter list by status
+- [x] `kizami supersede` — mark an ADR as superseded
+- [x] `kizami review` — detect long-stale ADRs
 - [x] Git hook to prompt ADR creation
-- [x] GitHub Actions integration (`why init` generates workflow)
+- [x] GitHub Actions integration (`kizami init` generates workflow)
 
 ### v0.3.0
 
-- [x] `why audit` — detect drift between Related Files and actual code
-- [x] Scheduled CI run of `why audit` (weekly + auto GitHub Issue creation)
+- [x] `kizami audit` — detect drift between Related Files and actual code
+- [x] Scheduled CI run of `kizami audit` (weekly + auto GitHub Issue creation)
 - [x] LLM-assisted ADR draft generation
-- [x] `why init` generates `~/.config/declog/config.toml` with default values
+- [x] `kizami init` generates `~/.config/kizami/config.toml` with default values
 
-### Rename to kizami (next — before any new features)
+### Rename to kizami ✅
 
-- [ ] Rename GitHub repository: `mskasa/declog` → `mskasa/kizami`
-- [ ] Update `go.mod` module path: `github.com/mskasa/declog` → `github.com/mskasa/kizami`
-- [ ] Update all import paths across the codebase
-- [ ] Rename binary: `why` → `kizami` (cmd/root.go, .goreleaser.yaml)
-- [ ] Update config path: `~/.config/declog/` → `~/.config/kizami/`
-- [ ] Update README.md and README.ja.md
-- [ ] Update CLAUDE.md and CLAUDE.ja.md (remove rename notice, reflect new identity)
-- [ ] Update existing ADRs that reference `why` command
+- [x] Rename GitHub repository: `mskasa/declog` → `mskasa/kizami`
+- [x] Update `go.mod` module path: `github.com/mskasa/declog` → `github.com/mskasa/kizami`
+- [x] Update all import paths across the codebase
+- [x] Rename binary: `why` → `kizami` (cmd/root.go, .goreleaser.yaml)
+- [x] Update config path: `~/.config/declog/` → `~/.config/kizami/`
+- [x] Update README.md and README.ja.md
+- [x] Update CLAUDE.md and CLAUDE.ja.md (reflect new identity)
+- [x] Update existing ADRs that reference `why` command
 
 ### v0.4.0 (scope expansion)
 

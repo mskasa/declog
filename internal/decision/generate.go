@@ -9,7 +9,7 @@ import (
 	"strconv"
 	"strings"
 
-	tmpl "github.com/mskasa/declog/internal/template"
+	tmpl "github.com/mskasa/kizami/internal/template"
 )
 
 var filePattern = regexp.MustCompile(`^(\d{4})-.*\.md$`)

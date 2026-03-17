@@ -1,7 +1,7 @@
 # 0006: コマンド名を「why」にする
 
 - Date: 2026-03-12
-- Status: Accepted
+- Status: Superseded by 0010
 - Author: masahiro.kasatani
 
 ## Context

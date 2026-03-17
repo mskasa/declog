@@ -1,7 +1,7 @@
 # 0006: Command Name "why"
 
 - Date: 2026-03-12
-- Status: Accepted
+- Status: Superseded by 0010
 - Author: masahiro.kasatani
 
 ## Context

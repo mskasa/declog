@@ -1,11 +1,18 @@
 # declog — CLAUDE.md（日本語版）
 
+> **リネーム進行中:** このツールは **kizami** にリネームされ、スコープが拡張されます。
+> 決定の背景は `docs/decisions/0010-rename-to-kizami-and-expand-scope.md` を参照。
+
 ## プロジェクト概要
 
-設計判断の「Why」を最小の手間で記録・検索できるGo製CLIツール。
-コマンド名は `why`。決定事項は `docs/decisions/` 配下にMarkdownで保存し、Gitで管理する。
+ドキュメントとコードの乖離を防ぐ、Go製のリビングドキュメント管理CLIツール。
+現在のコマンド名は `why`（`kizami` にリネーム予定）。ドキュメントは `docs/decisions/` 配下に Markdown で保存し、Git で管理する。
 
-Issue・PR・Slackに散らばりがちな「なぜこの設計にしたか」を、リポジトリ内に集約してトレーサブルにすることが目的。
+**コアバリュー：** Markdown ドキュメントの `## Related Files` セクションがソースファイルとドキュメントを結ぶ唯一の接点。
+`kizami audit` はそのファイルが削除・移動されていないかを検証し、ドキュメントの陳腐化を防ぐ。
+
+もともと ADR（アーキテクチャ決定記録）専用ツールとして開発されたが、設計書・API仕様書・
+アーキテクチャ概要など、あらゆるリビングドキュメントに対応するよう拡張中。
 
 ---
 
@@ -432,17 +439,39 @@ Claude:
 - [x] LLM連携によるADRドラフト自動生成
 - [x] why init 実行時に ~/.config/declog/config.toml をデフォルト値で生成する
 
-### v0.4.0以降
+### kizami へのリネーム（次のステップ — 新機能追加より先に実施）
 
-- [ ] why search -i
-- [ ] why edit
-- [ ] cmd/ パッケージのテスト追加
-- [ ] golangci-lint をCIに追加
+- [ ] GitHub リポジトリのリネーム: `mskasa/declog` → `mskasa/kizami`
+- [ ] `go.mod` モジュールパスの更新: `github.com/mskasa/declog` → `github.com/mskasa/kizami`
+- [ ] コードベース全体のインポートパス更新
+- [ ] バイナリ名の変更: `why` → `kizami`（cmd/root.go, .goreleaser.yaml）
+- [ ] 設定パスの変更: `~/.config/declog/` → `~/.config/kizami/`
+- [ ] README.md / README.ja.md の更新
+- [ ] CLAUDE.md / CLAUDE.ja.md の更新（リネーム注記削除、新アイデンティティを反映）
+- [ ] `why` コマンドを参照している既存 ADR の更新
+
+### v0.4.0（スコープ拡張）
+
+- [ ] `kizami audit` で複数ディレクトリをスキャン可能に（config の `audit.dirs`）
+- [ ] `kizami log --type <type>` — ドキュメント種別の選択（adr, design, api, ...）
+- [ ] 設計書テンプレートの追加
+- [ ] 汎用メッセージから ADR 固有の表現を除去
+
+### v0.5.0（監査強化）
+
+- [ ] ファイル存在確認を超えた乖離検出（関数名・シンボルレベルの参照チェック）
+- [ ] `kizami log --ai --type design` — 設計書向け AI ドラフト生成
+- [ ] `kizami sync` — 既存ドキュメントの Related Files を対話的に更新
+
+### v1.0.0（パブリックリリース）
+
+- [ ] ドキュメントサイト（GitHub Pages）
 - [ ] Homebrew formula
-- [ ] カラー出力
-- [ ] MADR既存ファイルのインポート
-- [ ] why stats
-- [ ] GitHub Actions Marketplace公開
+- [ ] golangci-lint を CI に追加
+- [ ] cmd/ パッケージのテスト追加
+- [ ] カラー出力（kizami list / kizami search）
+- [ ] kizami stats
+- [ ] GitHub Actions Marketplace 公開
 
 ---
 

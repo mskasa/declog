@@ -17,13 +17,13 @@ Design decisions tend to get scattered across Issues, PRs, and Slack — and eve
 `kizami` saves them as Markdown files alongside your code, so the reasoning behind every choice stays in the repository forever.
 
 ```
-$ kizami log "use PostgreSQL over SQLite"
+$ kizami adr "use PostgreSQL over SQLite"
 Created: docs/decisions/0007-use-postgresql-over-sqlite.md
 
 $ kizami list
 ID    Date        Status    Title
 --    ----        ------    -----
-0007  2026-03-12  Active    use PostgreSQL over SQLite
+0007  2026-03-12  Draft     use PostgreSQL over SQLite
 0006  2026-03-12  Active    Command Name "kizami"
 ...
 
@@ -75,9 +75,12 @@ Remove-Item kizami.zip, kizami_bin -Recurse
 # 1. Initialize your decisions directory
 kizami init
 
-# 2. Record a decision
-kizami log "use PostgreSQL over SQLite"
+# 2. Record an architectural decision (ADR)
+kizami adr "use PostgreSQL over SQLite"
 # Opens the generated Markdown file in your $EDITOR
+
+# 2b. Create a design document
+kizami design "connection pool design"
 
 # 3. List all decisions
 kizami list
@@ -98,7 +101,8 @@ kizami status 3 superseded --by 7
 | Command | Description |
 |---|---|
 | `kizami init` | Initialize the decisions directory and optional GitHub Actions workflow |
-| `kizami log "<title>"` | Create a new decision record and open it in `$EDITOR` |
+| `kizami adr "<title>"` | Create a new ADR and open it in `$EDITOR` |
+| `kizami design "<title>"` | Create a new design document and open it in `$EDITOR` |
 | `kizami list` | List all decisions in reverse chronological order |
 | `kizami show <id>` | Print the full content of a decision |
 | `kizami search <keyword>` | Search decisions by keyword |

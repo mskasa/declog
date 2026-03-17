@@ -17,13 +17,13 @@
 `kizami` は、その意思決定をMarkdownファイルとしてコードと並べて保存します。すべての判断の理由が、リポジトリの中に永続的に残ります。
 
 ```
-$ kizami log "SQLiteではなくPostgreSQLを使う"
+$ kizami adr "SQLiteではなくPostgreSQLを使う"
 Created: docs/decisions/0007-sqliteではなくpostgresqlを使う.md
 
 $ kizami list
 ID    Date        Status    Title
 --    ----        ------    -----
-0007  2026-03-12  Active    SQLiteではなくPostgreSQLを使う
+0007  2026-03-12  Draft     SQLiteではなくPostgreSQLを使う
 0006  2026-03-12  Active    Command Name "kizami"
 ...
 
@@ -75,9 +75,12 @@ Remove-Item kizami.zip, kizami_bin -Recurse
 # 1. decisionsディレクトリを初期化する
 kizami init
 
-# 2. 意思決定を記録する
-kizami log "SQLiteではなくPostgreSQLを使う"
+# 2. ADRを作成する
+kizami adr "SQLiteではなくPostgreSQLを使う"
 # 生成されたMarkdownファイルが $EDITOR で開きます
+
+# 2b. 設計ドキュメントを作成する
+kizami design "コネクションプール設計"
 
 # 3. 一覧を表示する
 kizami list
@@ -98,7 +101,8 @@ kizami status 3 superseded --by 7
 | コマンド | 説明 |
 |---|---|
 | `kizami init` | decisionsディレクトリとGitHub Actionsワークフローを初期化する |
-| `kizami log "<タイトル>"` | 新しい意思決定記録を作成し、`$EDITOR` で開く |
+| `kizami adr "<タイトル>"` | 新しいADRを作成し、`$EDITOR` で開く |
+| `kizami design "<タイトル>"` | 新しい設計ドキュメントを作成し、`$EDITOR` で開く |
 | `kizami list` | すべての意思決定を新しい順に一覧表示する |
 | `kizami show <id>` | 指定した意思決定の全文を表示する |
 | `kizami search <キーワード>` | キーワードで意思決定を検索する |

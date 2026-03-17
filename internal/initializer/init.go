@@ -64,7 +64,7 @@ func (i *Initializer) Run() error {
 	}
 
 	fmt.Fprintln(i.Output)
-	fmt.Fprintln(i.Output, `Done! Run `+"`"+`kizami log "<title>"`+"`"+` to create your first decision.`)
+	fmt.Fprintln(i.Output, `Done! Run `+"`"+`kizami adr "<title>"`+"`"+` to create your first decision.`)
 	return nil
 }
 

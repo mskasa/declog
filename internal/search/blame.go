@@ -9,7 +9,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/mskasa/declog/internal/decision"
+	"github.com/mskasa/kizami/internal/decision"
 )
 
 // Blame searches for ADRs in dir that mention the given file path.

@@ -1,4 +1,4 @@
-module github.com/mskasa/declog
+module github.com/mskasa/kizami
 
 go 1.23.2
 

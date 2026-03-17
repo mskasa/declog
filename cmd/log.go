@@ -9,10 +9,10 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/mskasa/declog/internal/ai"
-	"github.com/mskasa/declog/internal/config"
-	"github.com/mskasa/declog/internal/decision"
-	"github.com/mskasa/declog/internal/search"
+	"github.com/mskasa/kizami/internal/ai"
+	"github.com/mskasa/kizami/internal/config"
+	"github.com/mskasa/kizami/internal/decision"
+	"github.com/mskasa/kizami/internal/search"
 	"github.com/spf13/cobra"
 )
 

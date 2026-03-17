@@ -3,7 +3,7 @@ package cmd
 import (
 	"fmt"
 	"os"
-	"github.com/mskasa/declog/internal/search"
+	"github.com/mskasa/kizami/internal/search"
 	"github.com/spf13/cobra"
 )
 

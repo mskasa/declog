@@ -197,7 +197,7 @@ func TestRun_AuditWorkflowContent(t *testing.T) {
 		t.Fatalf("reading adr-audit.yml: %v", err)
 	}
 
-	for _, want := range []string{"ADR Audit", "schedule", "cron", "why audit", "[ADR Audit]"} {
+	for _, want := range []string{"ADR Audit", "schedule", "cron", "kizami audit", "[ADR Audit]"} {
 		if !strings.Contains(string(content), want) {
 			t.Errorf("adr-audit.yml missing %q", want)
 		}
@@ -265,7 +265,7 @@ func TestRun_CreatesConfig(t *testing.T) {
 	}
 
 	output := out.String()
-	if !strings.Contains(output, "✅ Created ~/.config/declog/config.toml") {
+	if !strings.Contains(output, "✅ Created ~/.config/kizami/config.toml") {
 		t.Errorf("expected creation message, got: %s", output)
 	}
 }
@@ -293,7 +293,7 @@ func TestRun_ConfigAlreadyExists(t *testing.T) {
 	}
 
 	output := out.String()
-	if !strings.Contains(output, "~/.config/declog/config.toml already exists. Skipping.") {
+	if !strings.Contains(output, "~/.config/kizami/config.toml already exists. Skipping.") {
 		t.Errorf("expected skip message, got: %s", output)
 	}
 

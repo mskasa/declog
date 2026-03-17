@@ -34,7 +34,7 @@ type Initializer struct {
 	Root      string
 	Input     io.Reader
 	Output    io.Writer
-	ConfigDir string // overrides ~/.config/declog for testing
+	ConfigDir string // overrides ~/.config/kizami for testing
 }
 
 // Run performs the initialization steps sequentially.
@@ -136,18 +136,18 @@ func (i *Initializer) setupConfig() error {
 
 	configPath := filepath.Join(dir, "config.toml")
 	if _, err := os.Stat(configPath); err == nil {
-		fmt.Fprintf(i.Output, "  ⚠️  ~/.config/declog/config.toml already exists. Skipping.\n")
+		fmt.Fprintf(i.Output, "  ⚠️  ~/.config/kizami/config.toml already exists. Skipping.\n")
 		return nil
 	}
 
 	if err := os.MkdirAll(dir, 0o755); err != nil {
-		return fmt.Errorf("creating ~/.config/declog/: %w", err)
+		return fmt.Errorf("creating ~/.config/kizami/: %w", err)
 	}
 
 	if err := os.WriteFile(configPath, []byte(defaultConfigContent), 0o644); err != nil {
 		return fmt.Errorf("writing config.toml: %w", err)
 	}
-	fmt.Fprintf(i.Output, "  ✅ Created ~/.config/declog/config.toml\n")
+	fmt.Fprintf(i.Output, "  ✅ Created ~/.config/kizami/config.toml\n")
 	return nil
 }
 

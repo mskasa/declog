@@ -40,7 +40,7 @@ type EditorConfig struct {
 	Command string
 }
 
-// Load reads the config from ~/.config/declog/config.toml.
+// Load reads the config from ~/.config/kizami/config.toml.
 // Returns a default Config if the file does not exist.
 func Load() (*Config, error) {
 	path := configPath()

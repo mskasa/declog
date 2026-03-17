@@ -6,9 +6,9 @@
 
 ## Context
 
-`why search` needs to perform full-text search across Markdown files.
+`kizami search` needs to perform full-text search across Markdown files.
 [ripgrep](https://github.com/BurntSushi/ripgrep) is significantly faster than alternatives and respects `.gitignore`, but it is an external binary that may not be installed on all machines.
-Making ripgrep a hard dependency would break `why search` for users who have not installed it.
+Making ripgrep a hard dependency would break `kizami search` for users who have not installed it.
 
 ## Decision
 
@@ -16,7 +16,7 @@ Use ripgrep (`rg`) as the primary search backend when it is available on `PATH`,
 
 ## Consequences
 
-- `why search` works on all machines, even without ripgrep installed
+- `kizami search` works on all machines, even without ripgrep installed
 - Users with ripgrep get better performance and `.gitignore` awareness
 - The fallback implementation is simpler but sufficient for the typical scale of a `docs/decisions/` directory
 - Tests that exercise the ripgrep path must include a skip condition (`t.Skip` when `rg` is not found)

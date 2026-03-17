@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"github.com/mskasa/declog/internal/initializer"
+	"github.com/mskasa/kizami/internal/initializer"
 	"github.com/spf13/cobra"
 	"os"
 )

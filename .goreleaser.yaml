@@ -5,11 +5,11 @@ before:
     - go mod tidy
 
 builds:
-  - binary: why
+  - binary: kizami
     env:
       - CGO_ENABLED=0
     ldflags:
-      - -X github.com/mskasa/declog/cmd.Version={{.Version}}
+      - -X github.com/mskasa/kizami/cmd.Version={{.Version}}
     goos:
       - linux
       - darwin

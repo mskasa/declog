@@ -1,12 +1,9 @@
-# declog — CLAUDE.md（日本語版）
-
-> **リネーム進行中:** このツールは **kizami** にリネームされ、スコープが拡張されます。
-> 決定の背景は `docs/decisions/0010-rename-to-kizami-and-expand-scope.md` を参照。
+# kizami — CLAUDE.md（日本語版）
 
 ## プロジェクト概要
 
-ドキュメントとコードの乖離を防ぐ、Go製のリビングドキュメント管理CLIツール。
-現在のコマンド名は `why`（`kizami` にリネーム予定）。ドキュメントは `docs/decisions/` 配下に Markdown で保存し、Git で管理する。
+ドキュメントとコードの乖離を防ぐ、Go製のリビングドキュメント管理CLIツール（`kizami`）。
+ドキュメントは `docs/decisions/` 配下（設定可能）に Markdown で保存し、Git で管理する。
 
 **コアバリュー：** Markdown ドキュメントの `## Related Files` セクションがソースファイルとドキュメントを結ぶ唯一の接点。
 `kizami audit` はそのファイルが削除・移動されていないかを検証し、ドキュメントの陳腐化を防ぐ。
@@ -19,14 +16,14 @@
 ## ディレクトリ構成
 
 ```
-declog/
+kizami/
 ├── cmd/
-│   ├── root.go         # ルートコマンド（why）
-│   ├── log.go          # why log
-│   ├── list.go         # why list
-│   ├── search.go       # why search
-│   ├── show.go         # why show
-│   └── status.go       # why status
+│   ├── root.go         # ルートコマンド（kizami）
+│   ├── log.go          # kizami log
+│   ├── list.go         # kizami list
+│   ├── search.go       # kizami search
+│   ├── show.go         # kizami show
+│   └── status.go       # kizami status
 ├── internal/
 │   ├── decision/
 │   │   ├── decision.go     # Decision型の定義・パース
@@ -46,7 +43,7 @@ declog/
 │       └── 0005-ripgrep-fallback-strategy.md
 ├── CLAUDE.md
 ├── CLAUDE.ja.md        # 日本語版（本ファイル）
-├── go.mod              # module github.com/yourname/declog
+├── go.mod              # module github.com/mskasa/kizami
 ├── go.sum
 └── main.go
 ```
@@ -70,12 +67,12 @@ declog/
 ## コマンド仕様（MVP）
 
 ```bash
-why log "<title>"              # テンプレ付きMarkdownを生成してエディタを開く
-why list                       # 新しい順に一覧表示（ID・日付・ステータス・タイトル）
-why search <keyword>           # キーワード検索
-why show <id>                  # 指定IDのDecisionを表示（例: why show 3）
-why status <id> <status>       # ステータス変更（例: why status 3 superseded --by 5）
-why blame <file>               # 指定ファイルに関連するDecisionを逆引き（将来実装）
+kizami log "<title>"              # テンプレ付きMarkdownを生成してエディタを開く
+kizami list                       # 新しい順に一覧表示（ID・日付・ステータス・タイトル）
+kizami search <keyword>           # キーワード検索
+kizami show <id>                  # 指定IDのDecisionを表示（例: kizami show 3）
+kizami status <id> <status>       # ステータス変更（例: kizami status 3 superseded --by 5）
+kizami blame <file>               # 指定ファイルに関連するDecisionを逆引き
 ```
 
 ### ステータス定義
@@ -95,7 +92,7 @@ why blame <file>               # 指定ファイルに関連するDecisionを逆
 
 ## Markdownテンプレート（MADR準拠）
 
-`why log` 実行時に生成されるテンプレート：
+`kizami log` 実行時に生成されるテンプレート：
 
 ```markdown
 # {NNNN}: {Title}
@@ -143,7 +140,7 @@ NNNN-kebab-case-title.md
 
 ## 🐕 ドッグフーディング方針（最重要）
 
-**このリポジトリ自体でdeclogを使って設計判断を記録する。**
+**このリポジトリ自体でkizamiを使って設計判断を記録する。**
 
 ### なぜドッグフーディングが重要か
 
@@ -232,7 +229,7 @@ func AuthorFromGit() string {
 | 0003 | madr-format-compatibility   | MADRフォーマット準拠の理由（既存ADRツールとの互換性）         |
 | 0004 | plaintext-markdown-only     | DBを使わずMarkdownのみにした理由（Git親和性、可搬性）         |
 | 0005 | ripgrep-fallback-strategy   | ripgrep依存とフォールバック設計の判断                         |
-| 0006 | command-name-why            | コマンド名を `dec` や `declog` でなく `why` にした理由        |
+| 0006 | command-name-why            | コマンド名をもともと `why` にした理由（0010 で superseded）   |
 
 ---
 
@@ -271,7 +268,7 @@ type:
   chore    ビルド・依存関係
 
 例:
-  feat: implement why log command with auto-numbering
+  feat: implement kizami log command with auto-numbering
   docs: add ADR 0003 for MADR format compatibility
 ```
 
@@ -356,15 +353,15 @@ Claudeが実装を担当し、オーナーが判断・承認を担当する。
 ```
 オーナー:
 「CLAUDE.mdを読んで現在の状態を把握してください。
- feature/why-log-commandブランチを作成して、
- why logコマンドを実装してください。
+ feature/kizami-log-commandブランチを作成して、
+ kizami logコマンドを実装してください。
  各ステップで確認を取りながら進めてください。」
 
 Claude:
 「CLAUDE.mdを確認しました。
- feature/why-log-commandブランチを作成します。
+ feature/kizami-log-commandブランチを作成します。
  [ブランチ作成]
- why logの実装を開始します...
+ kizami logの実装を開始します...
  [実装]
  完了しました。自動採番のロジックで設計上の判断が発生しました。
  コミット前にADRを作成しますか？」
@@ -381,7 +378,7 @@ Claude:
 「はい。」
 
 Claude:
-「PRを作成しました: https://github.com/yourname/declog/pull/1
+「PRを作成しました: https://github.com/mskasa/kizami/pull/1
  レビューしてマージをお願いします。」
 ```
 
@@ -401,15 +398,15 @@ Claude:
 ### MVP (v0.1.0) ✅
 
 - [x] .github/workflows/ci.yml（PR毎にgo test + go vet）
-- [x] go.mod + cobraセットアップ（`module github.com/mskasa/declog`）
-- [x] cmd/root.go（`why` コマンドのルート）
+- [x] go.mod + cobraセットアップ（`module github.com/mskasa/kizami`）
+- [x] cmd/root.go（`kizami` コマンドのルート）
 - [x] internal/decision/generate.go（自動採番・ファイル生成）
 - [x] internal/template/template.go（Markdownテンプレート）
-- [x] cmd/log.go（`why log`）
-- [x] cmd/list.go（`why list`）
-- [x] cmd/search.go（`why search`）
-- [x] cmd/show.go（`why show`）
-- [x] cmd/status.go（`why status`）
+- [x] cmd/log.go（`kizami log`）
+- [x] cmd/list.go（`kizami list`）
+- [x] cmd/search.go（`kizami search`）
+- [x] cmd/show.go（`kizami show`）
+- [x] cmd/status.go（`kizami status`）
 - [x] docs/decisions/ 初期ADR（0001〜0006）
 - [x] README.md
 - [x] GoReleaser設定
@@ -417,38 +414,38 @@ Claude:
 ### v0.1.0（残り）
 
 - [x] ロゴ画像作成
-- [x] cmd/blame.go（`why blame <file>` — ADR内のファイルパス記述を全文検索）
-- [x] why --version
+- [x] cmd/blame.go（`kizami blame <file>` — ADR内のファイルパス記述を全文検索）
+- [x] `kizami --version`
 
 ### v0.2.0
 
-- [x] why init
-- [x] why log のエディタ自動起動
-- [x] why log 実行時にステージング済み・未ステージングの両方の変更ファイルを候補としてRelated Filesに提示する
-- [x] why log 実行時の類似ADR提示（キーワード部分一致）
-- [x] why list --status
-- [x] why supersede
-- [x] why review（長期未更新ADRの検出）
+- [x] `kizami init`
+- [x] `kizami log` のエディタ自動起動
+- [x] `kizami log` 実行時にステージング済み・未ステージングの両方の変更ファイルを候補としてRelated Filesに提示する
+- [x] `kizami log` 実行時の類似ADR提示（キーワード部分一致）
+- [x] `kizami list --status`
+- [x] `kizami supersede`
+- [x] `kizami review`（長期未更新ADRの検出）
 - [x] git hookでADR追加を促す仕組み
-- [x] GitHub Actions連携（why init でワークフロー生成）
+- [x] GitHub Actions連携（`kizami init` でワークフロー生成）
 
 ### v0.3.0
 
-- [x] why audit（Related Filesのコードとの乖離検出）
-- [x] why audit のCI定期実行（週次・GitHub Issue自動作成）
+- [x] `kizami audit`（Related Filesのコードとの乖離検出）
+- [x] `kizami audit` のCI定期実行（週次・GitHub Issue自動作成）
 - [x] LLM連携によるADRドラフト自動生成
-- [x] why init 実行時に ~/.config/declog/config.toml をデフォルト値で生成する
+- [x] `kizami init` 実行時に `~/.config/kizami/config.toml` をデフォルト値で生成する
 
-### kizami へのリネーム（次のステップ — 新機能追加より先に実施）
+### kizami へのリネーム ✅
 
-- [ ] GitHub リポジトリのリネーム: `mskasa/declog` → `mskasa/kizami`
-- [ ] `go.mod` モジュールパスの更新: `github.com/mskasa/declog` → `github.com/mskasa/kizami`
-- [ ] コードベース全体のインポートパス更新
-- [ ] バイナリ名の変更: `why` → `kizami`（cmd/root.go, .goreleaser.yaml）
-- [ ] 設定パスの変更: `~/.config/declog/` → `~/.config/kizami/`
-- [ ] README.md / README.ja.md の更新
-- [ ] CLAUDE.md / CLAUDE.ja.md の更新（リネーム注記削除、新アイデンティティを反映）
-- [ ] `why` コマンドを参照している既存 ADR の更新
+- [x] GitHub リポジトリのリネーム: `mskasa/declog` → `mskasa/kizami`
+- [x] `go.mod` モジュールパスの更新: `github.com/mskasa/declog` → `github.com/mskasa/kizami`
+- [x] コードベース全体のインポートパス更新
+- [x] バイナリ名の変更: `why` → `kizami`（cmd/root.go, .goreleaser.yaml）
+- [x] 設定パスの変更: `~/.config/declog/` → `~/.config/kizami/`
+- [x] README.md / README.ja.md の更新
+- [x] CLAUDE.md / CLAUDE.ja.md の更新（新アイデンティティを反映）
+- [x] `why` コマンドを参照している既存 ADR の更新
 
 ### v0.4.0（スコープ拡張）
 

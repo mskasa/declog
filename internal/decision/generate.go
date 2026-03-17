@@ -108,6 +108,32 @@ func FindByID(dir string, id int) (*Decision, error) {
 	return nil, fmt.Errorf("decision %04d not found", id)
 }
 
+// CreateFromDraft creates an ADR file using AI-generated draft sections.
+// The standard header (ID, Date, Status, Author, Supersedes) is prepended to the draft.
+func CreateFromDraft(dir, title, draft string, supersededBy int) (string, error) {
+	if err := os.MkdirAll(dir, 0o755); err != nil {
+		return "", fmt.Errorf("creating decisions dir: %w", err)
+	}
+
+	id, err := NextID(dir)
+	if err != nil {
+		return "", err
+	}
+
+	slug := Slugify(title)
+	filename := fmt.Sprintf("%04d-%s.md", id, slug)
+	path := filepath.Join(dir, filename)
+
+	author := AuthorFromGit()
+	header := tmpl.RenderHeader(id, title, author, supersededBy)
+	content := header + "\n" + draft
+
+	if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
+		return "", fmt.Errorf("writing file: %w", err)
+	}
+	return path, nil
+}
+
 // Create generates a new ADR file and returns its path.
 // supersededBy, if > 0, adds a "- Supersedes: NNNN" line to the template.
 func Create(dir, title string, supersededBy int) (string, error) {

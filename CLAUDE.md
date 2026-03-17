@@ -463,7 +463,7 @@ Claude:
 
 - [x] `why audit` — detect drift between Related Files and actual code
 - [x] Scheduled CI run of `why audit` (weekly + auto GitHub Issue creation)
-- [ ] LLM-assisted ADR draft generation
+- [x] LLM-assisted ADR draft generation
 
 ### v0.4.0+
 

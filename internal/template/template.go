@@ -44,6 +44,18 @@ func gitDiffFiles(dir, flag string) []string {
 	return files
 }
 
+// RenderHeader returns the ADR front-matter block (title + metadata lines only, no body sections).
+// It is used when the body is generated externally (e.g. by an LLM).
+func RenderHeader(id int, title, author string, supersededBy int) string {
+	date := time.Now().Format("2006-01-02")
+	supersedes := ""
+	if supersededBy > 0 {
+		supersedes = fmt.Sprintf("\n- Supersedes: %04d", supersededBy)
+	}
+	return fmt.Sprintf("# %04d: %s\n\n- Date: %s\n- Status: Active\n- Author: %s%s\n",
+		id, title, date, author, supersedes)
+}
+
 // Render returns the MADR Markdown template filled with the given values.
 // relatedFiles is inserted into the Related Files section; pass nil for an empty section.
 // supersededBy, if > 0, adds a "- Supersedes: NNNN" line after the Author line.

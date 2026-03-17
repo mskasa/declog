@@ -429,7 +429,7 @@ Claude:
 
 - [x] why audit（Related Filesのコードとの乖離検出）
 - [x] why audit のCI定期実行（週次・GitHub Issue自動作成）
-- [ ] LLM連携によるADRドラフト自動生成
+- [x] LLM連携によるADRドラフト自動生成
 
 ### v0.4.0以降
 

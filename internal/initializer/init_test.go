@@ -14,7 +14,7 @@ func TestRun_FreshInit_WithWorkflow(t *testing.T) {
 
 	init_ := &Initializer{
 		Root:   root,
-		Input:  strings.NewReader("y\nn\n"), // workflow=y, hook=n
+		Input:  strings.NewReader("y\nn\nn\n"), // workflow=y, hook=n, audit=n
 		Output: &out,
 	}
 
@@ -50,7 +50,7 @@ func TestRun_FreshInit_SkipWorkflow(t *testing.T) {
 
 	init_ := &Initializer{
 		Root:   root,
-		Input:  strings.NewReader("n\nn\n"), // workflow=n, hook=n
+		Input:  strings.NewReader("n\nn\nn\n"), // workflow=n, hook=n, audit=n
 		Output: &out,
 	}
 
@@ -75,7 +75,7 @@ func TestRun_DecisionsDirAlreadyExists(t *testing.T) {
 	var out bytes.Buffer
 	init_ := &Initializer{
 		Root:   root,
-		Input:  strings.NewReader("n\nn\n"), // workflow=n, hook=n
+		Input:  strings.NewReader("n\nn\nn\n"), // workflow=n, hook=n, audit=n
 		Output: &out,
 	}
 
@@ -98,7 +98,7 @@ func TestRun_WorkflowContent(t *testing.T) {
 
 	init_ := &Initializer{
 		Root:   root,
-		Input:  strings.NewReader("y\nn\n"), // workflow=y, hook=n
+		Input:  strings.NewReader("y\nn\nn\n"), // workflow=y, hook=n, audit=n
 		Output: &out,
 	}
 
@@ -119,6 +119,91 @@ func TestRun_WorkflowContent(t *testing.T) {
 	}
 }
 
+func TestRun_WithAuditWorkflow(t *testing.T) {
+	root := t.TempDir()
+	var out bytes.Buffer
+	init_ := &Initializer{
+		Root:   root,
+		Input:  strings.NewReader("n\nn\ny\n"), // workflow=n, hook=n, audit=y
+		Output: &out,
+	}
+
+	if err := init_.Run(); err != nil {
+		t.Fatalf("Run() error: %v", err)
+	}
+
+	auditPath := filepath.Join(root, ".github", "workflows", "adr-audit.yml")
+	if _, err := os.Stat(auditPath); err != nil {
+		t.Errorf("adr-audit.yml not created: %v", err)
+	}
+
+	output := out.String()
+	if !strings.Contains(output, "✅ Created .github/workflows/adr-audit.yml") {
+		t.Errorf("expected audit workflow creation message, got: %s", output)
+	}
+}
+
+func TestRun_AuditWorkflowAlreadyExists(t *testing.T) {
+	root := t.TempDir()
+
+	workflowDir := filepath.Join(root, ".github", "workflows")
+	if err := os.MkdirAll(workflowDir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	auditPath := filepath.Join(workflowDir, "adr-audit.yml")
+	if err := os.WriteFile(auditPath, []byte("existing"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	var out bytes.Buffer
+	init_ := &Initializer{
+		Root:   root,
+		Input:  strings.NewReader("n\nn\ny\n"), // workflow=n, hook=n, audit=y
+		Output: &out,
+	}
+
+	if err := init_.Run(); err != nil {
+		t.Fatalf("Run() error: %v", err)
+	}
+
+	output := out.String()
+	if !strings.Contains(output, "adr-audit.yml already exists. Skipping.") {
+		t.Errorf("expected skip message, got: %s", output)
+	}
+
+	// Existing file must not be overwritten.
+	content, _ := os.ReadFile(auditPath)
+	if string(content) != "existing" {
+		t.Errorf("existing adr-audit.yml was overwritten")
+	}
+}
+
+func TestRun_AuditWorkflowContent(t *testing.T) {
+	root := t.TempDir()
+	var out bytes.Buffer
+	init_ := &Initializer{
+		Root:   root,
+		Input:  strings.NewReader("n\nn\ny\n"), // workflow=n, hook=n, audit=y
+		Output: &out,
+	}
+
+	if err := init_.Run(); err != nil {
+		t.Fatalf("Run() error: %v", err)
+	}
+
+	auditPath := filepath.Join(root, ".github", "workflows", "adr-audit.yml")
+	content, err := os.ReadFile(auditPath)
+	if err != nil {
+		t.Fatalf("reading adr-audit.yml: %v", err)
+	}
+
+	for _, want := range []string{"ADR Audit", "schedule", "cron", "why audit", "[ADR Audit]"} {
+		if !strings.Contains(string(content), want) {
+			t.Errorf("adr-audit.yml missing %q", want)
+		}
+	}
+}
+
 func TestRun_WithHook(t *testing.T) {
 	root := t.TempDir()
 	// Create .git/hooks dir so InstallHook can write there.
@@ -129,7 +214,7 @@ func TestRun_WithHook(t *testing.T) {
 	var out bytes.Buffer
 	init_ := &Initializer{
 		Root:   root,
-		Input:  strings.NewReader("n\ny\n"), // workflow=n, hook=y
+		Input:  strings.NewReader("n\ny\nn\n"), // workflow=n, hook=y, audit=n
 		Output: &out,
 	}
 

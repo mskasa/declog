@@ -490,6 +490,7 @@ Claude:
 ### v0.5.0 (audit enhancement)
 
 - [ ] Drift detection beyond file existence (function/symbol level references)
+- [ ] Generate reverse index (`.kizami/index.json`: file path → ADR IDs mapping) for faster `kizami blame` and external tool integration
 - [ ] `kizami log --ai --type design` — AI draft for design documents
 - [ ] `kizami sync` — interactively update Related Files in existing documents
 

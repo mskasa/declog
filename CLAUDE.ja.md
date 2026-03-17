@@ -458,6 +458,7 @@ Claude:
 
 - [ ] ファイル存在確認を超えた乖離検出（関数名・シンボルレベルの参照チェック）
 - [ ] `kizami log --ai --type design` — 設計書向け AI ドラフト生成
+- [ ] 逆引きインデックスの生成（`.kizami/index.json`：ファイルパス → ADR ID のマッピング）による `kizami blame` の高速化と外部ツール連携
 - [ ] `kizami sync` — 既存ドキュメントの Related Files を対話的に更新
 
 ### v1.0.0（パブリックリリース）

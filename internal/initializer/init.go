@@ -13,6 +13,9 @@ import (
 //go:embed templates/adr-check.yml
 var adrCheckWorkflow string
 
+//go:embed templates/adr-audit.yml
+var adrAuditWorkflow string
+
 // Initializer handles the declog initialization process.
 type Initializer struct {
 	Root   string
@@ -35,6 +38,10 @@ func (i *Initializer) Run() error {
 	}
 
 	if err := i.setupHook(scanner); err != nil {
+		return err
+	}
+
+	if err := i.setupAuditWorkflow(scanner); err != nil {
 		return err
 	}
 
@@ -90,4 +97,32 @@ func (i *Initializer) setupHook(scanner *bufio.Scanner) error {
 	}
 
 	return InstallHook(i.Root, i.Output)
+}
+
+func (i *Initializer) setupAuditWorkflow(scanner *bufio.Scanner) error {
+	fmt.Fprintf(i.Output, "Add weekly ADR audit workflow? (y/n): ")
+
+	if !scanner.Scan() {
+		return nil
+	}
+	if strings.TrimSpace(strings.ToLower(scanner.Text())) != "y" {
+		return nil
+	}
+
+	workflowDir := filepath.Join(i.Root, ".github", "workflows")
+	if err := os.MkdirAll(workflowDir, 0o755); err != nil {
+		return fmt.Errorf("creating .github/workflows/: %w", err)
+	}
+
+	workflowPath := filepath.Join(workflowDir, "adr-audit.yml")
+	if _, err := os.Stat(workflowPath); err == nil {
+		fmt.Fprintf(i.Output, "  ⚠️  .github/workflows/adr-audit.yml already exists. Skipping.\n")
+		return nil
+	}
+
+	if err := os.WriteFile(workflowPath, []byte(adrAuditWorkflow), 0o644); err != nil {
+		return fmt.Errorf("writing adr-audit.yml: %w", err)
+	}
+	fmt.Fprintf(i.Output, "  ✅ Created .github/workflows/adr-audit.yml\n")
+	return nil
 }

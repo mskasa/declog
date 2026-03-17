@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"fmt"
 	"os"
-	"path/filepath"
 	"strconv"
 	"strings"
 
@@ -27,7 +26,7 @@ var supersedeCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
-		dir := filepath.Join(root, "docs", "decisions")
+		dir := decisionsDir(root, loadCfg())
 
 		old, err := decision.FindByID(dir, oldID)
 		if err != nil {

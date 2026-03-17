@@ -18,7 +18,7 @@ var auditCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
-		dir := filepath.Join(root, "docs", "decisions")
+		dir := decisionsDir(root, loadCfg())
 
 		fmt.Fprintln(os.Stdout, "Checking Related Files in ADRs...")
 

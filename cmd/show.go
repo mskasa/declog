@@ -3,7 +3,6 @@ package cmd
 import (
 	"fmt"
 	"os"
-	"path/filepath"
 	"strconv"
 
 	"github.com/mskasa/declog/internal/decision"
@@ -24,7 +23,7 @@ var showCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
-		dir := filepath.Join(root, "docs", "decisions")
+		dir := decisionsDir(root, loadCfg())
 
 		d, err := decision.FindByID(dir, id)
 		if err != nil {

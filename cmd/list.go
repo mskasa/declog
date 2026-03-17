@@ -3,7 +3,6 @@ package cmd
 import (
 	"fmt"
 	"os"
-	"path/filepath"
 	"strings"
 	"text/tabwriter"
 
@@ -22,7 +21,7 @@ var listCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
-		dir := filepath.Join(root, "docs", "decisions")
+		dir := decisionsDir(root, loadCfg())
 
 		decisions, err := decision.List(dir)
 		if err != nil {

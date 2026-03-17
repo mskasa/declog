@@ -6,6 +6,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 )
 
@@ -13,12 +14,30 @@ const DefaultModel = "claude-sonnet-4-20250514"
 
 // Config holds declog configuration.
 type Config struct {
-	AI AIConfig
+	AI        AIConfig
+	Decisions DecisionsConfig
+	Review    ReviewConfig
+	Editor    EditorConfig
 }
 
 // AIConfig holds AI-related configuration.
 type AIConfig struct {
 	Model string
+}
+
+// DecisionsConfig holds decisions directory configuration.
+type DecisionsConfig struct {
+	Dir string
+}
+
+// ReviewConfig holds review threshold configuration.
+type ReviewConfig struct {
+	MonthsThreshold int
+}
+
+// EditorConfig holds editor configuration.
+type EditorConfig struct {
+	Command string
 }
 
 // Load reads the config from ~/.config/declog/config.toml.
@@ -56,24 +75,39 @@ func configPath() string {
 func parse(r io.Reader) (*Config, error) {
 	cfg := &Config{}
 	scanner := bufio.NewScanner(r)
-	inAI := false
+	var section string
 	for scanner.Scan() {
 		line := strings.TrimSpace(scanner.Text())
 		if strings.HasPrefix(line, "#") || line == "" {
 			continue
 		}
-		if line == "[ai]" {
-			inAI = true
+		if strings.HasPrefix(line, "[") && strings.HasSuffix(line, "]") {
+			section = line[1 : len(line)-1]
 			continue
 		}
-		if strings.HasPrefix(line, "[") {
-			inAI = false
+		parts := strings.SplitN(line, "=", 2)
+		if len(parts) != 2 {
 			continue
 		}
-		if inAI && strings.HasPrefix(line, "model") {
-			parts := strings.SplitN(line, "=", 2)
-			if len(parts) == 2 {
-				cfg.AI.Model = strings.Trim(strings.TrimSpace(parts[1]), `"`)
+		key := strings.TrimSpace(parts[0])
+		val := strings.Trim(strings.TrimSpace(parts[1]), `"`)
+		switch section {
+		case "ai":
+			if key == "model" {
+				cfg.AI.Model = val
+			}
+		case "decisions":
+			if key == "dir" {
+				cfg.Decisions.Dir = val
+			}
+		case "review":
+			if key == "months_threshold" {
+				n, _ := strconv.Atoi(val)
+				cfg.Review.MonthsThreshold = n
+			}
+		case "editor":
+			if key == "command" {
+				cfg.Editor.Command = val
 			}
 		}
 	}

@@ -21,20 +21,26 @@ var reviewCmd = &cobra.Command{
 		if err != nil {
 			return fmt.Errorf("not a git repository")
 		}
-		dir := filepath.Join(root, "docs", "decisions")
+		cfg := loadCfg()
+		dir := decisionsDir(root, cfg)
 
-		stale, err := decision.StaleADRs(dir, reviewMonths)
+		months := reviewMonths
+		if !cmd.Flags().Changed("months") && cfg.Review.MonthsThreshold > 0 {
+			months = cfg.Review.MonthsThreshold
+		}
+
+		stale, err := decision.StaleADRs(dir, months)
 		if err != nil {
 			return err
 		}
 
 		if len(stale) == 0 {
-			fmt.Fprintf(os.Stdout, "All ADRs have been reviewed within the last %d months. ✅\n", reviewMonths)
+			fmt.Fprintf(os.Stdout, "All ADRs have been reviewed within the last %d months. ✅\n", months)
 			return nil
 		}
 
 		now := time.Now()
-		fmt.Fprintf(os.Stdout, "ADRs not reviewed in %d+ months:\n\n", reviewMonths)
+		fmt.Fprintf(os.Stdout, "ADRs not reviewed in %d+ months:\n\n", months)
 		for _, s := range stale {
 			rel, err := filepath.Rel(root, s.File)
 			if err != nil {

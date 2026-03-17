@@ -3,8 +3,6 @@ package cmd
 import (
 	"fmt"
 	"os"
-	"path/filepath"
-
 	"github.com/mskasa/declog/internal/search"
 	"github.com/spf13/cobra"
 )
@@ -20,7 +18,7 @@ var blameCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
-		dir := filepath.Join(root, "docs", "decisions")
+		dir := decisionsDir(root, loadCfg())
 
 		decisions, err := search.Blame(dir, filePath)
 		if err != nil {

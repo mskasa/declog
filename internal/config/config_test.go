@@ -90,6 +90,54 @@ func TestResolveModel_NilConfig(t *testing.T) {
 	}
 }
 
+func TestLoad_ParsesAllSections(t *testing.T) {
+	content := `
+[ai]
+model = "claude-opus-4-20250514"
+
+[decisions]
+dir = "records/decisions"
+
+[review]
+months_threshold = 12
+
+[editor]
+command = "code --wait"
+`
+	cfg, err := parse(strings.NewReader(content))
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if cfg.AI.Model != "claude-opus-4-20250514" {
+		t.Errorf("AI.Model: got %q", cfg.AI.Model)
+	}
+	if cfg.Decisions.Dir != "records/decisions" {
+		t.Errorf("Decisions.Dir: got %q", cfg.Decisions.Dir)
+	}
+	if cfg.Review.MonthsThreshold != 12 {
+		t.Errorf("Review.MonthsThreshold: got %d", cfg.Review.MonthsThreshold)
+	}
+	if cfg.Editor.Command != "code --wait" {
+		t.Errorf("Editor.Command: got %q", cfg.Editor.Command)
+	}
+}
+
+func TestLoad_DefaultsWhenEmpty(t *testing.T) {
+	cfg, err := parse(strings.NewReader(""))
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if cfg.Decisions.Dir != "" {
+		t.Errorf("expected empty Decisions.Dir, got %q", cfg.Decisions.Dir)
+	}
+	if cfg.Review.MonthsThreshold != 0 {
+		t.Errorf("expected 0 MonthsThreshold, got %d", cfg.Review.MonthsThreshold)
+	}
+	if cfg.Editor.Command != "" {
+		t.Errorf("expected empty Editor.Command, got %q", cfg.Editor.Command)
+	}
+}
+
 func TestResolveModel_Priority(t *testing.T) {
 	tests := []struct {
 		name      string

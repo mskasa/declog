@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-	"path/filepath"
 	"runtime"
 	"strconv"
 	"strings"
@@ -32,7 +31,7 @@ var logCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
-		dir := filepath.Join(root, "docs", "decisions")
+		dir := decisionsDir(root, loadCfg())
 
 		supersededID, err := promptSimilar(dir, args[0])
 		if err != nil {
@@ -159,19 +158,21 @@ func gitRepoRoot() (string, error) {
 }
 
 func openEditor(path string) error {
-	editor := os.Getenv("EDITOR")
-	if editor == "" {
-		editor = os.Getenv("VISUAL")
-	}
-	if editor == "" {
-		if runtime.GOOS == "windows" {
-			editor = "notepad"
-		} else {
-			editor = "vi"
-		}
+	// Priority: EDITOR env > VISUAL env > config editor.command > platform default
+	var parts []string
+	if e := os.Getenv("EDITOR"); e != "" {
+		parts = []string{e, path}
+	} else if e := os.Getenv("VISUAL"); e != "" {
+		parts = []string{e, path}
+	} else if cmd := loadCfg().Editor.Command; cmd != "" {
+		parts = append(strings.Fields(cmd), path)
+	} else if runtime.GOOS == "windows" {
+		parts = []string{"notepad", path}
+	} else {
+		parts = []string{"vi", path}
 	}
 
-	c := exec.Command(editor, path)
+	c := exec.Command(parts[0], parts[1:]...)
 	c.Stdin = os.Stdin
 	c.Stdout = os.Stdout
 	c.Stderr = os.Stderr

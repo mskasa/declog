@@ -52,11 +52,11 @@ func RenderHeader(id int, title, author string, supersededBy int) string {
 	if supersededBy > 0 {
 		supersedes = fmt.Sprintf("\n- Supersedes: %04d", supersededBy)
 	}
-	return fmt.Sprintf("# %04d: %s\n\n- Date: %s\n- Status: Active\n- Author: %s%s\n",
+	return fmt.Sprintf("# %04d: %s\n\n- Date: %s\n- Type: ADR\n- Status: Draft\n- Author: %s%s\n",
 		id, title, date, author, supersedes)
 }
 
-// Render returns the MADR Markdown template filled with the given values.
+// Render returns the ADR Markdown template filled with the given values.
 // relatedFiles is inserted into the Related Files section; pass nil for an empty section.
 // supersededBy, if > 0, adds a "- Supersedes: NNNN" line after the Author line.
 func Render(id int, title, author string, relatedFiles []string, supersededBy int) string {
@@ -68,7 +68,8 @@ func Render(id int, title, author string, relatedFiles []string, supersededBy in
 	return fmt.Sprintf(`# %04d: %s
 
 - Date: %s
-- Status: Active
+- Type: ADR
+- Status: Draft
 - Author: %s`+supersedes+`
 
 ## Context
@@ -86,6 +87,69 @@ func Render(id int, title, author string, relatedFiles []string, supersededBy in
 ## Alternatives Considered
 
 <!-- Options that were considered but not adopted, and why. (Optional) -->
+
+## Related Files
+
+%s`, id, title, date, author, renderRelatedFiles(relatedFiles))
+}
+
+// RenderDesignHeader returns the Design document front-matter block (no body sections).
+// It is used when the body is generated externally (e.g. by an LLM).
+func RenderDesignHeader(id int, title, author string, supersededBy int) string {
+	date := time.Now().Format("2006-01-02")
+	supersedes := ""
+	if supersededBy > 0 {
+		supersedes = fmt.Sprintf("\n- Supersedes: %04d", supersededBy)
+	}
+	return fmt.Sprintf("# %04d: %s\n\n- Date: %s\n- Type: Design\n- Status: Draft\n- Author: %s%s\n",
+		id, title, date, author, supersedes)
+}
+
+// RenderDesign returns the Design document Markdown template filled with the given values.
+// relatedFiles is inserted into the Related Files section; pass nil for an empty section.
+// supersededBy, if > 0, adds a "- Supersedes: NNNN" line after the Author line.
+func RenderDesign(id int, title, author string, relatedFiles []string, supersededBy int) string {
+	date := time.Now().Format("2006-01-02")
+	supersedes := ""
+	if supersededBy > 0 {
+		supersedes = fmt.Sprintf("\n- Supersedes: %04d", supersededBy)
+	}
+	return fmt.Sprintf(`# %04d: %s
+
+- Date: %s
+- Type: Design
+- Status: Draft
+- Author: %s`+supersedes+`
+
+## Overview
+
+<!-- 1–3 sentences summarizing what this design does and why. -->
+
+## Background
+
+<!-- Why this design was needed. Describe the context, problem, and constraints. -->
+
+## Goals / Non-Goals
+
+<!--
+Goals:
+- ...
+
+Non-Goals:
+- ...
+-->
+
+## Design
+
+<!-- The actual design: structure, flow, interfaces, data models, diagrams, etc. -->
+
+## Implementation Plan
+
+<!-- Steps to implement this design. Omit if the scope is small. -->
+
+## Open Questions
+
+<!-- Unresolved questions at design time. Update as they are answered. -->
 
 ## Related Files
 

@@ -160,3 +160,30 @@ func Create(dir, title string, supersededBy int) (string, error) {
 
 	return path, nil
 }
+
+// CreateDesign generates a new design document file and returns its path.
+// supersededBy, if > 0, adds a "- Supersedes: NNNN" line to the template.
+func CreateDesign(dir, title string, supersededBy int) (string, error) {
+	if err := os.MkdirAll(dir, 0o755); err != nil {
+		return "", fmt.Errorf("creating design dir: %w", err)
+	}
+
+	id, err := NextID(dir)
+	if err != nil {
+		return "", err
+	}
+
+	slug := Slugify(title)
+	filename := fmt.Sprintf("%04d-%s.md", id, slug)
+	path := filepath.Join(dir, filename)
+
+	author := AuthorFromGit()
+	relatedFiles := tmpl.ChangedFiles(dir)
+	content := tmpl.RenderDesign(id, title, author, relatedFiles, supersededBy)
+
+	if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
+		return "", fmt.Errorf("writing file: %w", err)
+	}
+
+	return path, nil
+}

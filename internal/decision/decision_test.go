@@ -91,8 +91,33 @@ func TestCreate(t *testing.T) {
 	if !contains(body, "# 0001: Use PostgreSQL") {
 		t.Errorf("file missing title header, got:\n%s", body)
 	}
-	if !contains(body, "Status: Active") {
+	if !contains(body, "Status: Draft") {
 		t.Errorf("file missing status, got:\n%s", body)
+	}
+}
+
+func TestCreateDesign(t *testing.T) {
+	dir := t.TempDir()
+	path, err := CreateDesign(dir, "Connection Pool Design", 0)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	wantFile := "0001-connection-pool-design.md"
+	if filepath.Base(path) != wantFile {
+		t.Errorf("filename = %q, want %q", filepath.Base(path), wantFile)
+	}
+
+	content, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatalf("reading file: %v", err)
+	}
+
+	body := string(content)
+	for _, want := range []string{"- Type: Design", "- Status: Draft", "## Overview", "## Background"} {
+		if !contains(body, want) {
+			t.Errorf("design file missing %q, got:\n%s", want, body)
+		}
 	}
 }
 

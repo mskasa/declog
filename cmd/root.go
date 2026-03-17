@@ -39,6 +39,11 @@ func decisionsDir(root string, cfg *config.Config) string {
 	return filepath.Join(root, "docs", "decisions")
 }
 
+// designDir returns the design documents directory path.
+func designDir(root string) string {
+	return filepath.Join(root, "docs", "design")
+}
+
 // Execute runs the root command.
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {

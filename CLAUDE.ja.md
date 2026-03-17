@@ -430,6 +430,7 @@ Claude:
 - [x] why audit（Related Filesのコードとの乖離検出）
 - [x] why audit のCI定期実行（週次・GitHub Issue自動作成）
 - [x] LLM連携によるADRドラフト自動生成
+- [ ] why init 実行時に ~/.config/declog/config.toml をデフォルト値で生成する
 
 ### v0.4.0以降
 

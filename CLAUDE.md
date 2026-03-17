@@ -464,6 +464,7 @@ Claude:
 - [x] `why audit` — detect drift between Related Files and actual code
 - [x] Scheduled CI run of `why audit` (weekly + auto GitHub Issue creation)
 - [x] LLM-assisted ADR draft generation
+- [ ] `why init` generates `~/.config/declog/config.toml` with default values
 
 ### v0.4.0+
 

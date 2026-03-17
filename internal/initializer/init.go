@@ -16,11 +16,25 @@ var adrCheckWorkflow string
 //go:embed templates/adr-audit.yml
 var adrAuditWorkflow string
 
+const defaultConfigContent = `[ai]
+model = "claude-sonnet-4-20250514"
+
+[decisions]
+dir = "docs/decisions"
+
+[review]
+months_threshold = 6
+
+[editor]
+command = "code --wait"
+`
+
 // Initializer handles the declog initialization process.
 type Initializer struct {
-	Root   string
-	Input  io.Reader
-	Output io.Writer
+	Root      string
+	Input     io.Reader
+	Output    io.Writer
+	ConfigDir string // overrides ~/.config/declog for testing
 }
 
 // Run performs the initialization steps sequentially.
@@ -42,6 +56,10 @@ func (i *Initializer) Run() error {
 	}
 
 	if err := i.setupAuditWorkflow(scanner); err != nil {
+		return err
+	}
+
+	if err := i.setupConfig(); err != nil {
 		return err
 	}
 
@@ -97,6 +115,40 @@ func (i *Initializer) setupHook(scanner *bufio.Scanner) error {
 	}
 
 	return InstallHook(i.Root, i.Output)
+}
+
+func (i *Initializer) configDir() (string, error) {
+	if i.ConfigDir != "" {
+		return i.ConfigDir, nil
+	}
+	home, err := os.UserHomeDir()
+	if err != nil {
+		return "", fmt.Errorf("finding home directory: %w", err)
+	}
+	return filepath.Join(home, ".config", "declog"), nil
+}
+
+func (i *Initializer) setupConfig() error {
+	dir, err := i.configDir()
+	if err != nil {
+		return err
+	}
+
+	configPath := filepath.Join(dir, "config.toml")
+	if _, err := os.Stat(configPath); err == nil {
+		fmt.Fprintf(i.Output, "  ⚠️  ~/.config/declog/config.toml already exists. Skipping.\n")
+		return nil
+	}
+
+	if err := os.MkdirAll(dir, 0o755); err != nil {
+		return fmt.Errorf("creating ~/.config/declog/: %w", err)
+	}
+
+	if err := os.WriteFile(configPath, []byte(defaultConfigContent), 0o644); err != nil {
+		return fmt.Errorf("writing config.toml: %w", err)
+	}
+	fmt.Fprintf(i.Output, "  ✅ Created ~/.config/declog/config.toml\n")
+	return nil
 }
 
 func (i *Initializer) setupAuditWorkflow(scanner *bufio.Scanner) error {

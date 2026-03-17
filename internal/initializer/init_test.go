@@ -232,3 +232,97 @@ func TestRun_WithHook(t *testing.T) {
 		t.Errorf("expected hook creation message, got: %s", output)
 	}
 }
+
+func TestRun_CreatesConfig(t *testing.T) {
+	root := t.TempDir()
+	configDir := t.TempDir()
+	var out bytes.Buffer
+
+	init_ := &Initializer{
+		Root:      root,
+		Input:     strings.NewReader("n\nn\nn\n"), // workflow=n, hook=n, audit=n
+		Output:    &out,
+		ConfigDir: configDir,
+	}
+
+	if err := init_.Run(); err != nil {
+		t.Fatalf("Run() error: %v", err)
+	}
+
+	configPath := filepath.Join(configDir, "config.toml")
+	if _, err := os.Stat(configPath); err != nil {
+		t.Errorf("config.toml not created: %v", err)
+	}
+
+	content, err := os.ReadFile(configPath)
+	if err != nil {
+		t.Fatalf("reading config.toml: %v", err)
+	}
+	for _, want := range []string{"[ai]", "claude-sonnet-4-20250514", "[decisions]", "[review]", "[editor]"} {
+		if !strings.Contains(string(content), want) {
+			t.Errorf("config.toml missing %q", want)
+		}
+	}
+
+	output := out.String()
+	if !strings.Contains(output, "✅ Created ~/.config/declog/config.toml") {
+		t.Errorf("expected creation message, got: %s", output)
+	}
+}
+
+func TestRun_ConfigAlreadyExists(t *testing.T) {
+	root := t.TempDir()
+	configDir := t.TempDir()
+
+	// Pre-create the config file.
+	configPath := filepath.Join(configDir, "config.toml")
+	if err := os.WriteFile(configPath, []byte("existing"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	var out bytes.Buffer
+	init_ := &Initializer{
+		Root:      root,
+		Input:     strings.NewReader("n\nn\nn\n"),
+		Output:    &out,
+		ConfigDir: configDir,
+	}
+
+	if err := init_.Run(); err != nil {
+		t.Fatalf("Run() error: %v", err)
+	}
+
+	output := out.String()
+	if !strings.Contains(output, "~/.config/declog/config.toml already exists. Skipping.") {
+		t.Errorf("expected skip message, got: %s", output)
+	}
+
+	// Existing file must not be overwritten.
+	content, _ := os.ReadFile(configPath)
+	if string(content) != "existing" {
+		t.Errorf("existing config.toml was overwritten")
+	}
+}
+
+func TestRun_CreatesConfigDir(t *testing.T) {
+	root := t.TempDir()
+	// Use a subdirectory that does not yet exist.
+	configDir := filepath.Join(t.TempDir(), "declog")
+	var out bytes.Buffer
+
+	init_ := &Initializer{
+		Root:      root,
+		Input:     strings.NewReader("n\nn\nn\n"),
+		Output:    &out,
+		ConfigDir: configDir,
+	}
+
+	if err := init_.Run(); err != nil {
+		t.Fatalf("Run() error: %v", err)
+	}
+
+	configPath := filepath.Join(configDir, "config.toml")
+	if _, err := os.Stat(configPath); err != nil {
+		t.Errorf("config.toml not created when dir was missing: %v", err)
+	}
+}

@@ -20,8 +20,8 @@ var statusCmd = &cobra.Command{
 Valid statuses: Proposed, Accepted, Superseded, Deprecated
 
 Examples:
-  why status 3 accepted
-  why status 3 superseded --by 5`,
+  kizami status 3 accepted
+  kizami status 3 superseded --by 5`,
 	Args: cobra.ExactArgs(2),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		id, err := strconv.Atoi(args[0])

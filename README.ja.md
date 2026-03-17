@@ -1,7 +1,10 @@
 # kizami
 
 <p align="center">
-  <img src="docs/assets/logo.svg" alt="kizami" width="400">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="./docs/assets/kizami-logo-dark.svg">
+    <img src="./docs/assets/kizami-logo-light.svg" alt="kizami logo" width="400">
+  </picture>
 </p>
 
 **`kizami`** — ドキュメントとコードの乖離を防ぐ、Go製のリビングドキュメント管理CLIツールです。

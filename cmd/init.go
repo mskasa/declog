@@ -8,7 +8,7 @@ import (
 
 var initCmd = &cobra.Command{
 	Use:   "init",
-	Short: "Initialize declog in the current repository",
+	Short: "Initialize kizami in the current repository",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		root, err := gitRepoRoot()
 		if err != nil {

@@ -307,7 +307,7 @@ func TestRun_ConfigAlreadyExists(t *testing.T) {
 func TestRun_CreatesConfigDir(t *testing.T) {
 	root := t.TempDir()
 	// Use a subdirectory that does not yet exist.
-	configDir := filepath.Join(t.TempDir(), "declog")
+	configDir := filepath.Join(t.TempDir(), "kizami")
 	var out bytes.Buffer
 
 	init_ := &Initializer{

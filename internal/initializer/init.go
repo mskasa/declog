@@ -29,7 +29,7 @@ months_threshold = 6
 command = "code --wait"
 `
 
-// Initializer handles the declog initialization process.
+// Initializer handles the kizami initialization process.
 type Initializer struct {
 	Root      string
 	Input     io.Reader
@@ -39,7 +39,7 @@ type Initializer struct {
 
 // Run performs the initialization steps sequentially.
 func (i *Initializer) Run() error {
-	fmt.Fprintln(i.Output, "Initializing declog...")
+	fmt.Fprintln(i.Output, "Initializing kizami...")
 
 	if err := i.createDecisionsDir(); err != nil {
 		return err
@@ -125,7 +125,7 @@ func (i *Initializer) configDir() (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("finding home directory: %w", err)
 	}
-	return filepath.Join(home, ".config", "declog"), nil
+	return filepath.Join(home, ".config", "kizami"), nil
 }
 
 func (i *Initializer) setupConfig() error {

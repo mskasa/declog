@@ -67,7 +67,7 @@ func TestInstallHook_HookContent(t *testing.T) {
 		t.Fatalf("reading pre-commit: %v", err)
 	}
 
-	for _, want := range []string{"#!/bin/sh", "docs/decisions/", "kizami log"} {
+	for _, want := range []string{"#!/bin/sh", "docs/decisions/", "kizami adr"} {
 		if !strings.Contains(string(content), want) {
 			t.Errorf("hook missing %q", want)
 		}

@@ -16,4 +16,4 @@ fi
 
 printf "\n⚠️  No ADR found in this commit.\n"
 printf "    If this change involves a significant design decision,\n"
-printf "    consider running: kizami log \"<title>\"\n\n"
+printf "    consider running: kizami adr \"<title>\"\n\n"

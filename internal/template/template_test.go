@@ -191,3 +191,42 @@ func TestRender_WithoutSupersedes(t *testing.T) {
 		t.Errorf("unexpected Supersedes line in output:\n%s", out)
 	}
 }
+
+func TestRender_DefaultStatusDraft(t *testing.T) {
+	out := Render(1, "Test Decision", "alice", nil, 0)
+
+	if !strings.Contains(out, "- Status: Draft") {
+		t.Errorf("expected Status: Draft in ADR template:\n%s", out)
+	}
+	if !strings.Contains(out, "- Type: ADR") {
+		t.Errorf("expected Type: ADR in ADR template:\n%s", out)
+	}
+}
+
+func TestRenderDesign_Sections(t *testing.T) {
+	out := RenderDesign(1, "Test Design", "alice", nil, 0)
+
+	for _, want := range []string{
+		"- Type: Design",
+		"- Status: Draft",
+		"## Overview",
+		"## Background",
+		"## Goals / Non-Goals",
+		"## Design",
+		"## Implementation Plan",
+		"## Open Questions",
+		"## Related Files",
+	} {
+		if !strings.Contains(out, want) {
+			t.Errorf("design template missing %q:\n%s", want, out)
+		}
+	}
+}
+
+func TestRenderDesign_WithSupersedes(t *testing.T) {
+	out := RenderDesign(9, "New Design", "alice", nil, 3)
+
+	if !strings.Contains(out, "- Supersedes: 0003") {
+		t.Errorf("missing Supersedes line in output:\n%s", out)
+	}
+}

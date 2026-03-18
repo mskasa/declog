@@ -22,9 +22,9 @@ var (
 	dryRunFlag bool
 )
 
-var logCmd = &cobra.Command{
-	Use:   "log <title>",
-	Short: "Create a new decision record and open it in your editor",
+var adrCmd = &cobra.Command{
+	Use:   "adr <title>",
+	Short: "Create a new ADR and open it in your editor",
 	Args:  cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		root, err := gitRepoRoot()
@@ -70,6 +70,49 @@ var logCmd = &cobra.Command{
 	},
 }
 
+var designCmd = &cobra.Command{
+	Use:   "design <title>",
+	Short: "Create a new design document and open it in your editor",
+	Args:  cobra.ExactArgs(1),
+	RunE: func(cmd *cobra.Command, args []string) error {
+		root, err := gitRepoRoot()
+		if err != nil {
+			return err
+		}
+		dir := designDir(root)
+
+		supersededID, err := promptSimilar(dir, args[0])
+		if err != nil {
+			return err
+		}
+
+		newID, err := decision.NextID(dir)
+		if err != nil {
+			return err
+		}
+
+		path, err := decision.CreateDesign(dir, args[0], supersededID)
+		if err != nil {
+			return err
+		}
+
+		if supersededID > 0 {
+			old, err := decision.FindByID(dir, supersededID)
+			if err != nil {
+				return err
+			}
+			status := fmt.Sprintf("Superseded by %04d", newID)
+			if err := decision.UpdateStatus(old.File, status, 0); err != nil {
+				return err
+			}
+			fmt.Fprintf(os.Stdout, "Updated: %s\n  Status: %s\n\n", old.File, status)
+		}
+
+		fmt.Fprintf(os.Stdout, "Creating new design document...\nCreated: %s\n", path)
+		return openEditor(path)
+	},
+}
+
 // runWithAI generates an ADR draft via the Anthropic API and writes the file.
 func runWithAI(dir, root, title string, supersededID int) (string, error) {
 	apiKey := os.Getenv("ANTHROPIC_API_KEY")
@@ -101,7 +144,7 @@ func runWithAI(dir, root, title string, supersededID int) (string, error) {
 	return decision.CreateFromDraft(dir, title, draft, supersededID)
 }
 
-// promptSimilar searches for similar ADRs and asks the user if any should be superseded.
+// promptSimilar searches for similar documents and asks the user if any should be superseded.
 // Returns the ID to supersede (0 if none).
 func promptSimilar(dir, title string) (int, error) {
 	fmt.Fprintln(os.Stdout, "Searching for similar decisions...")
@@ -143,10 +186,12 @@ func promptSimilar(dir, title string) (int, error) {
 }
 
 func init() {
-	rootCmd.AddCommand(logCmd)
-	logCmd.Flags().BoolVar(&aiFlag, "ai", false, "Generate ADR draft using Anthropic API")
-	logCmd.Flags().StringVar(&modelFlag, "model", "", "Anthropic model to use (overrides config file)")
-	logCmd.Flags().BoolVar(&dryRunFlag, "dry-run", false, "Show the prompt to be sent to the API without calling it")
+	rootCmd.AddCommand(adrCmd)
+	adrCmd.Flags().BoolVar(&aiFlag, "ai", false, "Generate ADR draft using Anthropic API")
+	adrCmd.Flags().StringVar(&modelFlag, "model", "", "Anthropic model to use (overrides config file)")
+	adrCmd.Flags().BoolVar(&dryRunFlag, "dry-run", false, "Show the prompt to be sent to the API without calling it")
+
+	rootCmd.AddCommand(designCmd)
 }
 
 func gitRepoRoot() (string, error) {

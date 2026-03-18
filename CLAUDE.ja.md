@@ -19,7 +19,7 @@
 kizami/
 ├── cmd/
 │   ├── root.go         # ルートコマンド（kizami）
-│   ├── log.go          # kizami log
+│   ├── log.go          # kizami adr / kizami design
 │   ├── list.go         # kizami list
 │   ├── search.go       # kizami search
 │   ├── show.go         # kizami show
@@ -67,7 +67,8 @@ kizami/
 ## コマンド仕様（MVP）
 
 ```bash
-kizami log "<title>"              # テンプレ付きMarkdownを生成してエディタを開く
+kizami adr "<title>"              # ADRを生成してエディタを開く
+kizami design "<title>"           # 設計書を生成してエディタを開く
 kizami list                       # 新しい順に一覧表示（ID・日付・ステータス・タイトル）
 kizami search <keyword>           # キーワード検索
 kizami show <id>                  # 指定IDのDecisionを表示（例: kizami show 3）
@@ -92,7 +93,7 @@ kizami blame <file>               # 指定ファイルに関連するDecisionを
 
 ## Markdownテンプレート（MADR準拠）
 
-`kizami log` 実行時に生成されるテンプレート：
+`kizami adr` 実行時に生成されるテンプレート：
 
 ```markdown
 # {NNNN}: {Title}
@@ -268,7 +269,7 @@ type:
   chore    ビルド・依存関係
 
 例:
-  feat: implement kizami log command with auto-numbering
+  feat: implement kizami adr command with auto-numbering
   docs: add ADR 0003 for MADR format compatibility
 ```
 
@@ -353,15 +354,15 @@ Claudeが実装を担当し、オーナーが判断・承認を担当する。
 ```
 オーナー:
 「CLAUDE.mdを読んで現在の状態を把握してください。
- feature/kizami-log-commandブランチを作成して、
- kizami logコマンドを実装してください。
+ feature/kizami-adr-commandブランチを作成して、
+ kizami adrコマンドを実装してください。
  各ステップで確認を取りながら進めてください。」
 
 Claude:
 「CLAUDE.mdを確認しました。
- feature/kizami-log-commandブランチを作成します。
+ feature/kizami-adr-commandブランチを作成します。
  [ブランチ作成]
- kizami logの実装を開始します...
+ kizami adrの実装を開始します...
  [実装]
  完了しました。自動採番のロジックで設計上の判断が発生しました。
  コミット前にADRを作成しますか？」
@@ -402,7 +403,7 @@ Claude:
 - [x] cmd/root.go（`kizami` コマンドのルート）
 - [x] internal/decision/generate.go（自動採番・ファイル生成）
 - [x] internal/template/template.go（Markdownテンプレート）
-- [x] cmd/log.go（`kizami log`）
+- [x] cmd/log.go（`kizami adr` / `kizami design`）
 - [x] cmd/list.go（`kizami list`）
 - [x] cmd/search.go（`kizami search`）
 - [x] cmd/show.go（`kizami show`）
@@ -420,9 +421,9 @@ Claude:
 ### v0.2.0
 
 - [x] `kizami init`
-- [x] `kizami log` のエディタ自動起動
-- [x] `kizami log` 実行時にステージング済み・未ステージングの両方の変更ファイルを候補としてRelated Filesに提示する
-- [x] `kizami log` 実行時の類似ADR提示（キーワード部分一致）
+- [x] `kizami adr` のエディタ自動起動
+- [x] `kizami adr` 実行時にステージング済み・未ステージングの両方の変更ファイルを候補としてRelated Filesに提示する
+- [x] `kizami adr` 実行時の類似ADR提示（キーワード部分一致）
 - [x] `kizami list --status`
 - [x] `kizami supersede`
 - [x] `kizami review`（長期未更新ADRの検出）
@@ -449,9 +450,9 @@ Claude:
 
 ### v0.4.0（スコープ拡張）
 
-- [ ] `kizami log --type <type>` — ドキュメント種別の選択（`adr` / `design`）
-- [ ] 設計書テンプレートの追加（保存先 `docs/design/`、デフォルト `Status: Draft`）
-- [ ] ADR テンプレートのデフォルトを `Status: Active` → `Status: Draft` に変更
+- [x] `kizami adr` / `kizami design` — 作成コマンドの分離（`kizami log --type` の代替）
+- [x] 設計書テンプレートの追加（保存先 `docs/design/`、デフォルト `Status: Draft`）
+- [x] ADR テンプレートのデフォルトを `Status: Active` → `Status: Draft` に変更
 - [ ] `kizami audit` で `Draft` ドキュメントをスキップ（`Active` のみ対象）
 - [ ] `kizami init` にオプションで auto-promote ワークフロー（`kizami-promote.yml`）を生成する機能を追加：main へのプッシュ時に `Draft` → `Active` へ自動昇格、カスタマイズ用コメント付き
 - [ ] `kizami audit` で複数ディレクトリをスキャン可能に（config の `audit.dirs`）
@@ -460,7 +461,7 @@ Claude:
 ### v0.5.0（監査強化）
 
 - [ ] ファイル存在確認を超えた乖離検出（関数名・シンボルレベルの参照チェック）
-- [ ] `kizami log --ai --type design` — 設計書向け AI ドラフト生成
+- [ ] `kizami design --ai` — 設計書向け AI ドラフト生成
 - [ ] 逆引きインデックスの生成（`.kizami/index.json`：ファイルパス → ADR ID のマッピング）による `kizami blame` の高速化と外部ツール連携
 - [ ] `kizami sync` — 既存ドキュメントの Related Files を対話的に更新
 

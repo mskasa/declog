@@ -18,7 +18,7 @@ Supports any living document: ADRs, design docs, API specs, architecture overvie
 kizami/
 ├── cmd/
 │   ├── root.go         # Root command (kizami)
-│   ├── log.go          # kizami log
+│   ├── log.go          # kizami adr / kizami design
 │   ├── list.go         # kizami list
 │   ├── search.go       # kizami search
 │   ├── show.go         # kizami show
@@ -66,7 +66,8 @@ kizami/
 ## Command Specification (MVP)
 
 ```bash
-kizami log "<title>"              # Generate a template Markdown file and open it in an editor
+kizami adr "<title>"              # Create a new ADR and open it in an editor
+kizami design "<title>"           # Create a new design document and open it in an editor
 kizami list                       # List decisions in reverse chronological order (ID, date, status, title)
 kizami search <keyword>           # Search decisions by keyword
 kizami show <id>                  # Display a single decision (e.g. kizami show 3)
@@ -91,7 +92,7 @@ kizami blame <file>               # Find decisions related to a given file
 
 ## Markdown Template (MADR-compatible)
 
-Template generated when running `kizami log`:
+Template generated when running `kizami adr`:
 
 ```markdown
 # {NNNN}: {Title}
@@ -267,7 +268,7 @@ Types:
   chore    Build or dependency changes
 
 Examples:
-  feat: implement kizami log command with auto-numbering
+  feat: implement kizami adr command with auto-numbering
   docs: add ADR 0003 for MADR format compatibility
 ```
 
@@ -352,14 +353,14 @@ Claude handles implementation. The owner handles judgment and approval.
 ```
 Owner:
 "Please read CLAUDE.md and understand the current state.
- Create branch feature/kizami-log-command and implement the kizami log command.
+ Create branch feature/kizami-adr-command and implement the kizami adr command.
  Confirm with me at each step before proceeding."
 
 Claude:
 "Understood. I've read CLAUDE.md.
- Creating branch feature/kizami-log-command now.
+ Creating branch feature/kizami-adr-command now.
  [creates branch]
- Starting implementation of kizami log...
+ Starting implementation of kizami adr...
  [implements]
  Done. The auto-numbering logic required a design choice.
  Shall I create an ADR before committing?"
@@ -435,7 +436,7 @@ Claude:
 - [x] cmd/root.go (root `kizami` command)
 - [x] internal/decision/generate.go (auto-numbering and file generation)
 - [x] internal/template/template.go (Markdown template)
-- [x] cmd/log.go (`kizami log`)
+- [x] cmd/log.go (`kizami adr` / `kizami design`)
 - [x] cmd/list.go (`kizami list`)
 - [x] cmd/search.go (`kizami search`)
 - [x] cmd/show.go (`kizami show`)
@@ -453,9 +454,9 @@ Claude:
 ### v0.2.0
 
 - [x] `kizami init` — initialize decisions directory
-- [x] Auto-open editor after `kizami log`
-- [x] Suggest changed files (staged and unstaged) as Related Files candidates on `kizami log`
-- [x] Show similar ADR suggestions on `kizami log` (keyword partial match)
+- [x] Auto-open editor after `kizami adr`
+- [x] Suggest changed files (staged and unstaged) as Related Files candidates on `kizami adr`
+- [x] Show similar ADR suggestions on `kizami adr` (keyword partial match)
 - [x] `kizami list --status <status>` — filter list by status
 - [x] `kizami supersede` — mark an ADR as superseded
 - [x] `kizami review` — detect long-stale ADRs
@@ -482,9 +483,9 @@ Claude:
 
 ### v0.4.0 (scope expansion)
 
-- [ ] `kizami log --type <type>` — document type selection (`adr` / `design`)
-- [ ] Design document template (saved under `docs/design/`, default `Status: Draft`)
-- [ ] Change ADR template default from `Status: Active` to `Status: Draft`
+- [x] `kizami adr` / `kizami design` — separate creation commands (replaces `kizami log --type`)
+- [x] Design document template (saved under `docs/design/`, default `Status: Draft`)
+- [x] Change ADR template default from `Status: Active` to `Status: Draft`
 - [ ] `kizami audit` skips `Draft` documents (only checks `Active`)
 - [ ] `kizami init` generates optional auto-promote workflow (`kizami-promote.yml`): auto-promotes `Draft` → `Active` on push to main, with inline comments for customization
 - [ ] `kizami audit` supports multiple directories (`audit.dirs` in config)
@@ -494,7 +495,7 @@ Claude:
 
 - [ ] Drift detection beyond file existence (function/symbol level references)
 - [ ] Generate reverse index (`.kizami/index.json`: file path → ADR IDs mapping) for faster `kizami blame` and external tool integration
-- [ ] `kizami log --ai --type design` — AI draft for design documents
+- [ ] `kizami design --ai` — AI draft for design documents
 - [ ] `kizami sync` — interactively update Related Files in existing documents
 
 ### v1.0.0 (public release)

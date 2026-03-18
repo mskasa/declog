@@ -122,15 +122,16 @@ func TestAudit_SkipsNonActive(t *testing.T) {
 	dir := t.TempDir()
 	repoRoot := t.TempDir()
 
-	writeAuditADR(t, dir, "0001-inactive.md", "Inactive", []string{"internal/missing.go"})
-	writeAuditADR(t, dir, "0002-superseded.md", "Superseded by 0003", []string{"internal/missing.go"})
+	writeAuditADR(t, dir, "0001-draft.md", "Draft", []string{"internal/missing.go"})
+	writeAuditADR(t, dir, "0002-inactive.md", "Inactive", []string{"internal/missing.go"})
+	writeAuditADR(t, dir, "0003-superseded.md", "Superseded by 0004", []string{"internal/missing.go"})
 
 	results, err := Audit(dir, repoRoot)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
 	if len(results) != 0 {
-		t.Errorf("expected no results for non-Active ADRs, got %d", len(results))
+		t.Errorf("expected no results for non-Active documents, got %d", len(results))
 	}
 }
 

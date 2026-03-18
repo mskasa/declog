@@ -14,7 +14,7 @@ var reviewMonths int
 
 var reviewCmd = &cobra.Command{
 	Use:   "review",
-	Short: "List Active ADRs that have not been updated recently",
+	Short: "List Active documents that have not been updated recently",
 	Args:  cobra.NoArgs,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		root, err := gitRepoRoot()
@@ -35,12 +35,12 @@ var reviewCmd = &cobra.Command{
 		}
 
 		if len(stale) == 0 {
-			fmt.Fprintf(os.Stdout, "All ADRs have been reviewed within the last %d months. ✅\n", months)
+			fmt.Fprintf(os.Stdout, "All documents have been reviewed within the last %d months. ✅\n", months)
 			return nil
 		}
 
 		now := time.Now()
-		fmt.Fprintf(os.Stdout, "ADRs not reviewed in %d+ months:\n\n", months)
+		fmt.Fprintf(os.Stdout, "Documents not reviewed in %d+ months:\n\n", months)
 		for _, s := range stale {
 			rel, err := filepath.Rel(root, s.File)
 			if err != nil {
@@ -51,7 +51,7 @@ var reviewCmd = &cobra.Command{
 			fmt.Fprintf(os.Stdout, "  Title: %s\n", s.Title)
 			fmt.Fprintf(os.Stdout, "  Path: %s\n\n", rel)
 		}
-		fmt.Fprintf(os.Stdout, "%d ADR(s) need review.\n", len(stale))
+		fmt.Fprintf(os.Stdout, "%d document(s) need review.\n", len(stale))
 		fmt.Fprintln(os.Stdout, "Consider updating, marking as Inactive, or superseding them.")
 		return nil
 	},

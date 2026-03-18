@@ -14,7 +14,7 @@ func TestRun_FreshInit_WithWorkflow(t *testing.T) {
 
 	init_ := &Initializer{
 		Root:   root,
-		Input:  strings.NewReader("y\nn\nn\n"), // workflow=y, hook=n, audit=n
+		Input:  strings.NewReader("y\nn\nn\nn\n"), // workflow=y, hook=n, audit=n, promote=n
 		Output: &out,
 	}
 
@@ -50,7 +50,7 @@ func TestRun_FreshInit_SkipWorkflow(t *testing.T) {
 
 	init_ := &Initializer{
 		Root:   root,
-		Input:  strings.NewReader("n\nn\nn\n"), // workflow=n, hook=n, audit=n
+		Input:  strings.NewReader("n\nn\nn\nn\n"), // workflow=n, hook=n, audit=n, promote=n
 		Output: &out,
 	}
 
@@ -75,7 +75,7 @@ func TestRun_DecisionsDirAlreadyExists(t *testing.T) {
 	var out bytes.Buffer
 	init_ := &Initializer{
 		Root:   root,
-		Input:  strings.NewReader("n\nn\nn\n"), // workflow=n, hook=n, audit=n
+		Input:  strings.NewReader("n\nn\nn\nn\n"), // workflow=n, hook=n, audit=n, promote=n
 		Output: &out,
 	}
 
@@ -98,7 +98,7 @@ func TestRun_WorkflowContent(t *testing.T) {
 
 	init_ := &Initializer{
 		Root:   root,
-		Input:  strings.NewReader("y\nn\nn\n"), // workflow=y, hook=n, audit=n
+		Input:  strings.NewReader("y\nn\nn\nn\n"), // workflow=y, hook=n, audit=n, promote=n
 		Output: &out,
 	}
 
@@ -124,7 +124,7 @@ func TestRun_WithAuditWorkflow(t *testing.T) {
 	var out bytes.Buffer
 	init_ := &Initializer{
 		Root:   root,
-		Input:  strings.NewReader("n\nn\ny\n"), // workflow=n, hook=n, audit=y
+		Input:  strings.NewReader("n\nn\ny\nn\n"), // workflow=n, hook=n, audit=y, promote=n
 		Output: &out,
 	}
 
@@ -158,7 +158,7 @@ func TestRun_AuditWorkflowAlreadyExists(t *testing.T) {
 	var out bytes.Buffer
 	init_ := &Initializer{
 		Root:   root,
-		Input:  strings.NewReader("n\nn\ny\n"), // workflow=n, hook=n, audit=y
+		Input:  strings.NewReader("n\nn\ny\nn\n"), // workflow=n, hook=n, audit=y, promote=n
 		Output: &out,
 	}
 
@@ -183,7 +183,7 @@ func TestRun_AuditWorkflowContent(t *testing.T) {
 	var out bytes.Buffer
 	init_ := &Initializer{
 		Root:   root,
-		Input:  strings.NewReader("n\nn\ny\n"), // workflow=n, hook=n, audit=y
+		Input:  strings.NewReader("n\nn\ny\nn\n"), // workflow=n, hook=n, audit=y, promote=n
 		Output: &out,
 	}
 
@@ -214,7 +214,7 @@ func TestRun_WithHook(t *testing.T) {
 	var out bytes.Buffer
 	init_ := &Initializer{
 		Root:   root,
-		Input:  strings.NewReader("n\ny\nn\n"), // workflow=n, hook=y, audit=n
+		Input:  strings.NewReader("n\ny\nn\nn\n"), // workflow=n, hook=y, audit=n, promote=n
 		Output: &out,
 	}
 
@@ -240,7 +240,7 @@ func TestRun_CreatesConfig(t *testing.T) {
 
 	init_ := &Initializer{
 		Root:      root,
-		Input:     strings.NewReader("n\nn\nn\n"), // workflow=n, hook=n, audit=n
+		Input:     strings.NewReader("n\nn\nn\nn\n"), // workflow=n, hook=n, audit=n, promote=n
 		Output:    &out,
 		ConfigDir: configDir,
 	}
@@ -283,7 +283,7 @@ func TestRun_ConfigAlreadyExists(t *testing.T) {
 	var out bytes.Buffer
 	init_ := &Initializer{
 		Root:      root,
-		Input:     strings.NewReader("n\nn\nn\n"),
+		Input:     strings.NewReader("n\nn\nn\nn\n"),
 		Output:    &out,
 		ConfigDir: configDir,
 	}
@@ -312,7 +312,7 @@ func TestRun_CreatesConfigDir(t *testing.T) {
 
 	init_ := &Initializer{
 		Root:      root,
-		Input:     strings.NewReader("n\nn\nn\n"),
+		Input:     strings.NewReader("n\nn\nn\nn\n"),
 		Output:    &out,
 		ConfigDir: configDir,
 	}
@@ -324,5 +324,89 @@ func TestRun_CreatesConfigDir(t *testing.T) {
 	configPath := filepath.Join(configDir, "config.toml")
 	if _, err := os.Stat(configPath); err != nil {
 		t.Errorf("config.toml not created when dir was missing: %v", err)
+	}
+}
+
+func TestRun_WithPromoteWorkflow(t *testing.T) {
+	root := t.TempDir()
+	var out bytes.Buffer
+	init_ := &Initializer{
+		Root:   root,
+		Input:  strings.NewReader("n\nn\nn\ny\n"), // workflow=n, hook=n, audit=n, promote=y
+		Output: &out,
+	}
+
+	if err := init_.Run(); err != nil {
+		t.Fatalf("Run() error: %v", err)
+	}
+
+	promotePath := filepath.Join(root, ".github", "workflows", "kizami-promote.yml")
+	if _, err := os.Stat(promotePath); err != nil {
+		t.Errorf("kizami-promote.yml not created: %v", err)
+	}
+
+	output := out.String()
+	if !strings.Contains(output, "✅ Created .github/workflows/kizami-promote.yml") {
+		t.Errorf("expected promote workflow creation message, got: %s", output)
+	}
+}
+
+func TestRun_PromoteWorkflowContent(t *testing.T) {
+	root := t.TempDir()
+	var out bytes.Buffer
+	init_ := &Initializer{
+		Root:   root,
+		Input:  strings.NewReader("n\nn\nn\ny\n"), // workflow=n, hook=n, audit=n, promote=y
+		Output: &out,
+	}
+
+	if err := init_.Run(); err != nil {
+		t.Fatalf("Run() error: %v", err)
+	}
+
+	promotePath := filepath.Join(root, ".github", "workflows", "kizami-promote.yml")
+	content, err := os.ReadFile(promotePath)
+	if err != nil {
+		t.Fatalf("reading kizami-promote.yml: %v", err)
+	}
+
+	for _, want := range []string{"Promote Draft Documents", "Status: Draft", "Status: Active", "docs/decisions", "docs/design", "[skip ci]"} {
+		if !strings.Contains(string(content), want) {
+			t.Errorf("kizami-promote.yml missing %q", want)
+		}
+	}
+}
+
+func TestRun_PromoteWorkflowAlreadyExists(t *testing.T) {
+	root := t.TempDir()
+
+	workflowDir := filepath.Join(root, ".github", "workflows")
+	if err := os.MkdirAll(workflowDir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	promotePath := filepath.Join(workflowDir, "kizami-promote.yml")
+	if err := os.WriteFile(promotePath, []byte("existing"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	var out bytes.Buffer
+	init_ := &Initializer{
+		Root:   root,
+		Input:  strings.NewReader("n\nn\nn\ny\n"), // workflow=n, hook=n, audit=n, promote=y
+		Output: &out,
+	}
+
+	if err := init_.Run(); err != nil {
+		t.Fatalf("Run() error: %v", err)
+	}
+
+	output := out.String()
+	if !strings.Contains(output, "kizami-promote.yml already exists. Skipping.") {
+		t.Errorf("expected skip message, got: %s", output)
+	}
+
+	content, _ := os.ReadFile(promotePath)
+	if string(content) != "existing" {
+		t.Errorf("existing kizami-promote.yml was overwritten")
 	}
 }

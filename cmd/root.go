@@ -44,6 +44,19 @@ func designDir(root string) string {
 	return filepath.Join(root, "docs", "design")
 }
 
+// auditDirs returns the list of directories to audit.
+// Uses cfg.Audit.Dirs if set, otherwise falls back to decisionsDir.
+func auditDirs(root string, cfg *config.Config) []string {
+	if cfg != nil && len(cfg.Audit.Dirs) > 0 {
+		dirs := make([]string, len(cfg.Audit.Dirs))
+		for i, d := range cfg.Audit.Dirs {
+			dirs[i] = filepath.Join(root, d)
+		}
+		return dirs
+	}
+	return []string{decisionsDir(root, cfg)}
+}
+
 // Execute runs the root command.
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {

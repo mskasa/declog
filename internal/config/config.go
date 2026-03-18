@@ -16,6 +16,7 @@ const DefaultModel = "claude-sonnet-4-20250514"
 type Config struct {
 	AI        AIConfig
 	Decisions DecisionsConfig
+	Audit     AuditConfig
 	Review    ReviewConfig
 	Editor    EditorConfig
 }
@@ -28,6 +29,11 @@ type AIConfig struct {
 // DecisionsConfig holds decisions directory configuration.
 type DecisionsConfig struct {
 	Dir string
+}
+
+// AuditConfig holds audit directory configuration.
+type AuditConfig struct {
+	Dirs []string
 }
 
 // ReviewConfig holds review threshold configuration.
@@ -72,6 +78,22 @@ func configPath() string {
 	return filepath.Join(home, ".config", "kizami", "config.toml")
 }
 
+// parseStringArray parses a TOML inline string array like ["a", "b", "c"].
+func parseStringArray(raw string) []string {
+	raw = strings.TrimSpace(raw)
+	raw = strings.TrimPrefix(raw, "[")
+	raw = strings.TrimSuffix(raw, "]")
+	var result []string
+	for _, item := range strings.Split(raw, ",") {
+		item = strings.TrimSpace(item)
+		item = strings.Trim(item, `"'`)
+		if item != "" {
+			result = append(result, item)
+		}
+	}
+	return result
+}
+
 func parse(r io.Reader) (*Config, error) {
 	cfg := &Config{}
 	scanner := bufio.NewScanner(r)
@@ -99,6 +121,10 @@ func parse(r io.Reader) (*Config, error) {
 		case "decisions":
 			if key == "dir" {
 				cfg.Decisions.Dir = val
+			}
+		case "audit":
+			if key == "dirs" {
+				cfg.Audit.Dirs = parseStringArray(parts[1])
 			}
 		case "review":
 			if key == "months_threshold" {

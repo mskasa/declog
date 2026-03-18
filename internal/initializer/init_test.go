@@ -258,7 +258,7 @@ func TestRun_CreatesConfig(t *testing.T) {
 	if err != nil {
 		t.Fatalf("reading config.toml: %v", err)
 	}
-	for _, want := range []string{"[ai]", "claude-sonnet-4-20250514", "[decisions]", "[review]", "[editor]"} {
+	for _, want := range []string{"[ai]", "claude-sonnet-4-20250514", "[decisions]", "[audit]", "[review]", "[editor]"} {
 		if !strings.Contains(string(content), want) {
 			t.Errorf("config.toml missing %q", want)
 		}

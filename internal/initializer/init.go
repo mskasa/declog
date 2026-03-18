@@ -25,6 +25,9 @@ model = "claude-sonnet-4-20250514"
 [decisions]
 dir = "docs/decisions"
 
+[audit]
+dirs = ["docs/decisions", "docs/design"]
+
 [review]
 months_threshold = 6
 

@@ -16,6 +16,9 @@ var adrCheckWorkflow string
 //go:embed templates/adr-audit.yml
 var adrAuditWorkflow string
 
+//go:embed templates/kizami-promote.yml
+var promoteWorkflow string
+
 const defaultConfigContent = `[ai]
 model = "claude-sonnet-4-20250514"
 
@@ -56,6 +59,10 @@ func (i *Initializer) Run() error {
 	}
 
 	if err := i.setupAuditWorkflow(scanner); err != nil {
+		return err
+	}
+
+	if err := i.setupPromoteWorkflow(scanner); err != nil {
 		return err
 	}
 
@@ -148,6 +155,34 @@ func (i *Initializer) setupConfig() error {
 		return fmt.Errorf("writing config.toml: %w", err)
 	}
 	fmt.Fprintf(i.Output, "  ✅ Created ~/.config/kizami/config.toml\n")
+	return nil
+}
+
+func (i *Initializer) setupPromoteWorkflow(scanner *bufio.Scanner) error {
+	fmt.Fprintf(i.Output, "Add auto-promote workflow (Draft → Active on push to main)? (y/n): ")
+
+	if !scanner.Scan() {
+		return nil
+	}
+	if strings.TrimSpace(strings.ToLower(scanner.Text())) != "y" {
+		return nil
+	}
+
+	workflowDir := filepath.Join(i.Root, ".github", "workflows")
+	if err := os.MkdirAll(workflowDir, 0o755); err != nil {
+		return fmt.Errorf("creating .github/workflows/: %w", err)
+	}
+
+	workflowPath := filepath.Join(workflowDir, "kizami-promote.yml")
+	if _, err := os.Stat(workflowPath); err == nil {
+		fmt.Fprintf(i.Output, "  ⚠️  .github/workflows/kizami-promote.yml already exists. Skipping.\n")
+		return nil
+	}
+
+	if err := os.WriteFile(workflowPath, []byte(promoteWorkflow), 0o644); err != nil {
+		return fmt.Errorf("writing kizami-promote.yml: %w", err)
+	}
+	fmt.Fprintf(i.Output, "  ✅ Created .github/workflows/kizami-promote.yml\n")
 	return nil
 }
 

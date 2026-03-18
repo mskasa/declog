@@ -456,7 +456,7 @@ Claude:
 - [x] `kizami audit` で `Draft` ドキュメントをスキップ（`Active` のみ対象）
 - [x] `kizami init` にオプションで auto-promote ワークフロー（`kizami-promote.yml`）を生成する機能を追加：main へのプッシュ時に `Draft` → `Active` へ自動昇格、カスタマイズ用コメント付き
 - [x] `kizami audit` で複数ディレクトリをスキャン可能に（config の `audit.dirs`）
-- [ ] 汎用メッセージから ADR 固有の表現を除去
+- [x] 汎用メッセージから ADR 固有の表現を除去
 
 ### v0.5.0（監査強化）
 

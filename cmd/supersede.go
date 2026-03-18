@@ -30,14 +30,14 @@ var supersedeCmd = &cobra.Command{
 
 		old, err := decision.FindByID(dir, oldID)
 		if err != nil {
-			return fmt.Errorf("ADR %04d not found", oldID)
+			return fmt.Errorf("decision %04d not found", oldID)
 		}
 
 		if err := decision.CheckSupersedable(old); err != nil {
 			return err
 		}
 
-		fmt.Fprintf(os.Stdout, "Superseding ADR:\n  [%04d] %s\n\n", old.ID, old.Title)
+		fmt.Fprintf(os.Stdout, "Superseding decision:\n  [%04d] %s\n\n", old.ID, old.Title)
 		fmt.Fprint(os.Stdout, "Supersede this decision? (y/n): ")
 
 		reader := bufio.NewReader(os.Stdin)

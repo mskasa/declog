@@ -115,7 +115,7 @@ func (i *Initializer) setupWorkflow(scanner *bufio.Scanner) error {
 }
 
 func (i *Initializer) setupHook(scanner *bufio.Scanner) error {
-	fmt.Fprintf(i.Output, "Add pre-commit hook to prompt ADR creation? (y/n): ")
+	fmt.Fprintf(i.Output, "Add pre-commit hook to prompt for a decision record? (y/n): ")
 
 	if !scanner.Scan() {
 		return nil
@@ -190,7 +190,7 @@ func (i *Initializer) setupPromoteWorkflow(scanner *bufio.Scanner) error {
 }
 
 func (i *Initializer) setupAuditWorkflow(scanner *bufio.Scanner) error {
-	fmt.Fprintf(i.Output, "Add weekly ADR audit workflow? (y/n): ")
+	fmt.Fprintf(i.Output, "Add weekly audit workflow? (y/n): ")
 
 	if !scanner.Scan() {
 		return nil

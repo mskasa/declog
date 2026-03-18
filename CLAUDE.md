@@ -488,7 +488,7 @@ Claude:
 - [x] Change ADR template default from `Status: Active` to `Status: Draft`
 - [x] `kizami audit` skips `Draft` documents (only checks `Active`)
 - [x] `kizami init` generates optional auto-promote workflow (`kizami-promote.yml`): auto-promotes `Draft` → `Active` on push to main, with inline comments for customization
-- [ ] `kizami audit` supports multiple directories (`audit.dirs` in config)
+- [x] `kizami audit` supports multiple directories (`audit.dirs` in config)
 - [ ] Remove ADR-specific language from generic output messages
 
 ### v0.5.0 (audit enhancement)

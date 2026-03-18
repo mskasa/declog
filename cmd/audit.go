@@ -11,20 +11,25 @@ import (
 
 var auditCmd = &cobra.Command{
 	Use:   "audit",
-	Short: "Check that Related Files in ADRs still exist in the repository",
+	Short: "Check that Related Files in documents still exist in the repository",
 	Args:  cobra.NoArgs,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		root, err := gitRepoRoot()
 		if err != nil {
 			return err
 		}
-		dir := decisionsDir(root, loadCfg())
+		cfg := loadCfg()
+		dirs := auditDirs(root, cfg)
 
-		fmt.Fprintln(os.Stdout, "Checking Related Files in ADRs...")
+		fmt.Fprintln(os.Stdout, "Checking Related Files in documents...")
 
-		results, err := decision.Audit(dir, root)
-		if err != nil {
-			return err
+		var results []*decision.AuditResult
+		for _, dir := range dirs {
+			r, err := decision.Audit(dir, root)
+			if err != nil {
+				return err
+			}
+			results = append(results, r...)
 		}
 
 		if len(results) == 0 {
@@ -46,7 +51,7 @@ var auditCmd = &cobra.Command{
 			}
 			fmt.Fprintln(os.Stdout)
 		}
-		fmt.Fprintf(os.Stdout, "%d ADR(s) have stale file references.\n", len(results))
+		fmt.Fprintf(os.Stdout, "%d document(s) have stale file references.\n", len(results))
 		fmt.Fprintln(os.Stdout, "Consider updating Related Files, marking as Inactive, or superseding them.")
 		return nil
 	},

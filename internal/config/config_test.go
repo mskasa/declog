@@ -98,6 +98,9 @@ model = "claude-opus-4-20250514"
 [decisions]
 dir = "records/decisions"
 
+[audit]
+dirs = ["docs/decisions", "docs/design"]
+
 [review]
 months_threshold = 12
 
@@ -114,11 +117,25 @@ command = "code --wait"
 	if cfg.Decisions.Dir != "records/decisions" {
 		t.Errorf("Decisions.Dir: got %q", cfg.Decisions.Dir)
 	}
+	if len(cfg.Audit.Dirs) != 2 || cfg.Audit.Dirs[0] != "docs/decisions" || cfg.Audit.Dirs[1] != "docs/design" {
+		t.Errorf("Audit.Dirs: got %v", cfg.Audit.Dirs)
+	}
 	if cfg.Review.MonthsThreshold != 12 {
 		t.Errorf("Review.MonthsThreshold: got %d", cfg.Review.MonthsThreshold)
 	}
 	if cfg.Editor.Command != "code --wait" {
 		t.Errorf("Editor.Command: got %q", cfg.Editor.Command)
+	}
+}
+
+func TestLoad_ParsesAuditDirs_Single(t *testing.T) {
+	content := "[audit]\ndirs = [\"docs/decisions\"]\n"
+	cfg, err := parse(strings.NewReader(content))
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if len(cfg.Audit.Dirs) != 1 || cfg.Audit.Dirs[0] != "docs/decisions" {
+		t.Errorf("Audit.Dirs: got %v", cfg.Audit.Dirs)
 	}
 }
 

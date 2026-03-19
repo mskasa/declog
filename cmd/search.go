@@ -16,18 +16,23 @@ var searchCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
-		dir := decisionsDir(root, loadCfg())
+		cfg := loadCfg()
+		dirs := documentDirs(root, cfg)
 
-		results, err := search.Run(dir, args[0])
-		if err != nil {
-			return err
+		var allResults []search.Result
+		for _, dir := range dirs {
+			r, err := search.Run(dir, args[0])
+			if err != nil {
+				return err
+			}
+			allResults = append(allResults, r...)
 		}
-		if len(results) == 0 {
+		if len(allResults) == 0 {
 			fmt.Fprintln(os.Stdout, "No matches found.")
 			return nil
 		}
 
-		for _, r := range results {
+		for _, r := range allResults {
 			fmt.Fprintf(os.Stdout, "%s:%d: %s\n", r.File, r.Line, r.Text)
 		}
 		return nil

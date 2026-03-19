@@ -15,6 +15,7 @@ const DefaultModel = "claude-sonnet-4-20250514"
 // Config holds kizami configuration.
 type Config struct {
 	AI        AIConfig
+	Documents DocumentsConfig
 	Decisions DecisionsConfig
 	Audit     AuditConfig
 	Review    ReviewConfig
@@ -24,6 +25,12 @@ type Config struct {
 // AIConfig holds AI-related configuration.
 type AIConfig struct {
 	Model string
+}
+
+// DocumentsConfig holds the list of document directories for commands like
+// list, search, show, blame, review, status, and supersede.
+type DocumentsConfig struct {
+	Dirs []string
 }
 
 // DecisionsConfig holds decisions directory configuration.
@@ -117,6 +124,10 @@ func parse(r io.Reader) (*Config, error) {
 		case "ai":
 			if key == "model" {
 				cfg.AI.Model = val
+			}
+		case "documents":
+			if key == "dirs" {
+				cfg.Documents.Dirs = parseStringArray(parts[1])
 			}
 		case "decisions":
 			if key == "dir" {

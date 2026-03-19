@@ -26,11 +26,11 @@ var supersedeCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
-		dir := decisionsDir(root, loadCfg())
+		cfg := loadCfg()
 
-		old, err := decision.FindByID(dir, oldID)
+		old, err := findByID(root, cfg, oldID)
 		if err != nil {
-			return fmt.Errorf("decision %04d not found", oldID)
+			return err
 		}
 
 		if err := decision.CheckSupersedable(old); err != nil {
@@ -50,12 +50,14 @@ var supersedeCmd = &cobra.Command{
 			return nil
 		}
 
-		newID, err := decision.NextID(dir)
+		// New superseding document is always created in the same directory as the old one.
+		newDir := decisionsDir(root, cfg)
+		newID, err := decision.NextID(newDir)
 		if err != nil {
 			return err
 		}
 
-		newPath, err := decision.Create(dir, newTitle, oldID)
+		newPath, err := decision.Create(newDir, newTitle, oldID)
 		if err != nil {
 			return err
 		}

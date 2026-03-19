@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"sort"
 	"strings"
 	"text/tabwriter"
 
@@ -21,12 +22,23 @@ var listCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
-		dir := decisionsDir(root, loadCfg())
+		cfg := loadCfg()
+		dirs := documentDirs(root, cfg)
 
-		decisions, err := decision.List(dir)
-		if err != nil {
-			return err
+		var decisions []*decision.Decision
+		for _, dir := range dirs {
+			d, err := decision.List(dir)
+			if err != nil {
+				return err
+			}
+			decisions = append(decisions, d...)
 		}
+		sort.Slice(decisions, func(i, j int) bool {
+			if decisions[i].Date != decisions[j].Date {
+				return decisions[i].Date > decisions[j].Date
+			}
+			return decisions[i].ID > decisions[j].ID
+		})
 
 		if statusFilter != "" {
 			filter := strings.ToLower(statusFilter)

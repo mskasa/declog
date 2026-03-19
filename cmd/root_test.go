@@ -47,7 +47,7 @@ func TestDesignDir(t *testing.T) {
 	}
 }
 
-func TestAuditDirs(t *testing.T) {
+func TestDocumentDirs(t *testing.T) {
 	tests := []struct {
 		name string
 		cfg  *config.Config
@@ -59,7 +59,49 @@ func TestAuditDirs(t *testing.T) {
 			want: []string{filepath.Join("/repo", "docs", "decisions")},
 		},
 		{
-			name: "empty audit dirs falls back to decisionsDir",
+			name: "empty documents dirs falls back to decisionsDir",
+			cfg:  &config.Config{},
+			want: []string{filepath.Join("/repo", "docs", "decisions")},
+		},
+		{
+			name: "config with documents dirs",
+			cfg: &config.Config{
+				Documents: config.DocumentsConfig{Dirs: []string{"docs/decisions", "docs/design"}},
+			},
+			want: []string{
+				filepath.Join("/repo", "docs", "decisions"),
+				filepath.Join("/repo", "docs", "design"),
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := documentDirs("/repo", tt.cfg)
+			if len(got) != len(tt.want) {
+				t.Fatalf("documentDirs len = %d, want %d", len(got), len(tt.want))
+			}
+			for i := range got {
+				if got[i] != tt.want[i] {
+					t.Errorf("documentDirs[%d] = %q, want %q", i, got[i], tt.want[i])
+				}
+			}
+		})
+	}
+}
+
+func TestAuditDirs(t *testing.T) {
+	tests := []struct {
+		name string
+		cfg  *config.Config
+		want []string
+	}{
+		{
+			name: "nil config falls back to documentDirs",
+			cfg:  nil,
+			want: []string{filepath.Join("/repo", "docs", "decisions")},
+		},
+		{
+			name: "empty audit dirs falls back to documentDirs",
 			cfg:  &config.Config{},
 			want: []string{filepath.Join("/repo", "docs", "decisions")},
 		},

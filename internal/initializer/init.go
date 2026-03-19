@@ -22,6 +22,9 @@ var promoteWorkflow string
 const defaultConfigContent = `[ai]
 model = "claude-sonnet-4-20250514"
 
+[documents]
+dirs = ["docs/decisions", "docs/design"]
+
 [decisions]
 dir = "docs/decisions"
 

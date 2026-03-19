@@ -1,10 +1,12 @@
 package cmd
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 
 	"github.com/mskasa/kizami/internal/config"
+	"github.com/mskasa/kizami/internal/decision"
 	"github.com/spf13/cobra"
 )
 
@@ -44,8 +46,21 @@ func designDir(root string) string {
 	return filepath.Join(root, "docs", "design")
 }
 
+// documentDirs returns the list of directories for read/write commands (list, search, show, etc.).
+// Uses cfg.Documents.Dirs if set, otherwise falls back to decisionsDir.
+func documentDirs(root string, cfg *config.Config) []string {
+	if cfg != nil && len(cfg.Documents.Dirs) > 0 {
+		dirs := make([]string, len(cfg.Documents.Dirs))
+		for i, d := range cfg.Documents.Dirs {
+			dirs[i] = filepath.Join(root, d)
+		}
+		return dirs
+	}
+	return []string{decisionsDir(root, cfg)}
+}
+
 // auditDirs returns the list of directories to audit.
-// Uses cfg.Audit.Dirs if set, otherwise falls back to decisionsDir.
+// Uses cfg.Audit.Dirs if set, otherwise falls back to documentDirs.
 func auditDirs(root string, cfg *config.Config) []string {
 	if cfg != nil && len(cfg.Audit.Dirs) > 0 {
 		dirs := make([]string, len(cfg.Audit.Dirs))
@@ -54,7 +69,18 @@ func auditDirs(root string, cfg *config.Config) []string {
 		}
 		return dirs
 	}
-	return []string{decisionsDir(root, cfg)}
+	return documentDirs(root, cfg)
+}
+
+// findByID searches for a decision by ID across all document directories.
+func findByID(root string, cfg *config.Config, id int) (*decision.Decision, error) {
+	for _, dir := range documentDirs(root, cfg) {
+		d, err := decision.FindByID(dir, id)
+		if err == nil {
+			return d, nil
+		}
+	}
+	return nil, fmt.Errorf("decision %04d not found", id)
 }
 
 // Execute runs the root command.

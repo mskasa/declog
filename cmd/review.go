@@ -22,16 +22,20 @@ var reviewCmd = &cobra.Command{
 			return fmt.Errorf("not a git repository")
 		}
 		cfg := loadCfg()
-		dir := decisionsDir(root, cfg)
+		dirs := documentDirs(root, cfg)
 
 		months := reviewMonths
 		if !cmd.Flags().Changed("months") && cfg.Review.MonthsThreshold > 0 {
 			months = cfg.Review.MonthsThreshold
 		}
 
-		stale, err := decision.StaleADRs(dir, months)
-		if err != nil {
-			return err
+		var stale []*decision.StaleADR
+		for _, dir := range dirs {
+			s, err := decision.StaleADRs(dir, months)
+			if err != nil {
+				return err
+			}
+			stale = append(stale, s...)
 		}
 
 		if len(stale) == 0 {

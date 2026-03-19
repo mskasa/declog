@@ -5,7 +5,6 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/mskasa/kizami/internal/decision"
 	"github.com/spf13/cobra"
 )
 
@@ -23,9 +22,8 @@ var showCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
-		dir := decisionsDir(root, loadCfg())
 
-		d, err := decision.FindByID(dir, id)
+		d, err := findByID(root, loadCfg(), id)
 		if err != nil {
 			return err
 		}

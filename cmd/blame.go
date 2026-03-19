@@ -2,9 +2,11 @@ package cmd
 
 import (
 	"fmt"
+	"os"
+
+	"github.com/mskasa/kizami/internal/decision"
 	"github.com/mskasa/kizami/internal/search"
 	"github.com/spf13/cobra"
-	"os"
 )
 
 var blameCmd = &cobra.Command{
@@ -18,11 +20,23 @@ var blameCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
-		dir := decisionsDir(root, loadCfg())
+		cfg := loadCfg()
+		dirs := documentDirs(root, cfg)
 
-		decisions, err := search.Blame(dir, filePath)
-		if err != nil {
-			return err
+		seen := make(map[int]struct{})
+		var decisions []*decision.Decision
+		for _, dir := range dirs {
+			d, err := search.Blame(dir, filePath)
+			if err != nil {
+				return err
+			}
+			for _, dec := range d {
+				if _, ok := seen[dec.ID]; ok {
+					continue
+				}
+				seen[dec.ID] = struct{}{}
+				decisions = append(decisions, dec)
+			}
 		}
 		if len(decisions) == 0 {
 			fmt.Fprintf(os.Stdout, "No decisions found mentioning %q.\n", filePath)

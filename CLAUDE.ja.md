@@ -459,6 +459,7 @@ Claude:
 - [x] 汎用メッセージから ADR 固有の表現を除去
 - [ ] `kizami design --ai` — 設計書向け AI ドラフト生成
 - [x] golangci-lint を CI に追加
+- [x] mise ツールチェーン設定（Go と golangci-lint のバージョンをローカル環境でも固定）
 - [ ] cmd/ パッケージのテスト追加
 - [ ] Related Files にディレクトリパスを指定可能にする（配下のファイルすべてが関連ファイルとして扱われる）
 - [ ] このリポジトリ自体に `kizami init` を実行する（ドッグフーディング）

@@ -457,12 +457,12 @@ Claude:
 - [x] `kizami init` にオプションで auto-promote ワークフロー（`kizami-promote.yml`）を生成する機能を追加：main へのプッシュ時に `Draft` → `Active` へ自動昇格、カスタマイズ用コメント付き
 - [x] `kizami audit` で複数ディレクトリをスキャン可能に（config の `audit.dirs`）
 - [x] 汎用メッセージから ADR 固有の表現を除去
-
-### v0.5.0
-
 - [ ] `kizami design --ai` — 設計書向け AI ドラフト生成
 - [ ] golangci-lint を CI に追加
 - [ ] cmd/ パッケージのテスト追加
+- [ ] Related Files にディレクトリパスを指定可能にする（配下のファイルすべてが関連ファイルとして扱われる）
+- [ ] このリポジトリ自体に `kizami init` を実行する（ドッグフーディング）
+- [ ] このリポジトリ自体に設計書を作成する（ドッグフーディング）
 
 ### v1.0.0（パブリックリリース）
 
@@ -475,6 +475,7 @@ Claude:
 - [ ] ファイル存在確認を超えた乖離検出（関数名・シンボルレベルの参照チェック）
 - [ ] 逆引きインデックスの生成（`.kizami/index.json`：ファイルパス → ADR ID のマッピング）による `kizami blame` の高速化と外部ツール連携
 - [ ] `kizami sync` — 既存ドキュメントの Related Files を対話的に更新
+- [ ] テンプレートのユーザー定義（config でテンプレートパスを指定可能に。Related Files セクションの必須化については要検討）
 - [ ] kizami stats
 - [ ] GitHub Actions Marketplace 公開
 

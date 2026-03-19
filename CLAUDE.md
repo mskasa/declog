@@ -490,12 +490,12 @@ Claude:
 - [x] `kizami init` generates optional auto-promote workflow (`kizami-promote.yml`): auto-promotes `Draft` → `Active` on push to main, with inline comments for customization
 - [x] `kizami audit` supports multiple directories (`audit.dirs` in config)
 - [x] Remove ADR-specific language from generic output messages
-
-### v0.5.0
-
 - [ ] `kizami design --ai` — AI draft for design documents
 - [ ] golangci-lint in CI
 - [ ] Tests for `cmd/` package
+- [ ] Allow directory path in Related Files (all files under the directory are treated as related)
+- [ ] Run `kizami init` on this repository (dogfooding)
+- [ ] Create design documents for this repository (dogfooding)
 
 ### v1.0.0 (public release)
 
@@ -508,6 +508,7 @@ Claude:
 - [ ] Drift detection beyond file existence (function/symbol level references)
 - [ ] Generate reverse index (`.kizami/index.json`: file path → ADR IDs mapping) for faster `kizami blame` and external tool integration
 - [ ] `kizami sync` — interactively update Related Files in existing documents
+- [ ] User-defined templates (configurable template path; whether Related Files section is required is TBD)
 - [ ] `kizami stats`
 - [ ] GitHub Actions Marketplace release
 

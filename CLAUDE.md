@@ -494,7 +494,9 @@ Claude:
 - [x] golangci-lint in CI
 - [x] mise toolchain configuration (pin Go and golangci-lint versions for local development)
 - [x] Tests for `cmd/` package
-- [ ] Allow directory path in Related Files (all files under the directory are treated as related)
+- [x] Allow directory path in Related Files (all files under the directory are treated as related)
+- [x] Add `documents.dirs` config — all read/write commands now support design docs
+- [ ] Make `kizami design` creation directory configurable (`[design] dir` in config)
 - [ ] Run `kizami init` on this repository (dogfooding)
 - [ ] Create design documents for this repository (dogfooding)
 

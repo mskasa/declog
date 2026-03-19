@@ -461,7 +461,9 @@ Claude:
 - [x] golangci-lint を CI に追加
 - [x] mise ツールチェーン設定（Go と golangci-lint のバージョンをローカル環境でも固定）
 - [x] cmd/ パッケージのテスト追加
-- [ ] Related Files にディレクトリパスを指定可能にする（配下のファイルすべてが関連ファイルとして扱われる）
+- [x] Related Files にディレクトリパスを指定可能にする（配下のファイルすべてが関連ファイルとして扱われる）
+- [x] `documents.dirs` config の追加 — list/search/show 等の全コマンドで設計書もサポート
+- [ ] `kizami design` の作成先ディレクトリを config で変更可能にする（`[design] dir`）
 - [ ] このリポジトリ自体に `kizami init` を実行する（ドッグフーディング）
 - [ ] このリポジトリ自体に設計書を作成する（ドッグフーディング）
 

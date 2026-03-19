@@ -2,9 +2,9 @@ package cmd
 
 import (
 	"fmt"
-	"os"
 	"github.com/mskasa/kizami/internal/search"
 	"github.com/spf13/cobra"
+	"os"
 )
 
 var searchCmd = &cobra.Command{

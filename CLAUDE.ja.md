@@ -458,7 +458,7 @@ Claude:
 - [x] `kizami audit` で複数ディレクトリをスキャン可能に（config の `audit.dirs`）
 - [x] 汎用メッセージから ADR 固有の表現を除去
 - [ ] `kizami design --ai` — 設計書向け AI ドラフト生成
-- [ ] golangci-lint を CI に追加
+- [x] golangci-lint を CI に追加
 - [ ] cmd/ パッケージのテスト追加
 - [ ] Related Files にディレクトリパスを指定可能にする（配下のファイルすべてが関連ファイルとして扱われる）
 - [ ] このリポジトリ自体に `kizami init` を実行する（ドッグフーディング）

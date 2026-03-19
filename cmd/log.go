@@ -79,7 +79,8 @@ var designCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
-		dir := designDir(root)
+		cfg := loadCfg()
+		dir := designDir(root, cfg)
 
 		supersededID, err := promptSimilar(dir, args[0])
 		if err != nil {

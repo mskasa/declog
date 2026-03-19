@@ -42,7 +42,11 @@ func decisionsDir(root string, cfg *config.Config) string {
 }
 
 // designDir returns the design documents directory path.
-func designDir(root string) string {
+// Uses cfg.Design.Dir if set, otherwise defaults to "docs/design".
+func designDir(root string, cfg *config.Config) string {
+	if cfg != nil && cfg.Design.Dir != "" {
+		return filepath.Join(root, cfg.Design.Dir)
+	}
 	return filepath.Join(root, "docs", "design")
 }
 

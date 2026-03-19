@@ -40,10 +40,34 @@ func TestDecisionsDir(t *testing.T) {
 }
 
 func TestDesignDir(t *testing.T) {
-	got := designDir("/repo")
-	want := filepath.Join("/repo", "docs", "design")
-	if got != want {
-		t.Errorf("designDir = %q, want %q", got, want)
+	tests := []struct {
+		name string
+		cfg  *config.Config
+		want string
+	}{
+		{
+			name: "nil config uses default",
+			cfg:  nil,
+			want: filepath.Join("/repo", "docs", "design"),
+		},
+		{
+			name: "empty config uses default",
+			cfg:  &config.Config{},
+			want: filepath.Join("/repo", "docs", "design"),
+		},
+		{
+			name: "config with custom dir",
+			cfg:  &config.Config{Design: config.DesignConfig{Dir: "records/design"}},
+			want: filepath.Join("/repo", "records", "design"),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := designDir("/repo", tt.cfg)
+			if got != tt.want {
+				t.Errorf("designDir = %q, want %q", got, tt.want)
+			}
+		})
 	}
 }
 

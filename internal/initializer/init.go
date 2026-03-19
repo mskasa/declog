@@ -28,6 +28,9 @@ dirs = ["docs/decisions", "docs/design"]
 [decisions]
 dir = "docs/decisions"
 
+[design]
+dir = "docs/design"
+
 [audit]
 dirs = ["docs/decisions", "docs/design"]
 

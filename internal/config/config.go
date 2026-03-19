@@ -17,6 +17,7 @@ type Config struct {
 	AI        AIConfig
 	Documents DocumentsConfig
 	Decisions DecisionsConfig
+	Design    DesignConfig
 	Audit     AuditConfig
 	Review    ReviewConfig
 	Editor    EditorConfig
@@ -35,6 +36,11 @@ type DocumentsConfig struct {
 
 // DecisionsConfig holds decisions directory configuration.
 type DecisionsConfig struct {
+	Dir string
+}
+
+// DesignConfig holds design documents directory configuration.
+type DesignConfig struct {
 	Dir string
 }
 
@@ -132,6 +138,10 @@ func parse(r io.Reader) (*Config, error) {
 		case "decisions":
 			if key == "dir" {
 				cfg.Decisions.Dir = val
+			}
+		case "design":
+			if key == "dir" {
+				cfg.Design.Dir = val
 			}
 		case "audit":
 			if key == "dirs" {

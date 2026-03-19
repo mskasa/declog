@@ -149,3 +149,42 @@ func TestAudit_SkipsEmptyRelatedFiles(t *testing.T) {
 		t.Errorf("expected no results for ADR with no related files, got %d", len(results))
 	}
 }
+
+func TestAudit_DirectoryEntry_Exists(t *testing.T) {
+	dir := t.TempDir()
+	repoRoot := t.TempDir()
+
+	// Create the directory in the repo root.
+	if err := os.MkdirAll(filepath.Join(repoRoot, "internal"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+
+	writeAuditADR(t, dir, "0001-test.md", "Active", []string{"internal/"})
+
+	results, err := Audit(dir, repoRoot)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if len(results) != 0 {
+		t.Errorf("expected no results when directory exists, got %d", len(results))
+	}
+}
+
+func TestAudit_DirectoryEntry_Missing(t *testing.T) {
+	dir := t.TempDir()
+	repoRoot := t.TempDir()
+
+	// Do NOT create "internal/" in repoRoot.
+	writeAuditADR(t, dir, "0001-test.md", "Active", []string{"internal/"})
+
+	results, err := Audit(dir, repoRoot)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if len(results) != 1 {
+		t.Fatalf("expected 1 result for missing directory, got %d", len(results))
+	}
+	if len(results[0].MissingFiles) != 1 || results[0].MissingFiles[0] != "internal/" {
+		t.Errorf("unexpected missing paths: %v", results[0].MissingFiles)
+	}
+}

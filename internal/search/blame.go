@@ -13,6 +13,8 @@ import (
 )
 
 // Blame searches for ADRs in dir that mention the given file path.
+// It also matches ADRs whose Related Files section contains a directory entry
+// (trailing slash convention, e.g. "internal/") that is a prefix of filePath.
 // Results are deduplicated by ADR file and sorted by decision ID.
 func Blame(dir, filePath string) ([]*decision.Decision, error) {
 	var matchedFiles []string
@@ -26,6 +28,13 @@ func Blame(dir, filePath string) ([]*decision.Decision, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	// Also match ADRs with directory entries in Related Files.
+	dirMatches, err := blameDirEntries(dir, filePath)
+	if err != nil {
+		return nil, err
+	}
+	matchedFiles = append(matchedFiles, dirMatches...)
 
 	seen := make(map[string]struct{})
 	var decisions []*decision.Decision
@@ -47,6 +56,35 @@ func Blame(dir, filePath string) ([]*decision.Decision, error) {
 	})
 
 	return decisions, nil
+}
+
+// blameDirEntries returns ADR files whose Related Files section contains a
+// directory entry (ending with "/") that is a prefix of filePath.
+func blameDirEntries(dir, filePath string) ([]string, error) {
+	var files []string
+	err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		if info.IsDir() || !strings.HasSuffix(path, ".md") {
+			return nil
+		}
+		entries, parseErr := decision.ParseRelatedFiles(path)
+		if parseErr != nil {
+			return nil // non-fatal: skip unreadable files
+		}
+		for _, entry := range entries {
+			if !strings.HasSuffix(entry, "/") {
+				continue // not a directory entry
+			}
+			if strings.HasPrefix(filePath, entry) {
+				files = append(files, path)
+				return nil // one match per file is enough
+			}
+		}
+		return nil
+	})
+	return files, err
 }
 
 func blameRipgrep(dir, filePath string) ([]string, error) {

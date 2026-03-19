@@ -37,7 +37,7 @@ var auditCmd = &cobra.Command{
 			return nil
 		}
 
-		fmt.Fprintf(os.Stdout, "\nStale file references detected:\n\n")
+		fmt.Fprintf(os.Stdout, "\nStale path references detected:\n\n")
 		for _, r := range results {
 			rel, err := filepath.Rel(root, r.File)
 			if err != nil {
@@ -45,13 +45,13 @@ var auditCmd = &cobra.Command{
 			}
 			fmt.Fprintf(os.Stdout, "  [%04d] %s\n", r.ID, rel)
 			fmt.Fprintf(os.Stdout, "  Title: %s\n", r.Title)
-			fmt.Fprintf(os.Stdout, "  Missing files:\n")
+			fmt.Fprintf(os.Stdout, "  Missing paths:\n")
 			for _, f := range r.MissingFiles {
 				fmt.Fprintf(os.Stdout, "    ⚠️  %s\n", f)
 			}
 			fmt.Fprintln(os.Stdout)
 		}
-		fmt.Fprintf(os.Stdout, "%d document(s) have stale file references.\n", len(results))
+		fmt.Fprintf(os.Stdout, "%d document(s) have stale path references.\n", len(results))
 		fmt.Fprintln(os.Stdout, "Consider updating Related Files, marking as Inactive, or superseding them.")
 		return nil
 	},

@@ -124,6 +124,67 @@ func TestBlameRipgrep(t *testing.T) {
 	}
 }
 
+func TestBlameDirEntries_Match(t *testing.T) {
+	// ADR with a directory entry "database/" should match "database/connection.go".
+	dir := t.TempDir()
+	content := "# 0010: DB Layer\n\n- Date: 2025-04-01\n- Status: Active\n- Author: Alice\n\n## Related Files\n\n- database/\n"
+	writeFile(t, dir, "0010-db-layer.md", content)
+
+	files, err := blameDirEntries(dir, "database/connection.go")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if len(files) != 1 {
+		t.Fatalf("len = %d, want 1", len(files))
+	}
+}
+
+func TestBlameDirEntries_NoMatch(t *testing.T) {
+	// Directory entry "internal/" should NOT match "database/connection.go".
+	dir := t.TempDir()
+	content := "# 0010: Internal Pkg\n\n- Date: 2025-04-01\n- Status: Active\n- Author: Alice\n\n## Related Files\n\n- internal/\n"
+	writeFile(t, dir, "0010-internal-pkg.md", content)
+
+	files, err := blameDirEntries(dir, "database/connection.go")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if len(files) != 0 {
+		t.Errorf("expected no results, got %d", len(files))
+	}
+}
+
+func TestBlameDirEntries_FileEntryIgnored(t *testing.T) {
+	// A file entry without trailing slash should NOT use prefix matching.
+	dir := t.TempDir()
+	content := "# 0011: No Dir\n\n- Date: 2025-04-01\n- Status: Active\n- Author: Alice\n\n## Related Files\n\n- database\n"
+	writeFile(t, dir, "0011-no-dir.md", content)
+
+	files, err := blameDirEntries(dir, "database/connection.go")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if len(files) != 0 {
+		t.Errorf("expected no results for file entry without trailing slash, got %d", len(files))
+	}
+}
+
+func TestBlame_DirEntry_DeduplicatedWithTextSearch(t *testing.T) {
+	// An ADR that mentions both the exact file and has a directory entry
+	// should appear only once in results.
+	dir := t.TempDir()
+	content := "# 0012: Both Match\n\n- Date: 2025-04-01\n- Status: Active\n- Author: Alice\n\ndatabase/connection.go is referenced here.\n\n## Related Files\n\n- database/\n"
+	writeFile(t, dir, "0012-both-match.md", content)
+
+	decisions, err := Blame(dir, "database/connection.go")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if len(decisions) != 1 {
+		t.Errorf("expected 1 result (deduplicated), got %d", len(decisions))
+	}
+}
+
 func TestBlame_NonMarkdownSkipped(t *testing.T) {
 	dir := t.TempDir()
 	writeFile(t, dir, "0001-use-go.md", adr0001)

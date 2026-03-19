@@ -491,7 +491,7 @@ Claude:
 - [x] `kizami audit` supports multiple directories (`audit.dirs` in config)
 - [x] Remove ADR-specific language from generic output messages
 - [ ] `kizami design --ai` — AI draft for design documents
-- [ ] golangci-lint in CI
+- [x] golangci-lint in CI
 - [ ] Tests for `cmd/` package
 - [ ] Allow directory path in Related Files (all files under the directory are treated as related)
 - [ ] Run `kizami init` on this repository (dogfooding)

@@ -1,0 +1,27 @@
+run:
+  timeout: 5m
+
+linters:
+  enable:
+    - gofmt
+    - govet
+    - errcheck
+    - staticcheck
+    - unused
+    - gosimple
+    - ineffassign
+
+linters-settings:
+  errcheck:
+    # Don't require error checks on fmt.Fprint* (CLI output)
+    exclude-functions:
+      - fmt.Fprint
+      - fmt.Fprintf
+      - fmt.Fprintln
+
+issues:
+  exclude-rules:
+    # Test files are allowed to use t.Fatal without checking errors
+    - path: _test\.go
+      linters:
+        - errcheck

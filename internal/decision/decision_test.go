@@ -162,9 +162,9 @@ func TestList(t *testing.T) {
 	dir := t.TempDir()
 
 	files := map[string]string{
-		"0001-use-go.md": "# 0001: Use Go\n\n- Date: 2026-01-01\n- Status: Accepted\n- Author: alice\n",
-		"0003-use-madr.md": "# 0003: Use MADR\n\n- Date: 2026-03-01\n- Status: Proposed\n- Author: alice\n",
-		"0002-use-cobra.md": "# 0002: Use Cobra\n\n- Date: 2026-02-01\n- Status: Accepted\n- Author: alice\n",
+		"0001-use-go.md":     "# 0001: Use Go\n\n- Date: 2026-01-01\n- Status: Accepted\n- Author: alice\n",
+		"0003-use-madr.md":   "# 0003: Use MADR\n\n- Date: 2026-03-01\n- Status: Proposed\n- Author: alice\n",
+		"0002-use-cobra.md":  "# 0002: Use Cobra\n\n- Date: 2026-02-01\n- Status: Accepted\n- Author: alice\n",
 		"not-a-decision.txt": "ignored",
 	}
 	for name, body := range files {

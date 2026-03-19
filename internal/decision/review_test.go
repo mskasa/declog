@@ -9,8 +9,8 @@ import (
 
 var (
 	testNow    = time.Date(2026, 3, 16, 0, 0, 0, 0, time.UTC)
-	staleTime  = time.Date(2025, 7, 1, 0, 0, 0, 0, time.UTC)  // ~8 months before testNow
-	recentTime = time.Date(2026, 2, 1, 0, 0, 0, 0, time.UTC)  // ~1 month before testNow
+	staleTime  = time.Date(2025, 7, 1, 0, 0, 0, 0, time.UTC) // ~8 months before testNow
+	recentTime = time.Date(2026, 2, 1, 0, 0, 0, 0, time.UTC) // ~1 month before testNow
 )
 
 func makeDecisions(dir string, t *testing.T, specs []struct {

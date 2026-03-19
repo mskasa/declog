@@ -27,7 +27,7 @@ var adrCmd = &cobra.Command{
 	Short: "Create a new ADR and open it in your editor",
 	Args:  cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
-		root, err := gitRepoRoot()
+		root, err := gitRepoRootFn()
 		if err != nil {
 			return err
 		}
@@ -75,7 +75,7 @@ var designCmd = &cobra.Command{
 	Short: "Create a new design document and open it in your editor",
 	Args:  cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
-		root, err := gitRepoRoot()
+		root, err := gitRepoRootFn()
 		if err != nil {
 			return err
 		}
@@ -201,6 +201,10 @@ func gitRepoRoot() (string, error) {
 	}
 	return strings.TrimSpace(string(out)), nil
 }
+
+// gitRepoRootFn is the function used to locate the git repository root.
+// It can be overridden in tests.
+var gitRepoRootFn = gitRepoRoot
 
 func openEditor(path string) error {
 	// Priority: EDITOR env > VISUAL env > config editor.command > platform default

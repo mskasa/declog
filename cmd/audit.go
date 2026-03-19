@@ -14,7 +14,7 @@ var auditCmd = &cobra.Command{
 	Short: "Check that Related Files in documents still exist in the repository",
 	Args:  cobra.NoArgs,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		root, err := gitRepoRoot()
+		root, err := gitRepoRootFn()
 		if err != nil {
 			return err
 		}

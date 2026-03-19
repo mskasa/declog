@@ -17,7 +17,7 @@ var reviewCmd = &cobra.Command{
 	Short: "List Active documents that have not been updated recently",
 	Args:  cobra.NoArgs,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		root, err := gitRepoRoot()
+		root, err := gitRepoRootFn()
 		if err != nil {
 			return fmt.Errorf("not a git repository")
 		}

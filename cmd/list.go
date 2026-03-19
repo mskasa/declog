@@ -17,7 +17,7 @@ var listCmd = &cobra.Command{
 	Short: "List all decision records in reverse chronological order",
 	Args:  cobra.NoArgs,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		root, err := gitRepoRoot()
+		root, err := gitRepoRootFn()
 		if err != nil {
 			return err
 		}

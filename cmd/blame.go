@@ -14,7 +14,7 @@ var blameCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		filePath := args[0]
 
-		root, err := gitRepoRoot()
+		root, err := gitRepoRootFn()
 		if err != nil {
 			return err
 		}

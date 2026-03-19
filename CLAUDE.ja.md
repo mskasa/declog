@@ -458,20 +458,23 @@ Claude:
 - [x] `kizami audit` で複数ディレクトリをスキャン可能に（config の `audit.dirs`）
 - [x] 汎用メッセージから ADR 固有の表現を除去
 
-### v0.5.0（監査強化）
+### v0.5.0
 
-- [ ] ファイル存在確認を超えた乖離検出（関数名・シンボルレベルの参照チェック）
 - [ ] `kizami design --ai` — 設計書向け AI ドラフト生成
-- [ ] 逆引きインデックスの生成（`.kizami/index.json`：ファイルパス → ADR ID のマッピング）による `kizami blame` の高速化と外部ツール連携
-- [ ] `kizami sync` — 既存ドキュメントの Related Files を対話的に更新
+- [ ] golangci-lint を CI に追加
+- [ ] cmd/ パッケージのテスト追加
 
 ### v1.0.0（パブリックリリース）
 
 - [ ] ドキュメントサイト（GitHub Pages）
 - [ ] Homebrew formula
-- [ ] golangci-lint を CI に追加
-- [ ] cmd/ パッケージのテスト追加
 - [ ] カラー出力（kizami list / kizami search）
+
+### バックログ
+
+- [ ] ファイル存在確認を超えた乖離検出（関数名・シンボルレベルの参照チェック）
+- [ ] 逆引きインデックスの生成（`.kizami/index.json`：ファイルパス → ADR ID のマッピング）による `kizami blame` の高速化と外部ツール連携
+- [ ] `kizami sync` — 既存ドキュメントの Related Files を対話的に更新
 - [ ] kizami stats
 - [ ] GitHub Actions Marketplace 公開
 

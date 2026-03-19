@@ -491,20 +491,23 @@ Claude:
 - [x] `kizami audit` supports multiple directories (`audit.dirs` in config)
 - [x] Remove ADR-specific language from generic output messages
 
-### v0.5.0 (audit enhancement)
+### v0.5.0
 
-- [ ] Drift detection beyond file existence (function/symbol level references)
-- [ ] Generate reverse index (`.kizami/index.json`: file path → ADR IDs mapping) for faster `kizami blame` and external tool integration
 - [ ] `kizami design --ai` — AI draft for design documents
-- [ ] `kizami sync` — interactively update Related Files in existing documents
+- [ ] golangci-lint in CI
+- [ ] Tests for `cmd/` package
 
 ### v1.0.0 (public release)
 
 - [ ] Documentation site (GitHub Pages)
 - [ ] Homebrew formula
-- [ ] golangci-lint in CI
-- [ ] Tests for `cmd/` package
 - [ ] Color output for `kizami list` and `kizami search`
+
+### Backlog
+
+- [ ] Drift detection beyond file existence (function/symbol level references)
+- [ ] Generate reverse index (`.kizami/index.json`: file path → ADR IDs mapping) for faster `kizami blame` and external tool integration
+- [ ] `kizami sync` — interactively update Related Files in existing documents
 - [ ] `kizami stats`
 - [ ] GitHub Actions Marketplace release
 

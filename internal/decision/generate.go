@@ -134,6 +134,32 @@ func CreateFromDraft(dir, title, draft string, supersededBy int) (string, error)
 	return path, nil
 }
 
+// CreateDesignFromDraft creates a design document file using AI-generated draft sections.
+// The standard header (ID, Date, Type, Status, Author, Supersedes) is prepended to the draft.
+func CreateDesignFromDraft(dir, title, draft string, supersededBy int) (string, error) {
+	if err := os.MkdirAll(dir, 0o755); err != nil {
+		return "", fmt.Errorf("creating design dir: %w", err)
+	}
+
+	id, err := NextID(dir)
+	if err != nil {
+		return "", err
+	}
+
+	slug := Slugify(title)
+	filename := fmt.Sprintf("%04d-%s.md", id, slug)
+	path := filepath.Join(dir, filename)
+
+	author := AuthorFromGit()
+	header := tmpl.RenderDesignHeader(id, title, author, supersededBy)
+	content := header + "\n" + draft
+
+	if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
+		return "", fmt.Errorf("writing file: %w", err)
+	}
+	return path, nil
+}
+
 // Create generates a new ADR file and returns its path.
 // supersededBy, if > 0, adds a "- Supersedes: NNNN" line to the template.
 func Create(dir, title string, supersededBy int) (string, error) {

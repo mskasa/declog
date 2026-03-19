@@ -38,7 +38,7 @@ Examples:
 			return fmt.Errorf("--by flag is only valid with status 'superseded'")
 		}
 
-		root, err := gitRepoRoot()
+		root, err := gitRepoRootFn()
 		if err != nil {
 			return err
 		}

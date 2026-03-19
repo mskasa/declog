@@ -22,7 +22,7 @@ var supersedeCmd = &cobra.Command{
 		}
 		newTitle := args[1]
 
-		root, err := gitRepoRoot()
+		root, err := gitRepoRootFn()
 		if err != nil {
 			return err
 		}

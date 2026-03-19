@@ -10,7 +10,7 @@ var initCmd = &cobra.Command{
 	Use:   "init",
 	Short: "Initialize kizami in the current repository",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		root, err := gitRepoRoot()
+		root, err := gitRepoRootFn()
 		if err != nil {
 			return err
 		}

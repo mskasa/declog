@@ -19,7 +19,7 @@ var showCmd = &cobra.Command{
 			return fmt.Errorf("id must be a positive integer")
 		}
 
-		root, err := gitRepoRoot()
+		root, err := gitRepoRootFn()
 		if err != nil {
 			return err
 		}

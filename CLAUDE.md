@@ -493,7 +493,7 @@ Claude:
 - [ ] `kizami design --ai` — AI draft for design documents
 - [x] golangci-lint in CI
 - [x] mise toolchain configuration (pin Go and golangci-lint versions for local development)
-- [ ] Tests for `cmd/` package
+- [x] Tests for `cmd/` package
 - [ ] Allow directory path in Related Files (all files under the directory are treated as related)
 - [ ] Run `kizami init` on this repository (dogfooding)
 - [ ] Create design documents for this repository (dogfooding)

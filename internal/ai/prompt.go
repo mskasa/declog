@@ -53,6 +53,36 @@ func BuildPrompt(input PromptInput) string {
 	return sb.String()
 }
 
+// BuildDesignPrompt constructs the prompt string for generating a design document draft.
+func BuildDesignPrompt(input PromptInput) string {
+	var sb strings.Builder
+	sb.WriteString("You are helping a developer write a software design document.\n\n")
+	sb.WriteString("Title: " + input.Title + "\n\n")
+	sb.WriteString("Changed files:\n")
+	for _, f := range input.ChangedFiles {
+		sb.WriteString("  " + f + "\n")
+	}
+	sb.WriteString("\nCode diff (truncated):\n")
+	sb.WriteString(input.Diff)
+	sb.WriteString("\n\nGenerate a draft design document in the following Markdown format.\n")
+	sb.WriteString("Output the Markdown only. No explanation or preamble.\n\n")
+	sb.WriteString("## Overview\n")
+	sb.WriteString("(1-3 sentences summarizing what this design does and why.)\n\n")
+	sb.WriteString("## Background\n")
+	sb.WriteString("(Why this design was needed. Context, problem, and constraints.)\n\n")
+	sb.WriteString("## Goals / Non-Goals\n")
+	sb.WriteString("(Goals: what this design achieves. Non-Goals: what it explicitly does not cover.)\n\n")
+	sb.WriteString("## Design\n")
+	sb.WriteString("(The actual design: structure, flow, interfaces, data models, etc.)\n\n")
+	sb.WriteString("## Implementation Plan\n")
+	sb.WriteString("(Steps to implement this design. Omit if the scope is small.)\n\n")
+	sb.WriteString("## Open Questions\n")
+	sb.WriteString("(Unresolved questions at design time.)\n\n")
+	sb.WriteString("## Related Files\n")
+	sb.WriteString("(List the related files from the changed files above.)\n")
+	return sb.String()
+}
+
 func changedFiles(dir string) []string {
 	staged := gitDiffFiles(dir, "--staged")
 	unstaged := gitDiffFiles(dir, "")

@@ -457,7 +457,7 @@ Claude:
 - [x] `kizami init` にオプションで auto-promote ワークフロー（`kizami-promote.yml`）を生成する機能を追加：main へのプッシュ時に `Draft` → `Active` へ自動昇格、カスタマイズ用コメント付き
 - [x] `kizami audit` で複数ディレクトリをスキャン可能に（config の `audit.dirs`）
 - [x] 汎用メッセージから ADR 固有の表現を除去
-- [ ] `kizami design --ai` — 設計書向け AI ドラフト生成
+- [x] `kizami design --ai` — 設計書向け AI ドラフト生成
 - [x] golangci-lint を CI に追加
 - [x] mise ツールチェーン設定（Go と golangci-lint のバージョンをローカル環境でも固定）
 - [x] cmd/ パッケージのテスト追加

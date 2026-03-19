@@ -490,7 +490,7 @@ Claude:
 - [x] `kizami init` generates optional auto-promote workflow (`kizami-promote.yml`): auto-promotes `Draft` → `Active` on push to main, with inline comments for customization
 - [x] `kizami audit` supports multiple directories (`audit.dirs` in config)
 - [x] Remove ADR-specific language from generic output messages
-- [ ] `kizami design --ai` — AI draft for design documents
+- [x] `kizami design --ai` — AI draft for design documents
 - [x] golangci-lint in CI
 - [x] mise toolchain configuration (pin Go and golangci-lint versions for local development)
 - [x] Tests for `cmd/` package

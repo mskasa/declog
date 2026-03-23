@@ -510,6 +510,7 @@ Claude:
 
 ### Backlog
 
+- [ ] `kizami list --type <type>` — filter list by document Type field (e.g. `--type adr`, `--type design`)
 - [ ] Drift detection beyond file existence (function/symbol level references)
 - [ ] Generate reverse index (`.kizami/index.json`: file path → ADR IDs mapping) for faster `kizami blame` and external tool integration
 - [ ] `kizami sync` — interactively update Related Files in existing documents

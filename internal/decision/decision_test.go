@@ -250,6 +250,54 @@ func TestFindBySlug_NotFound(t *testing.T) {
 	}
 }
 
+func TestList_Recursive(t *testing.T) {
+	dir := t.TempDir()
+	subdir := filepath.Join(dir, "ja")
+	if err := os.MkdirAll(subdir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+
+	files := map[string]string{
+		filepath.Join(dir, "2026-01-01-use-go.md"):      "# Use Go\n\n- Date: 2026-01-01\n- Status: Active\n- Author: alice\n",
+		filepath.Join(subdir, "2026-01-01-use-go.md"):   "# Use Go (ja)\n\n- Date: 2026-01-01\n- Status: Active\n- Author: alice\n",
+		filepath.Join(subdir, "2026-03-01-use-madr.md"): "# Use MADR (ja)\n\n- Date: 2026-03-01\n- Status: Active\n- Author: alice\n",
+	}
+	for path, body := range files {
+		if err := os.WriteFile(path, []byte(body), 0o644); err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	decisions, err := List(dir)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if len(decisions) != 3 {
+		t.Fatalf("len = %d, want 3 (including subdirectory files)", len(decisions))
+	}
+}
+
+func TestFindBySlug_Recursive(t *testing.T) {
+	dir := t.TempDir()
+	subdir := filepath.Join(dir, "ja")
+	if err := os.MkdirAll(subdir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+
+	content := "# Use Cobra (ja)\n\n- Date: 2026-03-12\n- Status: Active\n- Author: alice\n"
+	if err := os.WriteFile(filepath.Join(subdir, "2026-03-12-use-cobra.md"), []byte(content), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	d, err := FindBySlug(dir, "use-cobra")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if d.Slug != "use-cobra" {
+		t.Errorf("Slug = %q, want %q", d.Slug, "use-cobra")
+	}
+}
+
 func contains(s, substr string) bool {
 	return len(s) >= len(substr) && (s == substr || len(s) > 0 && containsStr(s, substr))
 }

@@ -55,26 +55,32 @@ func AuthorFromGit() string {
 	return strings.TrimSpace(string(out))
 }
 
-// List returns all decisions in dir sorted by date descending (newest first).
+// List returns all decisions in dir (recursively) sorted by date descending (newest first).
 func List(dir string) ([]*Decision, error) {
-	entries, err := os.ReadDir(dir)
-	if err != nil {
-		if os.IsNotExist(err) {
-			return nil, nil
-		}
-		return nil, fmt.Errorf("reading decisions dir: %w", err)
+	if _, err := os.Stat(dir); os.IsNotExist(err) {
+		return nil, nil
 	}
 
 	var decisions []*Decision
-	for _, e := range entries {
-		if !isDocumentFile(e.Name()) {
-			continue
-		}
-		d, err := Parse(filepath.Join(dir, e.Name()))
+	err := filepath.WalkDir(dir, func(path string, d os.DirEntry, err error) error {
 		if err != nil {
-			return nil, err
+			return err
 		}
-		decisions = append(decisions, d)
+		if d.IsDir() {
+			return nil
+		}
+		if !isDocumentFile(d.Name()) {
+			return nil
+		}
+		doc, parseErr := Parse(path)
+		if parseErr != nil {
+			return parseErr
+		}
+		decisions = append(decisions, doc)
+		return nil
+	})
+	if err != nil {
+		return nil, fmt.Errorf("reading decisions dir: %w", err)
 	}
 
 	// Sort by date descending, then by filename descending as tiebreaker.
@@ -91,22 +97,36 @@ func List(dir string) ([]*Decision, error) {
 }
 
 // FindBySlug returns the decision whose filename slug matches the given slug, or an error if not found.
-// Both legacy (NNNN-slug.md) and new (YYYY-MM-DD-slug.md) formats are searched.
+// Both legacy (NNNN-slug.md) and new (YYYY-MM-DD-slug.md) formats are searched recursively.
 func FindBySlug(dir, slug string) (*Decision, error) {
-	entries, err := os.ReadDir(dir)
+	var found *Decision
+	err := filepath.WalkDir(dir, func(path string, d os.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+		if d.IsDir() {
+			return nil
+		}
+		if !isDocumentFile(d.Name()) {
+			return nil
+		}
+		if slugFromFilename(d.Name()) == slug {
+			doc, parseErr := Parse(path)
+			if parseErr != nil {
+				return parseErr
+			}
+			found = doc
+			return filepath.SkipAll
+		}
+		return nil
+	})
 	if err != nil {
 		return nil, fmt.Errorf("reading decisions dir: %w", err)
 	}
-
-	for _, e := range entries {
-		if !isDocumentFile(e.Name()) {
-			continue
-		}
-		if slugFromFilename(e.Name()) == slug {
-			return Parse(filepath.Join(dir, e.Name()))
-		}
+	if found == nil {
+		return nil, fmt.Errorf("document %q not found", slug)
 	}
-	return nil, fmt.Errorf("document %q not found", slug)
+	return found, nil
 }
 
 // CreateFromDraft creates an ADR file using AI-generated draft sections.

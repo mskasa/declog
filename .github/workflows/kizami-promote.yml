@@ -28,14 +28,13 @@ jobs:
           changed=0
           for dir in $dirs; do
             [ -d "$dir" ] || continue
-            for file in "$dir"/*.md; do
-              [ -f "$file" ] || continue
+            while IFS= read -r -d '' file; do
               if grep -q "^- Status: Draft$" "$file"; then
                 sed -i 's/^- Status: Draft$/- Status: Active/' "$file"
                 echo "Promoted: $file"
                 changed=1
               fi
-            done
+            done < <(find "$dir" -name "*.md" -print0)
           done
           echo "changed=$changed" >> "$GITHUB_OUTPUT"
 

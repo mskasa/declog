@@ -497,7 +497,7 @@ Claude:
 - [x] Allow directory path in Related Files (all files under the directory are treated as related)
 - [x] Add `documents.dirs` config — all read/write commands now support design docs
 - [x] Make `kizami design` creation directory configurable (`[design] dir` in config)
-- [ ] Run `kizami init` on this repository (dogfooding)
+- [x] Run `kizami init` on this repository (dogfooding)
 - [ ] Create design documents for this repository (dogfooding)
 
 ### v1.0.0 (public release)

@@ -2,7 +2,7 @@
 
 - Date: 2026-03-23
 - Type: Design
-- Status: Active
+- Status: Draft
 - Author: masahiro.kasatani
 
 ## Overview

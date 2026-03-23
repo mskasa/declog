@@ -258,8 +258,8 @@ func TestList_Recursive(t *testing.T) {
 	}
 
 	files := map[string]string{
-		filepath.Join(dir, "2026-01-01-use-go.md"):     "# Use Go\n\n- Date: 2026-01-01\n- Status: Active\n- Author: alice\n",
-		filepath.Join(subdir, "2026-01-01-use-go.md"):  "# Use Go (ja)\n\n- Date: 2026-01-01\n- Status: Active\n- Author: alice\n",
+		filepath.Join(dir, "2026-01-01-use-go.md"):      "# Use Go\n\n- Date: 2026-01-01\n- Status: Active\n- Author: alice\n",
+		filepath.Join(subdir, "2026-01-01-use-go.md"):   "# Use Go (ja)\n\n- Date: 2026-01-01\n- Status: Active\n- Author: alice\n",
 		filepath.Join(subdir, "2026-03-01-use-madr.md"): "# Use MADR (ja)\n\n- Date: 2026-03-01\n- Status: Active\n- Author: alice\n",
 	}
 	for path, body := range files {

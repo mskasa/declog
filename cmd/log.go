@@ -131,7 +131,7 @@ func runWithAIDesign(dir, root, title string, supersededID int) (string, error) 
 		return "", fmt.Errorf("ANTHROPIC_API_KEY is not set.\nPlease set the environment variable and try again.\n\n  export ANTHROPIC_API_KEY=your-api-key")
 	}
 
-	cfg, err := config.Load()
+	cfg, err := config.Load(root)
 	if err != nil {
 		return "", fmt.Errorf("loading config: %w", err)
 	}
@@ -162,7 +162,7 @@ func runWithAI(dir, root, title string, supersededID int) (string, error) {
 		return "", fmt.Errorf("ANTHROPIC_API_KEY is not set.\nPlease set the environment variable and try again.\n\n  export ANTHROPIC_API_KEY=your-api-key")
 	}
 
-	cfg, err := config.Load()
+	cfg, err := config.Load(root)
 	if err != nil {
 		return "", fmt.Errorf("loading config: %w", err)
 	}

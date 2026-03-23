@@ -43,10 +43,9 @@ command = "code --wait"
 
 // Initializer handles the kizami initialization process.
 type Initializer struct {
-	Root      string
-	Input     io.Reader
-	Output    io.Writer
-	ConfigDir string // overrides ~/.config/kizami for testing
+	Root   string
+	Input  io.Reader
+	Output io.Writer
 }
 
 // Run performs the initialization steps sequentially.
@@ -133,37 +132,17 @@ func (i *Initializer) setupHook(scanner *bufio.Scanner) error {
 	return InstallHook(i.Root, i.Output)
 }
 
-func (i *Initializer) configDir() (string, error) {
-	if i.ConfigDir != "" {
-		return i.ConfigDir, nil
-	}
-	home, err := os.UserHomeDir()
-	if err != nil {
-		return "", fmt.Errorf("finding home directory: %w", err)
-	}
-	return filepath.Join(home, ".config", "kizami"), nil
-}
-
 func (i *Initializer) setupConfig() error {
-	dir, err := i.configDir()
-	if err != nil {
-		return err
-	}
-
-	configPath := filepath.Join(dir, "config.toml")
+	configPath := filepath.Join(i.Root, "kizami.toml")
 	if _, err := os.Stat(configPath); err == nil {
-		fmt.Fprintf(i.Output, "  ⚠️  ~/.config/kizami/config.toml already exists. Skipping.\n")
+		fmt.Fprintf(i.Output, "  ⚠️  kizami.toml already exists. Skipping.\n")
 		return nil
 	}
 
-	if err := os.MkdirAll(dir, 0o755); err != nil {
-		return fmt.Errorf("creating ~/.config/kizami/: %w", err)
-	}
-
 	if err := os.WriteFile(configPath, []byte(defaultConfigContent), 0o644); err != nil {
-		return fmt.Errorf("writing config.toml: %w", err)
+		return fmt.Errorf("writing kizami.toml: %w", err)
 	}
-	fmt.Fprintf(i.Output, "  ✅ Created ~/.config/kizami/config.toml\n")
+	fmt.Fprintf(i.Output, "  ✅ Created kizami.toml\n")
 	return nil
 }
 

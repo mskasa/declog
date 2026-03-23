@@ -17,6 +17,10 @@ import (
 // (trailing slash convention, e.g. "internal/") that is a prefix of filePath.
 // Results are deduplicated by ADR file and sorted by decision ID.
 func Blame(dir, filePath string) ([]*decision.Decision, error) {
+	if _, err := os.Stat(dir); os.IsNotExist(err) {
+		return nil, nil
+	}
+
 	var matchedFiles []string
 	var err error
 

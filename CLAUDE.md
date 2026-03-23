@@ -500,6 +500,7 @@ Claude:
 - [x] Run `kizami init` on this repository (dogfooding)
 - [x] Create design documents for this repository (dogfooding) — docs/design/0001-audit-and-drift-detection.md
 - [x] Remove numeric IDs from document filenames (`NNNN-slug.md` → `YYYY-MM-DD-slug.md`)
+- [x] Recursive directory scanning in `List` and `FindBySlug` (subdirectories like `docs/decisions/ja/` are included)
 
 ### v1.0.0 (public release)
 

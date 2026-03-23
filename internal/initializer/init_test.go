@@ -112,7 +112,7 @@ func TestRun_WorkflowContent(t *testing.T) {
 		t.Fatalf("reading adr-check.yml: %v", err)
 	}
 
-	for _, want := range []string{"ADR Check", "pull_request", "[skip-adr]", "docs/decisions/"} {
+	for _, want := range []string{"Document Check", "pull_request", "[skip-doc]", "docs/decisions/", "docs/design/"} {
 		if !strings.Contains(string(content), want) {
 			t.Errorf("adr-check.yml missing %q", want)
 		}
@@ -197,7 +197,7 @@ func TestRun_AuditWorkflowContent(t *testing.T) {
 		t.Fatalf("reading adr-audit.yml: %v", err)
 	}
 
-	for _, want := range []string{"ADR Audit", "schedule", "cron", "kizami audit", "[ADR Audit]"} {
+	for _, want := range []string{"kizami Audit", "schedule", "cron", "kizami audit", "[kizami audit]"} {
 		if !strings.Contains(string(content), want) {
 			t.Errorf("adr-audit.yml missing %q", want)
 		}
@@ -235,57 +235,53 @@ func TestRun_WithHook(t *testing.T) {
 
 func TestRun_CreatesConfig(t *testing.T) {
 	root := t.TempDir()
-	configDir := t.TempDir()
 	var out bytes.Buffer
 
 	init_ := &Initializer{
-		Root:      root,
-		Input:     strings.NewReader("n\nn\nn\nn\n"), // workflow=n, hook=n, audit=n, promote=n
-		Output:    &out,
-		ConfigDir: configDir,
+		Root:   root,
+		Input:  strings.NewReader("n\nn\nn\nn\n"), // workflow=n, hook=n, audit=n, promote=n
+		Output: &out,
 	}
 
 	if err := init_.Run(); err != nil {
 		t.Fatalf("Run() error: %v", err)
 	}
 
-	configPath := filepath.Join(configDir, "config.toml")
+	configPath := filepath.Join(root, "kizami.toml")
 	if _, err := os.Stat(configPath); err != nil {
-		t.Errorf("config.toml not created: %v", err)
+		t.Errorf("kizami.toml not created: %v", err)
 	}
 
 	content, err := os.ReadFile(configPath)
 	if err != nil {
-		t.Fatalf("reading config.toml: %v", err)
+		t.Fatalf("reading kizami.toml: %v", err)
 	}
 	for _, want := range []string{"[ai]", "claude-sonnet-4-20250514", "[decisions]", "[audit]", "[review]", "[editor]"} {
 		if !strings.Contains(string(content), want) {
-			t.Errorf("config.toml missing %q", want)
+			t.Errorf("kizami.toml missing %q", want)
 		}
 	}
 
 	output := out.String()
-	if !strings.Contains(output, "✅ Created ~/.config/kizami/config.toml") {
+	if !strings.Contains(output, "✅ Created kizami.toml") {
 		t.Errorf("expected creation message, got: %s", output)
 	}
 }
 
 func TestRun_ConfigAlreadyExists(t *testing.T) {
 	root := t.TempDir()
-	configDir := t.TempDir()
 
 	// Pre-create the config file.
-	configPath := filepath.Join(configDir, "config.toml")
+	configPath := filepath.Join(root, "kizami.toml")
 	if err := os.WriteFile(configPath, []byte("existing"), 0o644); err != nil {
 		t.Fatal(err)
 	}
 
 	var out bytes.Buffer
 	init_ := &Initializer{
-		Root:      root,
-		Input:     strings.NewReader("n\nn\nn\nn\n"),
-		Output:    &out,
-		ConfigDir: configDir,
+		Root:   root,
+		Input:  strings.NewReader("n\nn\nn\nn\n"),
+		Output: &out,
 	}
 
 	if err := init_.Run(); err != nil {
@@ -293,37 +289,14 @@ func TestRun_ConfigAlreadyExists(t *testing.T) {
 	}
 
 	output := out.String()
-	if !strings.Contains(output, "~/.config/kizami/config.toml already exists. Skipping.") {
+	if !strings.Contains(output, "kizami.toml already exists. Skipping.") {
 		t.Errorf("expected skip message, got: %s", output)
 	}
 
 	// Existing file must not be overwritten.
 	content, _ := os.ReadFile(configPath)
 	if string(content) != "existing" {
-		t.Errorf("existing config.toml was overwritten")
-	}
-}
-
-func TestRun_CreatesConfigDir(t *testing.T) {
-	root := t.TempDir()
-	// Use a subdirectory that does not yet exist.
-	configDir := filepath.Join(t.TempDir(), "kizami")
-	var out bytes.Buffer
-
-	init_ := &Initializer{
-		Root:      root,
-		Input:     strings.NewReader("n\nn\nn\nn\n"),
-		Output:    &out,
-		ConfigDir: configDir,
-	}
-
-	if err := init_.Run(); err != nil {
-		t.Fatalf("Run() error: %v", err)
-	}
-
-	configPath := filepath.Join(configDir, "config.toml")
-	if _, err := os.Stat(configPath); err != nil {
-		t.Errorf("config.toml not created when dir was missing: %v", err)
+		t.Errorf("existing kizami.toml was overwritten")
 	}
 }
 

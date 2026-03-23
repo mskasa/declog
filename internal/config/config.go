@@ -59,10 +59,23 @@ type EditorConfig struct {
 	Command string
 }
 
-// Load reads the config from ~/.config/kizami/config.toml.
-// Returns a default Config if the file does not exist.
-func Load() (*Config, error) {
-	path := configPath()
+// Load reads the config for the given project root.
+// It first looks for kizami.toml in root, then falls back to ~/.config/kizami/config.toml.
+// Returns a default Config if neither file exists.
+func Load(root string) (*Config, error) {
+	if root != "" {
+		projectPath := filepath.Join(root, "kizami.toml")
+		f, err := os.Open(projectPath)
+		if err == nil {
+			defer f.Close()
+			return parse(f)
+		}
+		if !os.IsNotExist(err) {
+			return nil, fmt.Errorf("opening config: %w", err)
+		}
+	}
+
+	path := globalConfigPath()
 	f, err := os.Open(path)
 	if os.IsNotExist(err) {
 		return &Config{}, nil
@@ -86,7 +99,7 @@ func ResolveModel(flagModel string, cfg *Config) string {
 	return DefaultModel
 }
 
-func configPath() string {
+func globalConfigPath() string {
 	home, _ := os.UserHomeDir()
 	return filepath.Join(home, ".config", "kizami", "config.toml")
 }

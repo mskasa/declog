@@ -1,37 +1,37 @@
-name: ADR Check
+name: Document Check
 
 on:
   pull_request:
     types: [opened, edited, synchronize]
 
 jobs:
-  adr-check:
+  doc-check:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
           fetch-depth: 0
 
-      - name: Check for ADR
+      - name: Check for document
         env:
           PR_TITLE: ${{ github.event.pull_request.title }}
           PR_BODY: ${{ github.event.pull_request.body }}
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
-          if echo "$PR_TITLE" | grep -qF '[skip-adr]'; then
-            echo "✅ [skip-adr] found in PR title. Skipping ADR check."
+          if echo "$PR_TITLE" | grep -qF '[skip-doc]'; then
+            echo "✅ [skip-doc] found in PR title. Skipping document check."
             exit 0
           fi
 
-          if echo "$PR_BODY" | grep -qF 'docs/decisions/'; then
-            echo "✅ docs/decisions/ referenced in PR body."
+          if echo "$PR_BODY" | grep -qF 'docs/decisions/' || echo "$PR_BODY" | grep -qF 'docs/design/'; then
+            echo "✅ Document directory referenced in PR body."
             exit 0
           fi
 
-          if git diff --name-only "$BASE_SHA" "$HEAD_SHA" | grep -q '^docs/decisions/.*\.md$'; then
-            echo "✅ ADR file found in changed files."
+          if git diff --name-only "$BASE_SHA" "$HEAD_SHA" | grep -qE '^docs/(decisions|design)/.*\.md$'; then
+            echo "✅ Document file found in changed files."
             exit 0
           fi
 
-          echo "::warning::No ADR found. Consider adding a decision record to docs/decisions/ or include [skip-adr] in the PR title."
+          echo "::warning::No document found. Consider adding a decision record to docs/decisions/ or a design doc to docs/design/, or include [skip-doc] in the PR title."

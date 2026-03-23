@@ -25,7 +25,8 @@ Documents are saved as Markdown files and managed with Git.`,
 
 // loadCfg loads the user config, returning an empty Config on error.
 func loadCfg() *config.Config {
-	cfg, _ := config.Load()
+	root, _ := gitRepoRootFn()
+	cfg, _ := config.Load(root)
 	if cfg == nil {
 		return &config.Config{}
 	}

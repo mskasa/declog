@@ -155,6 +155,33 @@ func TestLoad_DefaultsWhenEmpty(t *testing.T) {
 	}
 }
 
+func TestLoad_ProjectConfigTakesPriority(t *testing.T) {
+	root := t.TempDir()
+	// Write project-level kizami.toml
+	if err := os.WriteFile(filepath.Join(root, "kizami.toml"), []byte("[ai]\nmodel = \"project-model\"\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	cfg, err := Load(root)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if cfg.AI.Model != "project-model" {
+		t.Errorf("expected project-model, got %q", cfg.AI.Model)
+	}
+}
+
+func TestLoad_FallbackWhenNoProjectConfig(t *testing.T) {
+	root := t.TempDir() // no kizami.toml here
+	cfg, err := Load(root)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	// Falls back to global config (which may not exist in test env), returns empty config.
+	if cfg == nil {
+		t.Error("expected non-nil config")
+	}
+}
+
 func TestResolveModel_Priority(t *testing.T) {
 	tests := []struct {
 		name      string

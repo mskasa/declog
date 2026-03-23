@@ -467,7 +467,6 @@ Claude:
 - [x] このリポジトリ自体に `kizami init` を実行する（ドッグフーディング）
 - [x] このリポジトリ自体に設計書を作成する（ドッグフーディング） — docs/design/0001-audit-and-drift-detection.md
 - [x] ドキュメントのファイル名から数値IDを廃止（`NNNN-slug.md` → `YYYY-MM-DD-slug.md`）
-- [x] `kizami migrate` — レガシー形式（NNNN-slug.md）を新形式（YYYY-MM-DD-slug.md）へ一括変換
 
 ### v1.0.0（パブリックリリース）
 

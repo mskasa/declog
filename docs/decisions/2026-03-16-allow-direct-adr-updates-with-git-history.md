@@ -1,4 +1,4 @@
-# 0009: Allow Direct Updates to ADRs Leveraging Git History
+# Allow Direct Updates to ADRs Leveraging Git History
 
 - Date: 2026-03-16
 - Status: Active

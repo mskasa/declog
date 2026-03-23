@@ -1,4 +1,4 @@
-# 0007: Add Related Files Section to ADR Template
+# Add Related Files Section to ADR Template
 
 - Date: 2026-03-12
 - Status: Accepted

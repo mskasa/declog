@@ -1,4 +1,4 @@
-# 0002: CLIフレームワークにCobraを使用する
+# CLIフレームワークにCobraを使用する
 
 - Date: 2026-03-12
 - Status: Accepted

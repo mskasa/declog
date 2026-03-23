@@ -1,4 +1,4 @@
-# 0009: GitHistoryを活用したADRの直接更新を許容する
+# GitHistoryを活用したADRの直接更新を許容する
 
 - Date: 2026-03-16
 - Status: Active

@@ -3,38 +3,32 @@ package cmd
 import (
 	"fmt"
 	"os"
-	"strconv"
 	"strings"
 
 	"github.com/mskasa/kizami/internal/decision"
 	"github.com/spf13/cobra"
 )
 
-var supersededBy int
+var supersededBySlug string
 
 var statusCmd = &cobra.Command{
-	Use:   "status <id> <status>",
+	Use:   "status <slug> <status>",
 	Short: "Update the status of a decision record",
 	Long: `Update the status of a decision record.
 
 Valid statuses: Proposed, Accepted, Superseded, Deprecated
 
 Examples:
-  kizami status 3 accepted
-  kizami status 3 superseded --by 5`,
+  kizami status use-postgresql accepted
+  kizami status use-postgresql superseded --by use-cockroachdb`,
 	Args: cobra.ExactArgs(2),
 	RunE: func(cmd *cobra.Command, args []string) error {
-		id, err := strconv.Atoi(args[0])
-		if err != nil || id < 1 {
-			return fmt.Errorf("id must be a positive integer")
-		}
-
 		status, err := decision.NormalizeStatus(args[1])
 		if err != nil {
 			return err
 		}
 
-		if supersededBy > 0 && !strings.EqualFold(status, "Superseded") {
+		if supersededBySlug != "" && !strings.EqualFold(status, "Superseded") {
 			return fmt.Errorf("--by flag is only valid with status 'superseded'")
 		}
 
@@ -43,18 +37,18 @@ Examples:
 			return err
 		}
 
-		d, err := findByID(root, loadCfg(), id)
+		d, err := findBySlug(root, loadCfg(), args[0])
 		if err != nil {
 			return err
 		}
 
-		if err := decision.UpdateStatus(d.File, status, supersededBy); err != nil {
+		if err := decision.UpdateStatus(d.File, status, supersededBySlug); err != nil {
 			return err
 		}
 
-		msg := fmt.Sprintf("Updated %04d: Status → %s", id, status)
-		if supersededBy > 0 {
-			msg += fmt.Sprintf(" (superseded by %04d)", supersededBy)
+		msg := fmt.Sprintf("Updated %s: Status → %s", args[0], status)
+		if supersededBySlug != "" {
+			msg += fmt.Sprintf(" (superseded by %s)", supersededBySlug)
 		}
 		fmt.Fprintln(os.Stdout, msg)
 		return nil
@@ -62,6 +56,6 @@ Examples:
 }
 
 func init() {
-	statusCmd.Flags().IntVar(&supersededBy, "by", 0, "ID of the decision that supersedes this one")
+	statusCmd.Flags().StringVar(&supersededBySlug, "by", "", "Slug of the document that supersedes this one")
 	rootCmd.AddCommand(statusCmd)
 }

@@ -1,4 +1,4 @@
-# 0004: Plaintext Markdown Only
+# Plaintext Markdown Only
 
 - Date: 2026-03-12
 - Status: Accepted

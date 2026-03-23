@@ -1,4 +1,4 @@
-# 0008: Simplify ADR Status to Active, Inactive, and Superseded Only
+# Simplify ADR Status to Active, Inactive, and Superseded Only
 
 - Date: 2026-03-13
 - Status: Active

@@ -6,36 +6,34 @@ import (
 	"os/exec"
 	"path/filepath"
 	"regexp"
-	"strconv"
 	"strings"
+	"time"
 
 	tmpl "github.com/mskasa/kizami/internal/template"
 )
 
-var filePattern = regexp.MustCompile(`^(\d{4})-.*\.md$`)
+// legacyFilePattern matches legacy NNNN-slug.md filenames.
+var legacyFilePattern = regexp.MustCompile(`^(\d{4})-([a-z].*)\.md$`)
 
-// NextID returns the next available 4-digit ID by scanning the decisions directory.
-func NextID(dir string) (int, error) {
-	entries, err := os.ReadDir(dir)
-	if err != nil {
-		if os.IsNotExist(err) {
-			return 1, nil
-		}
-		return 0, fmt.Errorf("reading decisions dir: %w", err)
-	}
+// dateFilePattern matches new YYYY-MM-DD-slug.md filenames.
+var dateFilePattern = regexp.MustCompile(`^(\d{4}-\d{2}-\d{2})-(.+)\.md$`)
 
-	max := 0
-	for _, e := range entries {
-		m := filePattern.FindStringSubmatch(e.Name())
-		if m == nil {
-			continue
-		}
-		n, _ := strconv.Atoi(m[1])
-		if n > max {
-			max = n
-		}
+// isDocumentFile reports whether a filename is a document file (either format).
+func isDocumentFile(name string) bool {
+	return dateFilePattern.MatchString(name) || legacyFilePattern.MatchString(name)
+}
+
+// slugFromFilename extracts the semantic slug from a document filename.
+// For "2026-03-23-use-go.md" returns "use-go".
+// For "0001-use-go.md" returns "use-go".
+func slugFromFilename(name string) string {
+	if m := dateFilePattern.FindStringSubmatch(name); m != nil {
+		return strings.TrimSuffix(m[2], ".md")
 	}
-	return max + 1, nil
+	if m := legacyFilePattern.FindStringSubmatch(name); m != nil {
+		return strings.TrimSuffix(m[2], ".md")
+	}
+	return ""
 }
 
 // Slugify converts a title to kebab-case.
@@ -48,6 +46,7 @@ func Slugify(title string) string {
 }
 
 // AuthorFromGit returns the git user.name, or "unknown" if unavailable.
+// Decision to use git config instead of an environment variable: docs/decisions/0009-author-source.md
 func AuthorFromGit() string {
 	out, err := exec.Command("git", "config", "user.name").Output()
 	if err != nil {
@@ -56,7 +55,7 @@ func AuthorFromGit() string {
 	return strings.TrimSpace(string(out))
 }
 
-// List returns all decisions in dir sorted by ID descending.
+// List returns all decisions in dir sorted by date descending (newest first).
 func List(dir string) ([]*Decision, error) {
 	entries, err := os.ReadDir(dir)
 	if err != nil {
@@ -68,7 +67,7 @@ func List(dir string) ([]*Decision, error) {
 
 	var decisions []*Decision
 	for _, e := range entries {
-		if !filePattern.MatchString(e.Name()) {
+		if !isDocumentFile(e.Name()) {
 			continue
 		}
 		d, err := Parse(filepath.Join(dir, e.Name()))
@@ -78,10 +77,12 @@ func List(dir string) ([]*Decision, error) {
 		decisions = append(decisions, d)
 	}
 
-	// Sort by ID descending.
+	// Sort by date descending, then by filename descending as tiebreaker.
 	for i := 0; i < len(decisions)-1; i++ {
 		for j := i + 1; j < len(decisions); j++ {
-			if decisions[i].ID < decisions[j].ID {
+			less := decisions[i].Date < decisions[j].Date ||
+				(decisions[i].Date == decisions[j].Date && decisions[i].File < decisions[j].File)
+			if less {
 				decisions[i], decisions[j] = decisions[j], decisions[i]
 			}
 		}
@@ -89,43 +90,39 @@ func List(dir string) ([]*Decision, error) {
 	return decisions, nil
 }
 
-// FindByID returns the decision with the given ID, or an error if not found.
-func FindByID(dir string, id int) (*Decision, error) {
+// FindBySlug returns the decision whose filename slug matches the given slug, or an error if not found.
+// Both legacy (NNNN-slug.md) and new (YYYY-MM-DD-slug.md) formats are searched.
+func FindBySlug(dir, slug string) (*Decision, error) {
 	entries, err := os.ReadDir(dir)
 	if err != nil {
 		return nil, fmt.Errorf("reading decisions dir: %w", err)
 	}
 
-	prefix := fmt.Sprintf("%04d-", id)
 	for _, e := range entries {
-		if !filePattern.MatchString(e.Name()) {
+		if !isDocumentFile(e.Name()) {
 			continue
 		}
-		if strings.HasPrefix(e.Name(), prefix) {
+		if slugFromFilename(e.Name()) == slug {
 			return Parse(filepath.Join(dir, e.Name()))
 		}
 	}
-	return nil, fmt.Errorf("decision %04d not found", id)
+	return nil, fmt.Errorf("document %q not found", slug)
 }
 
 // CreateFromDraft creates an ADR file using AI-generated draft sections.
-// The standard header (ID, Date, Status, Author, Supersedes) is prepended to the draft.
-func CreateFromDraft(dir, title, draft string, supersededBy int) (string, error) {
+// The standard header (Date, Status, Author, Supersedes) is prepended to the draft.
+func CreateFromDraft(dir, title, draft, supersededSlug string) (string, error) {
 	if err := os.MkdirAll(dir, 0o755); err != nil {
 		return "", fmt.Errorf("creating decisions dir: %w", err)
 	}
 
-	id, err := NextID(dir)
-	if err != nil {
-		return "", err
-	}
-
 	slug := Slugify(title)
-	filename := fmt.Sprintf("%04d-%s.md", id, slug)
+	date := time.Now().Format("2006-01-02")
+	filename := fmt.Sprintf("%s-%s.md", date, slug)
 	path := filepath.Join(dir, filename)
 
 	author := AuthorFromGit()
-	header := tmpl.RenderHeader(id, title, author, supersededBy)
+	header := tmpl.RenderHeader(title, author, supersededSlug)
 	content := header + "\n" + draft
 
 	if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
@@ -135,23 +132,19 @@ func CreateFromDraft(dir, title, draft string, supersededBy int) (string, error)
 }
 
 // CreateDesignFromDraft creates a design document file using AI-generated draft sections.
-// The standard header (ID, Date, Type, Status, Author, Supersedes) is prepended to the draft.
-func CreateDesignFromDraft(dir, title, draft string, supersededBy int) (string, error) {
+// The standard header (Date, Type, Status, Author, Supersedes) is prepended to the draft.
+func CreateDesignFromDraft(dir, title, draft, supersededSlug string) (string, error) {
 	if err := os.MkdirAll(dir, 0o755); err != nil {
 		return "", fmt.Errorf("creating design dir: %w", err)
 	}
 
-	id, err := NextID(dir)
-	if err != nil {
-		return "", err
-	}
-
 	slug := Slugify(title)
-	filename := fmt.Sprintf("%04d-%s.md", id, slug)
+	date := time.Now().Format("2006-01-02")
+	filename := fmt.Sprintf("%s-%s.md", date, slug)
 	path := filepath.Join(dir, filename)
 
 	author := AuthorFromGit()
-	header := tmpl.RenderDesignHeader(id, title, author, supersededBy)
+	header := tmpl.RenderDesignHeader(title, author, supersededSlug)
 	content := header + "\n" + draft
 
 	if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
@@ -161,24 +154,20 @@ func CreateDesignFromDraft(dir, title, draft string, supersededBy int) (string, 
 }
 
 // Create generates a new ADR file and returns its path.
-// supersededBy, if > 0, adds a "- Supersedes: NNNN" line to the template.
-func Create(dir, title string, supersededBy int) (string, error) {
+// supersededSlug, if non-empty, adds a "- Supersedes: <slug>" line to the template.
+func Create(dir, title, supersededSlug string) (string, error) {
 	if err := os.MkdirAll(dir, 0o755); err != nil {
 		return "", fmt.Errorf("creating decisions dir: %w", err)
 	}
 
-	id, err := NextID(dir)
-	if err != nil {
-		return "", err
-	}
-
 	slug := Slugify(title)
-	filename := fmt.Sprintf("%04d-%s.md", id, slug)
+	date := time.Now().Format("2006-01-02")
+	filename := fmt.Sprintf("%s-%s.md", date, slug)
 	path := filepath.Join(dir, filename)
 
 	author := AuthorFromGit()
 	relatedFiles := tmpl.ChangedFiles(dir)
-	content := tmpl.Render(id, title, author, relatedFiles, supersededBy)
+	content := tmpl.Render(title, author, relatedFiles, supersededSlug)
 
 	if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
 		return "", fmt.Errorf("writing file: %w", err)
@@ -188,24 +177,20 @@ func Create(dir, title string, supersededBy int) (string, error) {
 }
 
 // CreateDesign generates a new design document file and returns its path.
-// supersededBy, if > 0, adds a "- Supersedes: NNNN" line to the template.
-func CreateDesign(dir, title string, supersededBy int) (string, error) {
+// supersededSlug, if non-empty, adds a "- Supersedes: <slug>" line to the template.
+func CreateDesign(dir, title, supersededSlug string) (string, error) {
 	if err := os.MkdirAll(dir, 0o755); err != nil {
 		return "", fmt.Errorf("creating design dir: %w", err)
 	}
 
-	id, err := NextID(dir)
-	if err != nil {
-		return "", err
-	}
-
 	slug := Slugify(title)
-	filename := fmt.Sprintf("%04d-%s.md", id, slug)
+	date := time.Now().Format("2006-01-02")
+	filename := fmt.Sprintf("%s-%s.md", date, slug)
 	path := filepath.Join(dir, filename)
 
 	author := AuthorFromGit()
 	relatedFiles := tmpl.ChangedFiles(dir)
-	content := tmpl.RenderDesign(id, title, author, relatedFiles, supersededBy)
+	content := tmpl.RenderDesign(title, author, relatedFiles, supersededSlug)
 
 	if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
 		return "", fmt.Errorf("writing file: %w", err)

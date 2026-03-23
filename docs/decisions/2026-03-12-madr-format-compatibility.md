@@ -1,4 +1,4 @@
-# 0003: MADR Format Compatibility
+# MADR Format Compatibility
 
 - Date: 2026-03-12
 - Status: Accepted

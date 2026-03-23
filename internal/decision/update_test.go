@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-const sampleADR = `# 0003: Use MADR Format
+const sampleADR = `# Use MADR Format
 
 - Date: 2026-03-12
 - Status: Proposed
@@ -57,9 +57,9 @@ func TestNormalizeStatus_Invalid(t *testing.T) {
 }
 
 func TestUpdateStatus_Simple(t *testing.T) {
-	path := writeADR(t, t.TempDir(), "0003-use-madr.md", sampleADR)
+	path := writeADR(t, t.TempDir(), "2026-03-12-use-madr.md", sampleADR)
 
-	if err := UpdateStatus(path, "Accepted", 0); err != nil {
+	if err := UpdateStatus(path, "Accepted", ""); err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
 
@@ -74,9 +74,9 @@ func TestUpdateStatus_Simple(t *testing.T) {
 }
 
 func TestUpdateStatus_Superseded(t *testing.T) {
-	path := writeADR(t, t.TempDir(), "0003-use-madr.md", sampleADR)
+	path := writeADR(t, t.TempDir(), "2026-03-12-use-madr.md", sampleADR)
 
-	if err := UpdateStatus(path, "Superseded", 5); err != nil {
+	if err := UpdateStatus(path, "Superseded", "use-new-format"); err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
 
@@ -85,16 +85,16 @@ func TestUpdateStatus_Superseded(t *testing.T) {
 	if !strings.Contains(body, "- Status: Superseded") {
 		t.Errorf("status not updated:\n%s", body)
 	}
-	if !strings.Contains(body, "- Superseded by: 0005") {
+	if !strings.Contains(body, "- Superseded by: use-new-format") {
 		t.Errorf("missing Superseded by line:\n%s", body)
 	}
 }
 
 func TestUpdateStatus_RemovesSupersededBy(t *testing.T) {
-	content := strings.ReplaceAll(sampleADR, "- Status: Proposed", "- Status: Superseded\n- Superseded by: 0005")
-	path := writeADR(t, t.TempDir(), "0003-use-madr.md", content)
+	content := strings.ReplaceAll(sampleADR, "- Status: Proposed", "- Status: Superseded\n- Superseded by: use-old-format")
+	path := writeADR(t, t.TempDir(), "2026-03-12-use-madr.md", content)
 
-	if err := UpdateStatus(path, "Accepted", 0); err != nil {
+	if err := UpdateStatus(path, "Accepted", ""); err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
 

@@ -1,9 +1,9 @@
-# 0010: Rename to kizami and Expand Scope to Living Documentation
+# Rename to kizami and Expand Scope to Living Documentation
 
 - Date: 2026-03-17
 - Status: Active
 - Author: masahiro.kasatani
-- Supersedes: 0006
+- Supersedes: command-name-why
 
 ## Context
 

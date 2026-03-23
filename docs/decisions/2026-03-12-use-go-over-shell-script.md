@@ -1,4 +1,4 @@
-# 0001: Use Go Over Shell Script
+# Use Go Over Shell Script
 
 - Date: 2026-03-12
 - Status: Accepted

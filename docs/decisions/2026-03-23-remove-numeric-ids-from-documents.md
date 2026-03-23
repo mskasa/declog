@@ -1,4 +1,4 @@
-# 0011: Remove Numeric IDs from Documents
+# Remove Numeric IDs from Documents
 
 - Date: 2026-03-23
 - Status: Active
@@ -47,7 +47,6 @@ CLI commands that currently take a numeric ID will accept the slug instead:
 - Slug-based lookup requires prefix or exact matching instead of integer comparison
 
 **Migration path:**
-- Provide a `kizami migrate` subcommand (or script) to rename existing files and update internal references in bulk
 - During a transition period, the parser will accept both `NNNN-slug.md` and `YYYY-MM-DD-slug.md` formats to avoid breaking existing repositories
 
 ## Alternatives Considered

@@ -1,4 +1,4 @@
-# 0004: プレーンテキストMarkdownのみを使用する
+# プレーンテキストMarkdownのみを使用する
 
 - Date: 2026-03-12
 - Status: Accepted

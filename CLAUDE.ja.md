@@ -36,11 +36,11 @@ kizami/
 │       └── template.go     # Markdownテンプレート管理
 ├── docs/
 │   └── decisions/          # このリポジトリ自身のADR（ドッグフーディング）
-│       ├── 0001-use-go-over-shell-script.md
-│       ├── 0002-use-cobra-for-cli-framework.md
-│       ├── 0003-madr-format-compatibility.md
-│       ├── 0004-plaintext-markdown-only.md
-│       └── 0005-ripgrep-fallback-strategy.md
+│       ├── 2026-03-12-use-go-over-shell-script.md
+│       ├── 2026-03-12-use-cobra-for-cli-framework.md
+│       ├── 2026-03-12-madr-format-compatibility.md
+│       ├── 2026-03-12-plaintext-markdown-only.md
+│       └── 2026-03-12-ripgrep-fallback-strategy.md
 ├── CLAUDE.md
 ├── CLAUDE.ja.md        # 日本語版（本ファイル）
 ├── go.mod              # module github.com/mskasa/kizami
@@ -69,10 +69,10 @@ kizami/
 ```bash
 kizami adr "<title>"              # ADRを生成してエディタを開く
 kizami design "<title>"           # 設計書を生成してエディタを開く
-kizami list                       # 新しい順に一覧表示（ID・日付・ステータス・タイトル）
+kizami list                       # 新しい順に一覧表示（スラッグ・日付・ステータス・タイトル）
 kizami search <keyword>           # キーワード検索
-kizami show <id>                  # 指定IDのDecisionを表示（例: kizami show 3）
-kizami status <id> <status>       # ステータス変更（例: kizami status 3 superseded --by 5）
+kizami show <slug>                # 指定スラッグのDocumentを表示（例: kizami show use-go-over-shell-script）
+kizami status <slug> <status>     # ステータス変更（例: kizami status use-postgresql superseded --by use-cockroachdb）
 kizami blame <file>               # 指定ファイルに関連するDecisionを逆引き
 ```
 
@@ -82,11 +82,11 @@ kizami blame <file>               # 指定ファイルに関連するDecisionを
 | -------------------- | ---------------------------------- | ------------------------------------------ |
 | `Active`             | 現在有効な判断（デフォルト）       | コード変更と同時にコミット                 |
 | `Inactive`           | 単純に無効になった                 | 置き換え先のADRが存在しない場合            |
-| `Superseded by NNNN` | 別のADRに置き換えられた            | 新しいADRを作成した場合                    |
+| `Superseded by <slug>` | 別のDocumentに置き換えられた     | 新しいDocumentを作成した場合               |
 
 **ステータス運用方針：**
 - デフォルトは `Active`。ADRはコード変更と同時にコミットする運用のため、作成時点で意思決定済みとみなす
-- 設計を覆す新しいADRを作成した場合は既存ADRを `Superseded by NNNN` にする
+- 設計を覆す新しいADRを作成した場合は既存ADRを `Superseded by <slug>` にする
 - 置き換え先のADRが存在しない場合は `Inactive` にする
 
 ---
@@ -96,7 +96,7 @@ kizami blame <file>               # 指定ファイルに関連するDecisionを
 `kizami adr` 実行時に生成されるテンプレート：
 
 ```markdown
-# {NNNN}: {Title}
+# {Title}
 
 - Date: {YYYY-MM-DD}
 - Status: Active
@@ -126,16 +126,16 @@ kizami blame <file>               # 指定ファイルに関連するDecisionを
 ### ファイル命名規則
 
 ```
-NNNN-kebab-case-title.md
-例: 0001-use-go-over-shell-script.md
+YYYY-MM-DD-kebab-case-title.md
+例: 2026-03-12-use-go-over-shell-script.md
 ```
 
-- `NNNN`：4桁ゼロ埋め連番（既存ファイルの最大値＋1で自動採番）
+- `YYYY-MM-DD`：作成日（時系列ソートの基準）
 - kebab-case：タイトルを小文字・ハイフン区切りに自動変換
 - 保存先：`docs/decisions/`（リポジトリルートからの相対パス）
 - このリポジトリのドッグフーディング用ADRは、英語版と日本語版の両方を作成する：
-  - 英語版：`docs/decisions/0001-use-go-over-shell-script.md`
-  - 日本語版：`docs/decisions/ja/0001-use-go-over-shell-script.md`
+  - 英語版：`docs/decisions/2026-03-12-use-go-over-shell-script.md`
+  - 日本語版：`docs/decisions/ja/2026-03-12-use-go-over-shell-script.md`
 
 ---
 
@@ -192,7 +192,7 @@ NNNN-kebab-case-title.md
 
 ```go
 // AuthorFromGit reads the author name from git config.
-// Decision to use git config instead of an environment variable: docs/decisions/0009-author-source.md
+// Decision to use git config instead of an environment variable: docs/decisions/2026-03-16-allow-direct-adr-updates-with-git-history.md
 func AuthorFromGit() string {
     ...
 }
@@ -206,7 +206,7 @@ func AuthorFromGit() string {
 **許容される操作：**
 - 同じ判断の内容が変わった場合はADRを直接更新する
   → git diffで何が変わったか、git logでなぜ変えたかが追跡できる
-- StatusをActive → Inactive または Superseded by NNNN に変更する
+- StatusをActive → Inactive または Superseded by <slug> に変更する
 - 誤字脱字の修正
 - Related Filesへの追記
 
@@ -216,21 +216,21 @@ func AuthorFromGit() string {
 
 **ADR更新時のコミットメッセージ：**
 - 何をなぜ変えたかを明記する
-- 例：`docs: update ADR 0003 - increase pool size from 10 to 20 based on load test`
+- 例：`docs: update ADR madr-format-compatibility - increase pool size from 10 to 20 based on load test`
 - 悪い例：`update adr`
 
 ### 開発開始時点で作成すべき初期ADR
 
 コードを1行も書く前に、以下のADRを手動で作成しておくこと：
 
-| ID   | タイトル                    | 内容                                                          |
-| ---- | --------------------------- | ------------------------------------------------------------- |
-| 0001 | use-go-over-shell-script    | Goを選んだ理由（シングルバイナリ、Windows対応、型安全）       |
-| 0002 | use-cobra-for-cli-framework | cobraを選んだ理由（デファクト、シェル補完、サブコマンド管理） |
-| 0003 | madr-format-compatibility   | MADRフォーマット準拠の理由（既存ADRツールとの互換性）         |
-| 0004 | plaintext-markdown-only     | DBを使わずMarkdownのみにした理由（Git親和性、可搬性）         |
-| 0005 | ripgrep-fallback-strategy   | ripgrep依存とフォールバック設計の判断                         |
-| 0006 | command-name-why            | コマンド名をもともと `why` にした理由（0010 で superseded）   |
+| スラッグ                    | 内容                                                          |
+| --------------------------- | ------------------------------------------------------------- |
+| use-go-over-shell-script    | Goを選んだ理由（シングルバイナリ、Windows対応、型安全）       |
+| use-cobra-for-cli-framework | cobraを選んだ理由（デファクト、シェル補完、サブコマンド管理） |
+| madr-format-compatibility   | MADRフォーマット準拠の理由（既存ADRツールとの互換性）         |
+| plaintext-markdown-only     | DBを使わずMarkdownのみにした理由（Git親和性、可搬性）         |
+| ripgrep-fallback-strategy   | ripgrep依存とフォールバック設計の判断                         |
+| command-name-why            | コマンド名をもともと `why` にした理由（rename-to-kizami-and-expand-scope で superseded） |
 
 ---
 
@@ -371,7 +371,7 @@ Claude:
 「はい、お願いします。」
 
 Claude:
-「docs/decisions/0007-auto-numbering-strategy.md を作成しました。
+「docs/decisions/2026-03-23-auto-numbering-strategy.md を作成しました。
  コミット・プッシュします。
  PRを作成しますか？」
 
@@ -465,7 +465,8 @@ Claude:
 - [x] `documents.dirs` config の追加 — list/search/show 等の全コマンドで設計書もサポート
 - [x] `kizami design` の作成先ディレクトリを config で変更可能にする（`[design] dir`）
 - [x] このリポジトリ自体に `kizami init` を実行する（ドッグフーディング）
-- [ ] このリポジトリ自体に設計書を作成する（ドッグフーディング）
+- [x] このリポジトリ自体に設計書を作成する（ドッグフーディング） — docs/design/0001-audit-and-drift-detection.md
+- [x] ドキュメントのファイル名から数値IDを廃止（`NNNN-slug.md` → `YYYY-MM-DD-slug.md`）
 
 ### v1.0.0（パブリックリリース）
 

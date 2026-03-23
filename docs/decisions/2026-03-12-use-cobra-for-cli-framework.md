@@ -1,4 +1,4 @@
-# 0002: Use Cobra for CLI Framework
+# Use Cobra for CLI Framework
 
 - Date: 2026-03-12
 - Status: Accepted

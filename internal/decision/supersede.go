@@ -10,10 +10,10 @@ import (
 func CheckSupersedable(d *Decision) error {
 	status := d.Status
 	if strings.EqualFold(status, "Inactive") {
-		return fmt.Errorf("ADR %04d is already Inactive", d.ID)
+		return fmt.Errorf("document %q is already Inactive", d.Slug)
 	}
 	if strings.HasPrefix(strings.ToLower(status), "superseded") {
-		return fmt.Errorf("ADR %04d is already %s", d.ID, status)
+		return fmt.Errorf("document %q is already %s", d.Slug, status)
 	}
 	return nil
 }

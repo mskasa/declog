@@ -1,4 +1,4 @@
-# 0008: ADRステータスをActive・Inactive・Supersededの3つに絞る
+# ADRステータスをActive・Inactive・Supersededの3つに絞る
 
 - Date: 2026-03-13
 - Status: Active

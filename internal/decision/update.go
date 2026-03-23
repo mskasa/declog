@@ -22,9 +22,9 @@ func NormalizeStatus(s string) (string, error) {
 }
 
 // UpdateStatus rewrites the Status line in the decision file.
-// If supersededBy > 0, a "Superseded by: NNNN" line is inserted immediately after
-// the Status line; any existing such line is removed beforehand.
-func UpdateStatus(path, status string, supersededBy int) error {
+// If supersededBySlug is non-empty, a "- Superseded by: <slug>" line is inserted immediately
+// after the Status line; any existing such line is removed beforehand.
+func UpdateStatus(path, status, supersededBySlug string) error {
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return fmt.Errorf("reading file: %w", err)
@@ -37,8 +37,8 @@ func UpdateStatus(path, status string, supersededBy int) error {
 		switch {
 		case strings.HasPrefix(line, "- Status: "):
 			out = append(out, "- Status: "+status)
-			if supersededBy > 0 {
-				out = append(out, fmt.Sprintf("- Superseded by: %04d", supersededBy))
+			if supersededBySlug != "" {
+				out = append(out, "- Superseded by: "+supersededBySlug)
 			}
 		case strings.HasPrefix(line, "- Superseded by: "):
 			// Drop existing line; re-added above if still needed.

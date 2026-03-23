@@ -1,4 +1,4 @@
-# 0007: ADRテンプレートへのRelated Filesセクションの追加
+# ADRテンプレートへのRelated Filesセクションの追加
 
 - Date: 2026-03-12
 - Status: Accepted

@@ -1,4 +1,4 @@
-# 0005: Ripgrep Fallback Strategy
+# Ripgrep Fallback Strategy
 
 - Date: 2026-03-12
 - Status: Accepted

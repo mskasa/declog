@@ -5,45 +5,25 @@ import (
 	"testing"
 )
 
-func TestShowCmd_InvalidID(t *testing.T) {
-	root := newTestRepo(t)
-	setTestRoot(t, root)
-
-	_, err := executeCmd(t, "show", "abc")
-	if err == nil {
-		t.Fatal("expected error for non-integer ID")
-	}
-}
-
-func TestShowCmd_ZeroID(t *testing.T) {
-	root := newTestRepo(t)
-	setTestRoot(t, root)
-
-	_, err := executeCmd(t, "show", "0")
-	if err == nil {
-		t.Fatal("expected error for ID=0")
-	}
-}
-
 func TestShowCmd_NotFound(t *testing.T) {
 	root := newTestRepo(t)
 	dir := decisionsPath(root)
 	seedDecision(t, dir, 1, "Use Go", "Active")
 	setTestRoot(t, root)
 
-	_, err := executeCmd(t, "show", "999")
+	_, err := executeCmd(t, "show", "nonexistent-slug")
 	if err == nil {
-		t.Fatal("expected error for non-existent ID")
+		t.Fatal("expected error for non-existent slug")
 	}
 }
 
-func TestShowCmd_ValidID(t *testing.T) {
+func TestShowCmd_ValidSlug(t *testing.T) {
 	root := newTestRepo(t)
 	dir := decisionsPath(root)
 	seedDecision(t, dir, 1, "Use Go", "Active")
 	setTestRoot(t, root)
 
-	out, err := executeCmd(t, "show", "1")
+	out, err := executeCmd(t, "show", "use-go")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}

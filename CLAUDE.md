@@ -35,11 +35,11 @@ kizami/
 │       └── template.go     # Markdown template management
 ├── docs/
 │   └── decisions/          # ADRs for this repository itself (dogfooding)
-│       ├── 0001-use-go-over-shell-script.md
-│       ├── 0002-use-cobra-for-cli-framework.md
-│       ├── 0003-madr-format-compatibility.md
-│       ├── 0004-plaintext-markdown-only.md
-│       └── 0005-ripgrep-fallback-strategy.md
+│       ├── 2026-03-12-use-go-over-shell-script.md
+│       ├── 2026-03-12-use-cobra-for-cli-framework.md
+│       ├── 2026-03-12-madr-format-compatibility.md
+│       ├── 2026-03-12-plaintext-markdown-only.md
+│       └── 2026-03-12-ripgrep-fallback-strategy.md
 ├── CLAUDE.md
 ├── CLAUDE.ja.md
 ├── go.mod              # module github.com/mskasa/kizami
@@ -68,10 +68,10 @@ kizami/
 ```bash
 kizami adr "<title>"              # Create a new ADR and open it in an editor
 kizami design "<title>"           # Create a new design document and open it in an editor
-kizami list                       # List decisions in reverse chronological order (ID, date, status, title)
+kizami list                       # List decisions in reverse chronological order (slug, date, status, title)
 kizami search <keyword>           # Search decisions by keyword
-kizami show <id>                  # Display a single decision (e.g. kizami show 3)
-kizami status <id> <status>       # Update the status (e.g. kizami status 3 superseded --by 5)
+kizami show <slug>                # Display a single decision (e.g. kizami show use-go-over-shell-script)
+kizami status <slug> <status>     # Update the status (e.g. kizami status use-postgresql superseded --by use-cockroachdb)
 kizami blame <file>               # Find decisions related to a given file
 ```
 
@@ -81,11 +81,11 @@ kizami blame <file>               # Find decisions related to a given file
 | -------------------- | ------------------------------------ | ------------------------------------------------ |
 | `Active`             | Currently valid decision (default)   | Commit together with the code change             |
 | `Inactive`           | Simply no longer valid               | When no replacement ADR exists                   |
-| `Superseded by NNNN` | Replaced by another decision         | When a new ADR is created to replace this one    |
+| `Superseded by <slug>` | Replaced by another decision       | When a new ADR is created to replace this one    |
 
 **Status policy:**
 - Default is `Active` — ADRs are committed alongside code changes, so the decision is considered final at creation time
-- When a new ADR replaces an existing one, mark the old ADR as `Superseded by NNNN`
+- When a new ADR replaces an existing one, mark the old ADR as `Superseded by <slug>`
 - When a decision becomes invalid without a replacement, mark it as `Inactive`
 
 ---
@@ -95,10 +95,10 @@ kizami blame <file>               # Find decisions related to a given file
 Template generated when running `kizami adr`:
 
 ```markdown
-# {NNNN}: {Title}
+# {Title}
 
 - Date: {YYYY-MM-DD}
-- Status: Active
+- Status: Draft
 - Author: {git config user.name}
 
 ## Context
@@ -125,16 +125,16 @@ Template generated when running `kizami adr`:
 ### File Naming Convention
 
 ```
-NNNN-kebab-case-title.md
-e.g. 0001-use-go-over-shell-script.md
+YYYY-MM-DD-kebab-case-title.md
+e.g. 2026-03-12-use-go-over-shell-script.md
 ```
 
-- `NNNN`: 4-digit zero-padded sequential number (auto-incremented from the current maximum)
+- `YYYY-MM-DD`: creation date (preserves chronological sort order)
 - kebab-case: title is automatically converted to lowercase with hyphens
 - Saved under: `docs/decisions/` (relative to the repository root)
 - For dogfooding ADRs in this repository, create both English and Japanese versions of each file:
-  - English: `docs/decisions/0001-use-go-over-shell-script.md`
-  - Japanese: `docs/decisions/ja/0001-use-go-over-shell-script.md`
+  - English: `docs/decisions/2026-03-12-use-go-over-shell-script.md`
+  - Japanese: `docs/decisions/ja/2026-03-12-use-go-over-shell-script.md`
 
 ---
 
@@ -191,7 +191,7 @@ Example — referencing an ADR from a code comment:
 
 ```go
 // AuthorFromGit reads the author name from git config.
-// Decision to use git config instead of an environment variable: docs/decisions/0009-author-source.md
+// Decision to use git config instead of an environment variable: docs/decisions/2026-03-16-allow-direct-adr-updates-with-git-history.md
 func AuthorFromGit() string {
     ...
 }
@@ -205,31 +205,31 @@ func AuthorFromGit() string {
 **Permitted changes:**
 - Directly updating the content when the same decision is revised
   → `git diff` shows what changed; `git log` shows why
-- Updating Status: `Active` → `Inactive` or `Superseded by NNNN`
+- Updating Status: `Active` → `Inactive` or `Superseded by <slug>`
 - Fixing typos
 - Appending entries to the Related Files section
 
 **When to use Superseded:**
-- When the direction of the decision changes entirely, create a new ADR and mark the old one as `Superseded by NNNN`
+- When the direction of the decision changes entirely, create a new ADR and mark the old one as `Superseded by <slug>`
 - When revising or refining the same decision, a direct update is sufficient
 
 **Commit messages when updating an ADR:**
 - Clearly state what was changed and why
-- Good: `docs: update ADR 0003 - increase pool size from 10 to 20 based on load test`
+- Good: `docs: update ADR madr-format-compatibility - increase pool size from 10 to 20 based on load test`
 - Bad: `update adr`
 
 ### Initial ADRs to Create at Project Start
 
 Before writing any code, manually create the following ADRs:
 
-| ID   | Title                       | Content                                                                           |
-| ---- | --------------------------- | --------------------------------------------------------------------------------- |
-| 0001 | use-go-over-shell-script    | Why Go was chosen (single binary, Windows support, type safety)                   |
-| 0002 | use-cobra-for-cli-framework | Why cobra was chosen (de facto standard, shell completion, subcommand management) |
-| 0003 | madr-format-compatibility   | Why MADR format was adopted (compatibility with existing ADR tooling)             |
-| 0004 | plaintext-markdown-only     | Why plain Markdown was chosen over a database (Git-friendly, portable)            |
-| 0005 | ripgrep-fallback-strategy   | The decision around ripgrep dependency and fallback design                        |
-| 0006 | command-name-why            | Why the CLI command was originally named `why` (now superseded by 0010)           |
+| Slug                       | Content                                                                           |
+| -------------------------- | --------------------------------------------------------------------------------- |
+| use-go-over-shell-script   | Why Go was chosen (single binary, Windows support, type safety)                   |
+| use-cobra-for-cli-framework | Why cobra was chosen (de facto standard, shell completion, subcommand management) |
+| madr-format-compatibility  | Why MADR format was adopted (compatibility with existing ADR tooling)             |
+| plaintext-markdown-only    | Why plain Markdown was chosen over a database (Git-friendly, portable)            |
+| ripgrep-fallback-strategy  | The decision around ripgrep dependency and fallback design                        |
+| command-name-why           | Why the CLI command was originally named `why` (now superseded by rename-to-kizami-and-expand-scope) |
 
 ---
 
@@ -369,7 +369,7 @@ Owner:
 "Yes, please create the ADR."
 
 Claude:
-"Created docs/decisions/0007-auto-numbering-strategy.md.
+"Created docs/decisions/2026-03-23-auto-numbering-strategy.md.
  Committing and pushing now.
  Shall I open a PR?"
 
@@ -498,7 +498,9 @@ Claude:
 - [x] Add `documents.dirs` config — all read/write commands now support design docs
 - [x] Make `kizami design` creation directory configurable (`[design] dir` in config)
 - [x] Run `kizami init` on this repository (dogfooding)
-- [ ] Create design documents for this repository (dogfooding)
+- [x] Create design documents for this repository (dogfooding) — docs/design/0001-audit-and-drift-detection.md
+- [x] Remove numeric IDs from document filenames (`NNNN-slug.md` → `YYYY-MM-DD-slug.md`)
+- [x] `kizami migrate` — rename legacy NNNN-slug.md files to YYYY-MM-DD-slug.md
 
 ### v1.0.0 (public release)
 

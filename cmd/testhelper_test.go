@@ -65,21 +65,20 @@ func executeCmd(t *testing.T, args ...string) (string, error) {
 }
 
 // seedDecision writes a minimal decision file into dir and returns its path.
-func seedDecision(t *testing.T, dir string, id int, title, status string) string {
+func seedDecision(t *testing.T, dir string, _ int, title, status string) string {
 	t.Helper()
 	if err := os.MkdirAll(dir, 0o755); err != nil {
 		t.Fatalf("MkdirAll: %v", err)
 	}
-	path, err := decision.Create(dir, title, 0)
+	path, err := decision.Create(dir, title, "")
 	if err != nil {
 		t.Fatalf("decision.Create: %v", err)
 	}
 	if status != "Draft" {
-		if err := decision.UpdateStatus(path, status, 0); err != nil {
+		if err := decision.UpdateStatus(path, status, ""); err != nil {
 			t.Fatalf("UpdateStatus: %v", err)
 		}
 	}
-	_ = id
 	return path
 }
 

@@ -6,7 +6,6 @@ import (
 	"os"
 	"os/exec"
 	"runtime"
-	"strconv"
 	"strings"
 
 	"github.com/mskasa/kizami/internal/ai"
@@ -33,33 +32,29 @@ var adrCmd = &cobra.Command{
 		}
 		dir := decisionsDir(root, loadCfg())
 
-		supersededID, err := promptSimilar(dir, args[0])
-		if err != nil {
-			return err
-		}
-
-		newID, err := decision.NextID(dir)
+		supersededSlug, err := promptSimilar(dir, args[0])
 		if err != nil {
 			return err
 		}
 
 		var path string
 		if aiFlag {
-			path, err = runWithAI(dir, root, args[0], supersededID)
+			path, err = runWithAI(dir, root, args[0], supersededSlug)
 		} else {
-			path, err = decision.Create(dir, args[0], supersededID)
+			path, err = decision.Create(dir, args[0], supersededSlug)
 		}
 		if err != nil {
 			return err
 		}
 
-		if supersededID > 0 {
-			old, err := decision.FindByID(dir, supersededID)
+		if supersededSlug != "" {
+			old, err := decision.FindBySlug(dir, supersededSlug)
 			if err != nil {
 				return err
 			}
-			status := fmt.Sprintf("Superseded by %04d", newID)
-			if err := decision.UpdateStatus(old.File, status, 0); err != nil {
+			newSlug := decision.Slugify(args[0])
+			status := "Superseded by " + newSlug
+			if err := decision.UpdateStatus(old.File, status, ""); err != nil {
 				return err
 			}
 			fmt.Fprintf(os.Stdout, "Updated: %s\n  Status: %s\n\n", old.File, status)
@@ -87,33 +82,29 @@ var designCmd = &cobra.Command{
 		cfg := loadCfg()
 		dir := designDir(root, cfg)
 
-		supersededID, err := promptSimilar(dir, args[0])
-		if err != nil {
-			return err
-		}
-
-		newID, err := decision.NextID(dir)
+		supersededSlug, err := promptSimilar(dir, args[0])
 		if err != nil {
 			return err
 		}
 
 		var path string
 		if designAIFlag {
-			path, err = runWithAIDesign(dir, root, args[0], supersededID)
+			path, err = runWithAIDesign(dir, root, args[0], supersededSlug)
 		} else {
-			path, err = decision.CreateDesign(dir, args[0], supersededID)
+			path, err = decision.CreateDesign(dir, args[0], supersededSlug)
 		}
 		if err != nil {
 			return err
 		}
 
-		if supersededID > 0 {
-			old, err := decision.FindByID(dir, supersededID)
+		if supersededSlug != "" {
+			old, err := decision.FindBySlug(dir, supersededSlug)
 			if err != nil {
 				return err
 			}
-			status := fmt.Sprintf("Superseded by %04d", newID)
-			if err := decision.UpdateStatus(old.File, status, 0); err != nil {
+			newSlug := decision.Slugify(args[0])
+			status := "Superseded by " + newSlug
+			if err := decision.UpdateStatus(old.File, status, ""); err != nil {
 				return err
 			}
 			fmt.Fprintf(os.Stdout, "Updated: %s\n  Status: %s\n\n", old.File, status)
@@ -125,7 +116,7 @@ var designCmd = &cobra.Command{
 }
 
 // runWithAIDesign generates a design document draft via the Anthropic API and writes the file.
-func runWithAIDesign(dir, root, title string, supersededID int) (string, error) {
+func runWithAIDesign(dir, root, title, supersededSlug string) (string, error) {
 	apiKey := os.Getenv("ANTHROPIC_API_KEY")
 	if apiKey == "" {
 		return "", fmt.Errorf("ANTHROPIC_API_KEY is not set.\nPlease set the environment variable and try again.\n\n  export ANTHROPIC_API_KEY=your-api-key")
@@ -152,11 +143,11 @@ func runWithAIDesign(dir, root, title string, supersededID int) (string, error) 
 		return "", err
 	}
 
-	return decision.CreateDesignFromDraft(dir, title, draft, supersededID)
+	return decision.CreateDesignFromDraft(dir, title, draft, supersededSlug)
 }
 
 // runWithAI generates an ADR draft via the Anthropic API and writes the file.
-func runWithAI(dir, root, title string, supersededID int) (string, error) {
+func runWithAI(dir, root, title, supersededSlug string) (string, error) {
 	apiKey := os.Getenv("ANTHROPIC_API_KEY")
 	if apiKey == "" {
 		return "", fmt.Errorf("ANTHROPIC_API_KEY is not set.\nPlease set the environment variable and try again.\n\n  export ANTHROPIC_API_KEY=your-api-key")
@@ -183,48 +174,40 @@ func runWithAI(dir, root, title string, supersededID int) (string, error) {
 		return "", err
 	}
 
-	return decision.CreateFromDraft(dir, title, draft, supersededID)
+	return decision.CreateFromDraft(dir, title, draft, supersededSlug)
 }
 
 // promptSimilar searches for similar documents and asks the user if any should be superseded.
-// Returns the ID to supersede (0 if none).
-func promptSimilar(dir, title string) (int, error) {
+// Returns the slug to supersede (empty string if none).
+func promptSimilar(dir, title string) (string, error) {
 	fmt.Fprintln(os.Stdout, "Searching for similar decisions...")
 
 	similar, err := search.Similar(dir, title)
 	if err != nil {
 		// Non-fatal: skip if search fails (e.g. docs/decisions doesn't exist yet).
 		fmt.Fprintf(os.Stdout, "No similar decisions found.\n\n")
-		return 0, nil
+		return "", nil
 	}
 	if len(similar) == 0 {
 		fmt.Fprintf(os.Stdout, "No similar decisions found.\n\n")
-		return 0, nil
+		return "", nil
 	}
 
 	fmt.Fprintln(os.Stdout, "Similar decisions found:")
 	for _, d := range similar {
-		fmt.Fprintf(os.Stdout, "  [%04d] %s | %s\n  Title: %s\n\n", d.ID, d.Date, d.Status, d.Title)
+		fmt.Fprintf(os.Stdout, "  [%s] %s | %s\n  Title: %s\n\n", d.Slug, d.Date, d.Status, d.Title)
 	}
 
 	fmt.Fprintln(os.Stdout, "Does this supersede any of the above?")
-	fmt.Fprint(os.Stdout, "Enter ID to supersede (or press Enter to skip): ")
+	fmt.Fprint(os.Stdout, "Enter slug to supersede (or press Enter to skip): ")
 
 	reader := bufio.NewReader(os.Stdin)
 	line, err := reader.ReadString('\n')
 	if err != nil {
-		return 0, nil
+		return "", nil
 	}
 	line = strings.TrimSpace(line)
-	if line == "" {
-		return 0, nil
-	}
-
-	id, err := strconv.Atoi(line)
-	if err != nil || id < 1 {
-		return 0, fmt.Errorf("invalid ID: %q", line)
-	}
-	return id, nil
+	return line, nil
 }
 
 func init() {

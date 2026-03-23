@@ -3,27 +3,21 @@ package cmd
 import (
 	"fmt"
 	"os"
-	"strconv"
 
 	"github.com/spf13/cobra"
 )
 
 var showCmd = &cobra.Command{
-	Use:   "show <id>",
+	Use:   "show <slug>",
 	Short: "Display a single decision record",
 	Args:  cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
-		id, err := strconv.Atoi(args[0])
-		if err != nil || id < 1 {
-			return fmt.Errorf("id must be a positive integer")
-		}
-
 		root, err := gitRepoRootFn()
 		if err != nil {
 			return err
 		}
 
-		d, err := findByID(root, loadCfg(), id)
+		d, err := findBySlug(root, loadCfg(), args[0])
 		if err != nil {
 			return err
 		}

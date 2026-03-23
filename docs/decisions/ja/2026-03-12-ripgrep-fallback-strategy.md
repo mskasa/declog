@@ -1,4 +1,4 @@
-# 0005: ripgrepのフォールバック戦略
+# ripgrepのフォールバック戦略
 
 - Date: 2026-03-12
 - Status: Accepted

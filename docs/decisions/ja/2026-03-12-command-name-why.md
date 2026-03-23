@@ -1,7 +1,7 @@
-# 0006: コマンド名を「why」にする
+# コマンド名を「why」にする
 
 - Date: 2026-03-12
-- Status: Superseded by 0010
+- Status: Superseded by rename-to-kizami-and-expand-scope
 - Author: masahiro.kasatani
 
 ## Context

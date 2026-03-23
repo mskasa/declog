@@ -155,7 +155,7 @@ func TestChangedFiles_OutsideGitRepo(t *testing.T) {
 }
 
 func TestRender_WithRelatedFiles(t *testing.T) {
-	out := Render(1, "Test Decision", "alice", []string{"internal/foo.go", "cmd/bar.go"}, 0)
+	out := Render("Test Decision", "alice", []string{"internal/foo.go", "cmd/bar.go"}, "")
 
 	if !strings.Contains(out, "- `internal/foo.go`") {
 		t.Errorf("missing internal/foo.go in output:\n%s", out)
@@ -169,7 +169,7 @@ func TestRender_WithRelatedFiles(t *testing.T) {
 }
 
 func TestRender_WithoutRelatedFiles(t *testing.T) {
-	out := Render(1, "Test Decision", "alice", nil, 0)
+	out := Render("Test Decision", "alice", nil, "")
 
 	if !strings.Contains(out, "<!-- List files related to this decision") {
 		t.Errorf("expected placeholder comment in output:\n%s", out)
@@ -177,15 +177,15 @@ func TestRender_WithoutRelatedFiles(t *testing.T) {
 }
 
 func TestRender_WithSupersedes(t *testing.T) {
-	out := Render(9, "New Decision", "alice", nil, 3)
+	out := Render("New Decision", "alice", nil, "use-old-decision")
 
-	if !strings.Contains(out, "- Supersedes: 0003") {
+	if !strings.Contains(out, "- Supersedes: use-old-decision") {
 		t.Errorf("missing Supersedes line in output:\n%s", out)
 	}
 }
 
 func TestRender_WithoutSupersedes(t *testing.T) {
-	out := Render(9, "New Decision", "alice", nil, 0)
+	out := Render("New Decision", "alice", nil, "")
 
 	if strings.Contains(out, "Supersedes") {
 		t.Errorf("unexpected Supersedes line in output:\n%s", out)
@@ -193,7 +193,7 @@ func TestRender_WithoutSupersedes(t *testing.T) {
 }
 
 func TestRender_DefaultStatusDraft(t *testing.T) {
-	out := Render(1, "Test Decision", "alice", nil, 0)
+	out := Render("Test Decision", "alice", nil, "")
 
 	if !strings.Contains(out, "- Status: Draft") {
 		t.Errorf("expected Status: Draft in ADR template:\n%s", out)
@@ -204,7 +204,7 @@ func TestRender_DefaultStatusDraft(t *testing.T) {
 }
 
 func TestRenderDesign_Sections(t *testing.T) {
-	out := RenderDesign(1, "Test Design", "alice", nil, 0)
+	out := RenderDesign("Test Design", "alice", nil, "")
 
 	for _, want := range []string{
 		"- Type: Design",
@@ -224,9 +224,9 @@ func TestRenderDesign_Sections(t *testing.T) {
 }
 
 func TestRenderDesign_WithSupersedes(t *testing.T) {
-	out := RenderDesign(9, "New Design", "alice", nil, 3)
+	out := RenderDesign("New Design", "alice", nil, "use-old-design")
 
-	if !strings.Contains(out, "- Supersedes: 0003") {
+	if !strings.Contains(out, "- Supersedes: use-old-design") {
 		t.Errorf("missing Supersedes line in output:\n%s", out)
 	}
 }

@@ -46,26 +46,26 @@ func gitDiffFiles(dir, flag string) []string {
 
 // RenderHeader returns the ADR front-matter block (title + metadata lines only, no body sections).
 // It is used when the body is generated externally (e.g. by an LLM).
-func RenderHeader(id int, title, author string, supersededBy int) string {
+func RenderHeader(title, author, supersededSlug string) string {
 	date := time.Now().Format("2006-01-02")
 	supersedes := ""
-	if supersededBy > 0 {
-		supersedes = fmt.Sprintf("\n- Supersedes: %04d", supersededBy)
+	if supersededSlug != "" {
+		supersedes = fmt.Sprintf("\n- Supersedes: %s", supersededSlug)
 	}
-	return fmt.Sprintf("# %04d: %s\n\n- Date: %s\n- Type: ADR\n- Status: Draft\n- Author: %s%s\n",
-		id, title, date, author, supersedes)
+	return fmt.Sprintf("# %s\n\n- Date: %s\n- Type: ADR\n- Status: Draft\n- Author: %s%s\n",
+		title, date, author, supersedes)
 }
 
 // Render returns the ADR Markdown template filled with the given values.
 // relatedFiles is inserted into the Related Files section; pass nil for an empty section.
-// supersededBy, if > 0, adds a "- Supersedes: NNNN" line after the Author line.
-func Render(id int, title, author string, relatedFiles []string, supersededBy int) string {
+// supersededSlug, if non-empty, adds a "- Supersedes: <slug>" line after the Author line.
+func Render(title, author string, relatedFiles []string, supersededSlug string) string {
 	date := time.Now().Format("2006-01-02")
 	supersedes := ""
-	if supersededBy > 0 {
-		supersedes = fmt.Sprintf("\n- Supersedes: %04d", supersededBy)
+	if supersededSlug != "" {
+		supersedes = fmt.Sprintf("\n- Supersedes: %s", supersededSlug)
 	}
-	return fmt.Sprintf(`# %04d: %s
+	return fmt.Sprintf(`# %s
 
 - Date: %s
 - Type: ADR
@@ -90,31 +90,31 @@ func Render(id int, title, author string, relatedFiles []string, supersededBy in
 
 ## Related Files
 
-%s`, id, title, date, author, renderRelatedFiles(relatedFiles))
+%s`, title, date, author, renderRelatedFiles(relatedFiles))
 }
 
 // RenderDesignHeader returns the Design document front-matter block (no body sections).
 // It is used when the body is generated externally (e.g. by an LLM).
-func RenderDesignHeader(id int, title, author string, supersededBy int) string {
+func RenderDesignHeader(title, author, supersededSlug string) string {
 	date := time.Now().Format("2006-01-02")
 	supersedes := ""
-	if supersededBy > 0 {
-		supersedes = fmt.Sprintf("\n- Supersedes: %04d", supersededBy)
+	if supersededSlug != "" {
+		supersedes = fmt.Sprintf("\n- Supersedes: %s", supersededSlug)
 	}
-	return fmt.Sprintf("# %04d: %s\n\n- Date: %s\n- Type: Design\n- Status: Draft\n- Author: %s%s\n",
-		id, title, date, author, supersedes)
+	return fmt.Sprintf("# %s\n\n- Date: %s\n- Type: Design\n- Status: Draft\n- Author: %s%s\n",
+		title, date, author, supersedes)
 }
 
 // RenderDesign returns the Design document Markdown template filled with the given values.
 // relatedFiles is inserted into the Related Files section; pass nil for an empty section.
-// supersededBy, if > 0, adds a "- Supersedes: NNNN" line after the Author line.
-func RenderDesign(id int, title, author string, relatedFiles []string, supersededBy int) string {
+// supersededSlug, if non-empty, adds a "- Supersedes: <slug>" line after the Author line.
+func RenderDesign(title, author string, relatedFiles []string, supersededSlug string) string {
 	date := time.Now().Format("2006-01-02")
 	supersedes := ""
-	if supersededBy > 0 {
-		supersedes = fmt.Sprintf("\n- Supersedes: %04d", supersededBy)
+	if supersededSlug != "" {
+		supersedes = fmt.Sprintf("\n- Supersedes: %s", supersededSlug)
 	}
-	return fmt.Sprintf(`# %04d: %s
+	return fmt.Sprintf(`# %s
 
 - Date: %s
 - Type: Design
@@ -153,7 +153,7 @@ Non-Goals:
 
 ## Related Files
 
-%s`, id, title, date, author, renderRelatedFiles(relatedFiles))
+%s`, title, date, author, renderRelatedFiles(relatedFiles))
 }
 
 func renderRelatedFiles(files []string) string {

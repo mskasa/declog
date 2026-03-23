@@ -1,4 +1,4 @@
-# 0003: MADRフォーマットとの互換性
+# MADRフォーマットとの互換性
 
 - Date: 2026-03-12
 - Status: Accepted

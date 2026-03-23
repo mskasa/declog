@@ -77,15 +77,15 @@ func auditDirs(root string, cfg *config.Config) []string {
 	return documentDirs(root, cfg)
 }
 
-// findByID searches for a decision by ID across all document directories.
-func findByID(root string, cfg *config.Config, id int) (*decision.Decision, error) {
+// findBySlug searches for a decision by slug across all document directories.
+func findBySlug(root string, cfg *config.Config, slug string) (*decision.Decision, error) {
 	for _, dir := range documentDirs(root, cfg) {
-		d, err := decision.FindByID(dir, id)
+		d, err := decision.FindBySlug(dir, slug)
 		if err == nil {
 			return d, nil
 		}
 	}
-	return nil, fmt.Errorf("decision %04d not found", id)
+	return nil, fmt.Errorf("document %q not found", slug)
 }
 
 // Execute runs the root command.

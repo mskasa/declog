@@ -37,7 +37,7 @@ var listCmd = &cobra.Command{
 			if decisions[i].Date != decisions[j].Date {
 				return decisions[i].Date > decisions[j].Date
 			}
-			return decisions[i].ID > decisions[j].ID
+			return decisions[i].File > decisions[j].File
 		})
 
 		if statusFilter != "" {
@@ -57,10 +57,10 @@ var listCmd = &cobra.Command{
 		}
 
 		w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
-		fmt.Fprintln(w, "ID\tDate\tStatus\tTitle")
-		fmt.Fprintln(w, "--\t----\t------\t-----")
+		fmt.Fprintln(w, "Slug\tDate\tStatus\tTitle")
+		fmt.Fprintln(w, "----\t----\t------\t-----")
 		for _, d := range decisions {
-			fmt.Fprintf(w, "%04d\t%s\t%s\t%s\n", d.ID, d.Date, d.Status, d.Title)
+			fmt.Fprintf(w, "%s\t%s\t%s\t%s\n", d.Slug, d.Date, d.Status, d.Title)
 		}
 		return w.Flush()
 	},

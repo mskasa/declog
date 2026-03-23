@@ -1,4 +1,4 @@
-# 0001: Audit と Drift Detection
+# Audit と Drift Detection
 
 - Date: 2026-03-23
 - Type: Design

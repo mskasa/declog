@@ -1,7 +1,7 @@
 # 0011: Remove Numeric IDs from Documents
 
 - Date: 2026-03-23
-- Status: Draft
+- Status: Active
 - Author: masahiro.kasatani
 
 ## Context

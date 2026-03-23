@@ -1,7 +1,7 @@
 # 0011: ドキュメントから数値 ID を廃止する
 
 - Date: 2026-03-23
-- Status: Draft
+- Status: Active
 - Author: masahiro.kasatani
 
 ## Context

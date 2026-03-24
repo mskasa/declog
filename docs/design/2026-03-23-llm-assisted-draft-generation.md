@@ -50,8 +50,10 @@ kizami adr --ai "<title>"
 ### Context Gathering (`internal/ai/prompt.go`)
 
 `GatherInput(dir, title string)` collects:
-- **Changed files**: union of staged and unstaged files from `git diff --name-only` and `git diff --staged --name-only`, deduplicated
+- **Changed files**: staged files from `git diff --staged --name-only`
 - **Staged diff**: output of `git diff --staged`, truncated to `DiffLimit = 2000` characters to stay within token budgets
+
+Both are limited to staged files so that the developer controls the context by staging before running `kizami adr --ai`.
 
 The diff is truncated rather than summarized to keep the implementation simple and deterministic. The 2000-character limit was chosen as a practical balance between context quality and API cost.
 
@@ -103,7 +105,7 @@ Priority (highest to lowest):
 ## Open Questions
 
 - **Diff truncation**: The 2000-character hard cut may split a diff mid-hunk, potentially confusing the LLM. A smarter truncation (e.g., whole hunks only, or file-by-file priority) could improve draft quality for large changesets.
-- **Unstaged diff**: Currently only the staged diff is sent. Including unstaged changes could improve context when the developer hasn't staged everything yet, but risks including unrelated edits.
+- **Unstaged changes**: Both the changed file list and the diff are limited to staged files. This is intentional — the developer controls what context is sent by staging files before running `kizami adr --ai`. Unstaged changes are excluded to avoid including unrelated work-in-progress edits.
 - **Token usage feedback**: The API response includes token counts, but kizami does not currently surface them. Logging this at `--dry-run` time would help developers tune their workflow.
 
 ## Related Files

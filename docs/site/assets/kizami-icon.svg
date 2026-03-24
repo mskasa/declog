@@ -9,31 +9,31 @@
   </defs>
 
   <!-- Symbol frame -->
-  <rect x="88" y="56" width="236" height="236" rx="16" stroke="#161616" stroke-width="8"/>
+  <rect x="88" y="56" width="236" height="236" rx="16" stroke="#F3F1EC" stroke-width="8"/>
 
   <!-- Carving texture -->
-  <g clip-path="url(#clipMark)" opacity="0.22">
-    <path d="M92 88L164 160" stroke="#161616" stroke-width="7" stroke-linecap="round"/>
-    <path d="M124 72L220 168" stroke="#161616" stroke-width="7" stroke-linecap="round"/>
-    <path d="M180 72L274 166" stroke="#161616" stroke-width="7" stroke-linecap="round"/>
-    <path d="M238 72L320 154" stroke="#161616" stroke-width="7" stroke-linecap="round"/>
-    <path d="M94 136L170 212" stroke="#161616" stroke-width="7" stroke-linecap="round"/>
-    <path d="M92 190L146 244" stroke="#161616" stroke-width="7" stroke-linecap="round"/>
-    <path d="M140 200L200 260" stroke="#161616" stroke-width="7" stroke-linecap="round"/>
-    <path d="M216 188L300 272" stroke="#161616" stroke-width="7" stroke-linecap="round"/>
-    <path d="M258 132L326 200" stroke="#161616" stroke-width="7" stroke-linecap="round"/>
+  <g clip-path="url(#clipMark)" opacity="0.16">
+    <path d="M92 88L164 160" stroke="#F3F1EC" stroke-width="7" stroke-linecap="round"/>
+    <path d="M124 72L220 168" stroke="#F3F1EC" stroke-width="7" stroke-linecap="round"/>
+    <path d="M180 72L274 166" stroke="#F3F1EC" stroke-width="7" stroke-linecap="round"/>
+    <path d="M238 72L320 154" stroke="#F3F1EC" stroke-width="7" stroke-linecap="round"/>
+    <path d="M94 136L170 212" stroke="#F3F1EC" stroke-width="7" stroke-linecap="round"/>
+    <path d="M92 190L146 244" stroke="#F3F1EC" stroke-width="7" stroke-linecap="round"/>
+    <path d="M140 200L200 260" stroke="#F3F1EC" stroke-width="7" stroke-linecap="round"/>
+    <path d="M216 188L300 272" stroke="#F3F1EC" stroke-width="7" stroke-linecap="round"/>
+    <path d="M258 132L326 200" stroke="#F3F1EC" stroke-width="7" stroke-linecap="round"/>
   </g>
 
   <!-- Terminal >_ mark -->
-  <path d="M146 145L197 170L146 195" stroke="#8B2E2E" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M214 202H255" stroke="#8B2E2E" stroke-width="16" stroke-linecap="round"/>
+  <path d="M146 145L197 170L146 195" stroke="#C65B5B" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M214 202H255" stroke="#C65B5B" stroke-width="16" stroke-linecap="round"/>
 
   <!-- Chisel -->
   <g transform="rotate(-38 233 152)">
-    <rect x="214" y="92" width="38" height="116" rx="13" fill="#161616"/>
-    <rect x="218" y="100" width="8" height="98" rx="4" fill="#FFFFFF" opacity="0.18"/>
-    <rect x="240" y="100" width="6" height="98" rx="3" fill="#FFFFFF" opacity="0.12"/>
-    <rect x="214" y="184" width="38" height="22" rx="8" fill="#5A5A5A"/>
-    <path d="M214 206H252L233 246L214 206Z" fill="#161616"/>
+    <rect x="214" y="92" width="38" height="116" rx="13" fill="#F3F1EC"/>
+    <rect x="218" y="100" width="8" height="98" rx="4" fill="#000000" opacity="0.16"/>
+    <rect x="240" y="100" width="6" height="98" rx="3" fill="#000000" opacity="0.10"/>
+    <rect x="214" y="184" width="38" height="22" rx="8" fill="#C8C2B8"/>
+    <path d="M214 206H252L233 246L214 206Z" fill="#F3F1EC"/>
   </g>
 </svg>

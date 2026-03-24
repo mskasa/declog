@@ -1,10 +1,12 @@
 ---
 layout: default
-title: kizami — ドキュメント
+title: 日本語
+nav_order: 5
+has_children: true
 ---
 
 <p align="center">
-  <img src="../assets/kizami-logo-dark.svg" alt="kizami logo" width="480">
+  <img src="{{ site.baseurl }}/assets/kizami-logo-dark.svg" alt="kizami logo" width="480">
 </p>
 
 > ドキュメントに、嘘をつかせるな。

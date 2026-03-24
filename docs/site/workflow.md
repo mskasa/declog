@@ -1,6 +1,7 @@
 ---
 layout: default
-title: Development Workflow — kizami
+title: Development Workflow
+nav_order: 2
 ---
 
 # Development Workflow

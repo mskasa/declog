@@ -1,6 +1,8 @@
 ---
 layout: default
-title: 開発ワークフロー — kizami
+title: 開発ワークフロー
+parent: 日本語
+nav_order: 1
 ---
 
 # 開発ワークフロー

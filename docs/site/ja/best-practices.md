@@ -1,6 +1,8 @@
 ---
 layout: default
-title: ベストプラクティス — kizami
+title: ベストプラクティス
+parent: 日本語
+nav_order: 3
 ---
 
 # ベストプラクティス

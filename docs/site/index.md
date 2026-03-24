@@ -3,7 +3,12 @@ layout: default
 title: kizami — Documentation
 ---
 
-# kizami
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/kizami-logo-dark.svg">
+    <img src="assets/kizami-logo-light.svg" alt="kizami logo" width="480">
+  </picture>
+</p>
 
 > Keep your docs honest.
 

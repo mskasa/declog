@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1200" height="360" viewBox="0 0 1200 360" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">kizami logo - light mode</title>
+  <desc id="desc">A minimalist logo for kizami featuring a carved terminal prompt, chisel motif, wordmark, and tagline Carved in Code.</desc>
+
+  <defs>
+    <clipPath id="clipMark">
+      <rect x="88" y="56" width="236" height="236" rx="16"/>
+    </clipPath>
+  </defs>
+
+  <!-- transparent background -->
+
+  <!-- Symbol frame -->
+  <rect x="88" y="56" width="236" height="236" rx="16" stroke="#161616" stroke-width="8"/>
+
+  <!-- Carving texture -->
+  <g clip-path="url(#clipMark)" opacity="0.22">
+    <path d="M92 88L164 160" stroke="#161616" stroke-width="7" stroke-linecap="round"/>
+    <path d="M124 72L220 168" stroke="#161616" stroke-width="7" stroke-linecap="round"/>
+    <path d="M180 72L274 166" stroke="#161616" stroke-width="7" stroke-linecap="round"/>
+    <path d="M238 72L320 154" stroke="#161616" stroke-width="7" stroke-linecap="round"/>
+    <path d="M94 136L170 212" stroke="#161616" stroke-width="7" stroke-linecap="round"/>
+    <path d="M92 190L146 244" stroke="#161616" stroke-width="7" stroke-linecap="round"/>
+    <path d="M140 200L200 260" stroke="#161616" stroke-width="7" stroke-linecap="round"/>
+    <path d="M216 188L300 272" stroke="#161616" stroke-width="7" stroke-linecap="round"/>
+    <path d="M258 132L326 200" stroke="#161616" stroke-width="7" stroke-linecap="round"/>
+  </g>
+
+  <!-- Terminal >_ mark -->
+  <path d="M146 145L197 170L146 195" stroke="#8B2E2E" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M214 202H255" stroke="#8B2E2E" stroke-width="16" stroke-linecap="round"/>
+
+  <!-- Chisel -->
+  <g transform="rotate(-38 233 152)">
+    <rect x="214" y="92" width="38" height="116" rx="13" fill="#161616"/>
+    <rect x="218" y="100" width="8" height="98" rx="4" fill="#FFFFFF" opacity="0.18"/>
+    <rect x="240" y="100" width="6" height="98" rx="3" fill="#FFFFFF" opacity="0.12"/>
+    <rect x="214" y="184" width="38" height="22" rx="8" fill="#5A5A5A"/>
+    <path d="M214 206H252L233 246L214 206Z" fill="#161616"/>
+  </g>
+
+  <!-- Wordmark -->
+  <g transform="translate(380 78)">
+    <path fill="#161616" d="M34 0H70V60L121 0H166L101 78L173 190H129L77 106L70 114V190H34V0Z"/>
+    <text x="185" y="136"
+          fill="#161616"
+          font-size="138"
+          font-family="Georgia, 'Times New Roman', serif"
+          font-weight="700"
+          letter-spacing="1.5">izami</text>
+
+    <line x1="178" y1="176" x2="708" y2="176" stroke="#8B2E2E" stroke-width="4" stroke-linecap="round" opacity="0.9"/>
+
+    <text x="184" y="232"
+          fill="#5A5A5A"
+          font-size="44"
+          font-family="Georgia, 'Times New Roman', serif"
+          letter-spacing="4">Carved in Code</text>
+  </g>
+</svg>

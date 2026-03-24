@@ -16,7 +16,7 @@ This page shows how kizami fits into your day-to-day development process.
 
 When you make a code change that involves a meaningful technical decision, record it alongside the code change — in the same commit.
 
-```mermaid
+<div class="mermaid">
 flowchart TD
     A[Change code] --> B[git add]
     B --> C[kizami adr / kizami design]
@@ -27,7 +27,7 @@ flowchart TD
     F --> G[git add the new document]
     G --> H[git commit\ncode + document together]
     H --> I[Later: kizami blame / search\nto look up past decisions]
-```
+</div>
 
 ---
 

@@ -3,7 +3,9 @@ layout: default
 title: kizami — Documentation
 ---
 
-# kizami
+<p align="center">
+  <img src="assets/kizami-logo-dark.svg" alt="kizami logo" width="480">
+</p>
 
 > Keep your docs honest.
 

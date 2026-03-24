@@ -5,7 +5,7 @@ title: kizami — Documentation
 
 # kizami
 
-> Record the why, not just the what.
+> Keep your docs honest.
 
 **kizami** is a minimal CLI tool to maintain living documentation alongside code, with automatic drift detection.
 

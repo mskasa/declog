@@ -1,6 +1,7 @@
 ---
 layout: default
-title: Best Practices — kizami
+title: Best Practices
+nav_order: 4
 ---
 
 # Best Practices

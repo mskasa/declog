@@ -1,3 +1,13 @@
 title: kizami
 description: Keep your docs honest.
-theme: jekyll-theme-midnight
+remote_theme: just-the-docs/just-the-docs@v0.10.0
+
+color_scheme: dark
+logo: /assets/kizami-icon.svg
+
+search_enabled: true
+
+footer_content: 'kizami is MIT licensed. <a href="https://github.com/mskasa/kizami">View on GitHub</a>'
+
+back_to_top: true
+back_to_top_text: "Back to top"

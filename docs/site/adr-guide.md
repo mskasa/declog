@@ -1,6 +1,7 @@
 ---
 layout: default
-title: ADR Guide — kizami
+title: ADR Guide
+nav_order: 3
 ---
 
 # ADR Guide

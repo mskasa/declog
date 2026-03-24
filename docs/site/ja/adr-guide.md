@@ -1,6 +1,8 @@
 ---
 layout: default
-title: ADR運用ガイド — kizami
+title: ADR運用ガイド
+parent: 日本語
+nav_order: 2
 ---
 
 # ADR運用ガイド

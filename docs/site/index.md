@@ -1,10 +1,11 @@
 ---
-layout: default
-title: kizami — Documentation
+layout: home
+title: Home
+nav_order: 1
 ---
 
 <p align="center">
-  <img src="assets/kizami-logo-dark.svg" alt="kizami logo" width="480">
+  <img src="{{ site.baseurl }}/assets/kizami-logo-dark.svg" alt="kizami logo" width="480">
 </p>
 
 > Keep your docs honest.

@@ -83,6 +83,17 @@ func AuthorFromGit() string { ... }
 この意思決定に関連するファイル（例: internal/search/search.go）
 ```
 
+### AIによるドラフト生成
+
+`--ai` フラグを付けると、AIがテンプレートの下書きを自動生成します。ステージ済みファイルの差分を読み込み、Context・Decision・Consequencesのセクションを埋めた状態でエディタが開きます。
+
+```bash
+kizami adr --ai "データベースアクセスにコネクションプールを使う"
+kizami design --ai "コネクションプール設計"
+```
+
+生成された内容はあくまで出発点です。コミット前に必ず内容を確認・編集してください。
+
 ### 書き方のポイント
 
 **Context** — *問題*にフォーカスする。解決策ではなく、なぜ決断が必要だったかを書く。どんな制約があったか？
@@ -120,6 +131,18 @@ kizami status 2026-03-12-use-sqlite active
 kizami status 2026-03-12-use-sqlite inactive
 kizami status 2026-03-12-use-sqlite superseded --by 2026-06-01-use-postgresql
 ```
+
+### Draft → Active の自動昇格
+
+`kizami init` で生成されるワークフロー（`kizami-promote.yml`）を有効にすると、main ブランチへの push 時に `Draft` ステータスのドキュメントを自動的に `Active` に昇格させることができます。
+
+```bash
+kizami init
+# → .github/workflows/kizami-promote.yml が生成される（コメントアウト済み）
+# ファイルを編集してワークフローを有効化する
+```
+
+コミット時点で Draft のまま残し、マージされた時点で Active になるフローを自動化したい場合に活用してください。
 
 ---
 

@@ -83,6 +83,17 @@ Options that were considered but not adopted, and why. (Optional)
 List files related to this decision (e.g. internal/search/search.go).
 ```
 
+### AI-assisted drafting
+
+Add the `--ai` flag to have AI generate a draft for you. kizami reads the diff of staged files and pre-fills the Context, Decision, and Consequences sections before opening your editor.
+
+```bash
+kizami adr --ai "use connection pooling for database access"
+kizami design --ai "connection pool design"
+```
+
+Treat the generated content as a starting point — always review and edit before committing.
+
 ### Writing tips
 
 **Context** — Focus on the *problem*, not the solution. Why was a decision needed at all? What constraints existed?
@@ -119,6 +130,16 @@ Draft → Active → Inactive
 kizami status 2026-03-12-use-sqlite active
 kizami status 2026-03-12-use-sqlite inactive
 kizami status 2026-03-12-use-sqlite superseded --by 2026-06-01-use-postgresql
+```
+
+### Automating Draft → Active promotion
+
+`kizami init` generates a workflow (`kizami-promote.yml`) that automatically promotes `Draft` documents to `Active` on push to main. This lets you commit ADRs as `Draft` during development and have them automatically become `Active` when the change lands.
+
+```bash
+kizami init
+# → .github/workflows/kizami-promote.yml (generated but commented out)
+# Edit the file to enable the workflow
 ```
 
 ---

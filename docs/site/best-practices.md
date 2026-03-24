@@ -119,7 +119,7 @@ There's no fixed limit, but if you're creating more than one or two ADRs per wee
 
 **Q: Should I write ADRs for decisions made in the past?**
 
-Yes, retroactive ADRs are valuable — especially for decisions that are still shaping the codebase today. Use the actual decision date (even if it was years ago) in the `Date` field, and note in the Context section that this is a retroactive record.
+Yes, ADRs written after the fact are valuable — especially for decisions that are still shaping the codebase today. Use the actual decision date (even if it was years ago) in the `Date` field, and note in the Context section that this was recorded after the decision was made.
 
 **Q: Can I use kizami for non-code decisions?**
 

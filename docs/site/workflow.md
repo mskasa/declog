@@ -53,6 +53,12 @@ kizami will:
 - **Show similar ADRs** if any existing documents partially match the title
 - Open the generated file in your `$EDITOR`
 
+Add `--ai` to have AI generate a draft based on your staged diff:
+
+```bash
+kizami adr --ai "use connection pooling for database access"
+```
+
 ### 3. Handle existing decisions (if needed)
 
 If an existing ADR is being replaced by the new one, mark it as superseded before committing:

@@ -22,12 +22,12 @@ flowchart TD
     A[コードを変更] --> B[git add]
     B --> C[kizami adr / kizami design]
     C --> D{類似ADRはある?}
-    D -- ある --> E[既存ADRを確認\n必要なら Superseded にする]
-    D -- ない --> F[テンプレートを記入\nRelated Filesは自動挿入済み]
+    D -- ある --> E[既存ADRを確認し必要なら Superseded に]
+    D -- ない --> F[テンプレートを記入]
     E --> F
     F --> G[新しいドキュメントをgit add]
-    G --> H[git commit\nコードとドキュメントをまとめて]
-    H --> I[後から kizami blame / search\n過去の判断を参照]
+    G --> H[コードとドキュメントをまとめてgit commit]
+    H --> I[kizami blame / search で過去の判断を参照]
 </div>
 
 ---

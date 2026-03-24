@@ -19,14 +19,14 @@ When you make a code change that involves a meaningful technical decision, recor
 <div class="mermaid">
 flowchart TD
     A[Change code] --> B[git add]
-    B --> C[kizami adr / kizami design]
-    C --> D{Similar ADRs exist?}
+    B --> C["kizami adr / kizami design"]
+    C --> D{"Similar ADRs exist?"}
     D -- Yes --> E[Review and supersede if needed]
     D -- No --> F[Fill in the template]
     E --> F
     F --> G[git add the new document]
     G --> H[git commit code and document together]
-    H --> I[kizami blame / search]
+    H --> I["kizami blame / search"]
 </div>
 
 ---

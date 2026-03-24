@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - 'docs/site/**'
+      - "docs/site/**"
 
   workflow_dispatch:
 
@@ -34,7 +34,7 @@ jobs:
           enablement: true
 
       - name: Build with Jekyll
-        uses: actions/jekyll-build-pages@44a6e6beabd48582f863aeeb9fb61e4c69a7d400 # v1.0.13
+        uses: actions/jekyll-build-pages@44a6e6beabd48582f863aeeb6cb2151cc1716697 # v1.0.13
         with:
           source: docs/site
           destination: _site

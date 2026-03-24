@@ -84,17 +84,7 @@ func BuildDesignPrompt(input PromptInput) string {
 }
 
 func changedFiles(dir string) []string {
-	staged := gitDiffFiles(dir, "--staged")
-	unstaged := gitDiffFiles(dir, "")
-	seen := make(map[string]struct{})
-	var result []string
-	for _, f := range append(staged, unstaged...) {
-		if _, ok := seen[f]; !ok {
-			seen[f] = struct{}{}
-			result = append(result, f)
-		}
-	}
-	return result
+	return gitDiffFiles(dir, "--staged")
 }
 
 func gitDiffFiles(dir, flag string) []string {

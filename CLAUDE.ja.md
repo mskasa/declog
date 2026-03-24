@@ -243,6 +243,19 @@ func AuthorFromGit() string {
 - CLIの出力メッセージは**英語**に統一する
 - コードコメントは**英語**に統一する
 
+### GitHub Actions
+
+- タグのすり替えによるインジェクションを防ぐため、アクションはバージョンタグではなくフルコミットSHAで指定する
+- まずバージョンタグで記載し、その後 `pinact run` を実行してSHAに変換する：
+
+```yaml
+# 変換前
+- uses: actions/checkout@v4
+
+# 変換後（pinact run を実行）
+- uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+```
+
 ### テスト方針
 
 - 各パッケージに `_test.go` を置く

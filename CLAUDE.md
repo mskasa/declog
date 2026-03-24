@@ -242,6 +242,19 @@ Before writing any code, manually create the following ADRs:
 - All CLI output messages must be in **English**
 - Code comments must be written in **English**
 
+### GitHub Actions
+
+- Always pin actions to a full commit SHA instead of a version tag to prevent tag-mutation attacks
+- Write the version tag first as a comment for readability, then run `pinact run` to convert it to a SHA:
+
+```yaml
+# Before
+- uses: actions/checkout@v4
+
+# After (run: pinact run)
+- uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+```
+
 ### Testing Policy
 
 - Place `_test.go` files in each package

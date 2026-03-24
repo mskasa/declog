@@ -471,7 +471,7 @@ Claude:
 
 ### v1.0.0（パブリックリリース）
 
-- [ ] ドキュメントサイト（GitHub Pages）
+- [x] ドキュメントサイト（GitHub Pages）
 - [ ] Homebrew formula
 - [ ] カラー出力（kizami list / kizami search）
 

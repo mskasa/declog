@@ -504,7 +504,7 @@ Claude:
 
 ### v1.0.0 (public release)
 
-- [ ] Documentation site (GitHub Pages)
+- [x] Documentation site (GitHub Pages)
 - [ ] Homebrew formula
 - [ ] Color output for `kizami list` and `kizami search`
 

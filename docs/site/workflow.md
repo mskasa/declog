@@ -21,12 +21,12 @@ flowchart TD
     A[Change code] --> B[git add]
     B --> C[kizami adr / kizami design]
     C --> D{Similar ADRs exist?}
-    D -- Yes --> E[Review existing ADRs\nSupersede if needed]
-    D -- No --> F[Fill in the template\nRelated Files auto-inserted]
+    D -- Yes --> E[Review and supersede if needed]
+    D -- No --> F[Fill in the template]
     E --> F
     F --> G[git add the new document]
-    G --> H[git commit\ncode + document together]
-    H --> I[Later: kizami blame / search\nto look up past decisions]
+    G --> H[git commit code and document together]
+    H --> I[kizami blame / search]
 </div>
 
 ---

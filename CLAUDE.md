@@ -531,6 +531,15 @@ Claude:
 - [ ] `kizami stats`
 - [ ] GitHub Actions Marketplace release
 
+### AI Integration (Strengthening the "why not just use AI?" answer)
+
+Current state: `kizami adr --ai` exists but AI is used only as a drafting assistant.
+Goal: make kizami + AI clearly superior to "just ask AI" for documentation maintenance.
+
+- [ ] `kizami audit --ai` — when drift is detected, use AI + `git log` to suggest fixes (e.g. detect renames and propose updated Related Files entries)
+- [ ] `kizami verify --ai` — read ADR content and current code, flag semantic mismatches (e.g. "ADR says X but code now does Y")
+- [ ] `kizami blame` output enhancement — show a one-line excerpt (Decision section) alongside each result, so the value of accumulated ADRs is immediately visible
+
 ---
 
 ## References

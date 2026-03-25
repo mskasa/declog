@@ -1,7 +1,7 @@
 ---
 layout: default
 title: 日本語
-nav_order: 5
+nav_order: 6
 has_children: true
 ---
 
@@ -34,6 +34,7 @@ kizamiは、その意思決定をMarkdownファイルとしてコードと並べ
 
 | ページ | 内容 |
 |---|---|
+| [なぜkizamiが必要か？](why-kizami) | AIアシスタントがある時代になぜkizamiが必要なのか |
 | [開発ワークフロー](workflow) | kizamiを日常の開発プロセスに組み込む方法 |
 | [ADR運用ガイド](adr-guide) | ADRの書き方・粒度・ステータス管理 |
 | [ベストプラクティス](best-practices) | kizamiを最大限に活用するためのヒント |

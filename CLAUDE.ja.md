@@ -498,6 +498,15 @@ Claude:
 - [ ] kizami stats
 - [ ] GitHub Actions Marketplace 公開
 
+### AI 連携強化（「AIに頼めばいい」への回答を補強する）
+
+現状：`kizami adr --ai` はあるが、AI はドラフト生成の補助にとどまっている。
+目標：kizami + AI が「AIに聞くだけ」より明らかに優れていることを体験として示す。
+
+- [ ] `kizami audit --ai` — 乖離検出時に AI + `git log` で修正案を提示（例：リネームを検出して Related Files の更新を提案）
+- [ ] `kizami verify --ai` — ADR の内容と現在のコードを照合し、意味的なずれを検出（例：「ADR には X と書いてあるが、コードは今 Y をしている」）
+- [ ] `kizami blame` の出力強化 — 各結果に Decision セクションの一行要約を表示し、蓄積された ADR の価値をその場で実感できるようにする
+
 ---
 
 ## 参考リンク

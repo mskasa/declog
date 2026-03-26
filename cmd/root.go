@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"runtime/debug"
 
 	"github.com/mskasa/kizami/internal/config"
 	"github.com/mskasa/kizami/internal/decision"
@@ -11,7 +12,17 @@ import (
 )
 
 // Version is set at build time via ldflags.
+// Falls back to the module version from build info (e.g. when installed via go install).
 var Version = "dev"
+
+func init() {
+	if Version == "dev" {
+		if info, ok := debug.ReadBuildInfo(); ok && info.Main.Version != "" && info.Main.Version != "(devel)" {
+			Version = info.Main.Version
+		}
+	}
+	rootCmd.Version = Version
+}
 
 var rootCmd = &cobra.Command{
 	Use:     "kizami",

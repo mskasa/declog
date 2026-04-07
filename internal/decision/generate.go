@@ -98,7 +98,11 @@ func List(dir string) ([]*Decision, error) {
 
 // FindBySlug returns the decision whose filename slug matches the given slug, or an error if not found.
 // Both legacy (NNNN-slug.md) and new (YYYY-MM-DD-slug.md) formats are searched recursively.
+// Returns "not found" without error if dir does not exist.
 func FindBySlug(dir, slug string) (*Decision, error) {
+	if _, err := os.Stat(dir); os.IsNotExist(err) {
+		return nil, fmt.Errorf("document %q not found", slug)
+	}
 	var found *Decision
 	err := filepath.WalkDir(dir, func(path string, d os.DirEntry, err error) error {
 		if err != nil {

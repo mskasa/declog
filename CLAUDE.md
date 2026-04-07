@@ -466,7 +466,7 @@ Claude:
 
 ### v0.2.0
 
-- [x] `kizami init` — initialize decisions directory
+- [x] `kizami init` — initialize decisions directory (`--yes` flag for non-interactive use)
 - [x] Auto-open editor after `kizami adr`
 - [x] Suggest changed files (staged and unstaged) as Related Files candidates on `kizami adr`
 - [x] Show similar ADR suggestions on `kizami adr` (keyword partial match)
@@ -500,7 +500,7 @@ Claude:
 - [x] Design document template (saved under `docs/design/`, default `Status: Draft`)
 - [x] Change ADR template default from `Status: Active` to `Status: Draft`
 - [x] `kizami audit` skips `Draft` documents (only checks `Active`)
-- [x] `kizami init` generates optional auto-promote workflow (`kizami-promote.yml`): auto-promotes `Draft` → `Active` on push to main, with inline comments for customization
+- [x] `kizami init` generates optional auto-promote workflow (`kizami-promote.yml`): auto-promotes `Draft` → `Active` on push to default branch (auto-detected via git)
 - [x] `kizami audit` supports multiple directories (`audit.dirs` in config)
 - [x] Remove ADR-specific language from generic output messages
 - [x] `kizami design --ai` — AI draft for design documents

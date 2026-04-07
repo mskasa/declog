@@ -18,7 +18,11 @@ type Result struct {
 }
 
 // Run searches for keyword in dir using ripgrep if available, otherwise stdlib.
+// Returns empty results without error if dir does not exist.
 func Run(dir, keyword string) ([]Result, error) {
+	if _, err := os.Stat(dir); os.IsNotExist(err) {
+		return nil, nil
+	}
 	if _, err := exec.LookPath("rg"); err == nil {
 		return runRipgrep(dir, keyword)
 	}
@@ -26,7 +30,11 @@ func Run(dir, keyword string) ([]Result, error) {
 }
 
 // RunCaseInsensitive searches for keyword case-insensitively.
+// Returns empty results without error if dir does not exist.
 func RunCaseInsensitive(dir, keyword string) ([]Result, error) {
+	if _, err := os.Stat(dir); os.IsNotExist(err) {
+		return nil, nil
+	}
 	if _, err := exec.LookPath("rg"); err == nil {
 		return runRipgrepCI(dir, keyword)
 	}

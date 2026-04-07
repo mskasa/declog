@@ -1,10 +1,13 @@
 package cmd
 
 import (
+	"os"
+
 	"github.com/mskasa/kizami/internal/initializer"
 	"github.com/spf13/cobra"
-	"os"
 )
+
+var initYesAll bool
 
 var initCmd = &cobra.Command{
 	Use:   "init",
@@ -18,11 +21,13 @@ var initCmd = &cobra.Command{
 			Root:   root,
 			Input:  os.Stdin,
 			Output: os.Stdout,
+			YesAll: initYesAll,
 		}
 		return i.Run()
 	},
 }
 
 func init() {
+	initCmd.Flags().BoolVarP(&initYesAll, "yes", "y", false, "Accept all prompts non-interactively")
 	rootCmd.AddCommand(initCmd)
 }

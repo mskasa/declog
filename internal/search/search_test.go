@@ -82,3 +82,23 @@ func TestRunRipgrep(t *testing.T) {
 		t.Errorf("Text = %q", results[0].Text)
 	}
 }
+
+func TestRun_NonExistentDir(t *testing.T) {
+	results, err := Run("/nonexistent/path/that/does/not/exist", "keyword")
+	if err != nil {
+		t.Fatalf("Run() on non-existent dir should not error, got: %v", err)
+	}
+	if len(results) != 0 {
+		t.Errorf("expected empty results, got: %v", results)
+	}
+}
+
+func TestRunCaseInsensitive_NonExistentDir(t *testing.T) {
+	results, err := RunCaseInsensitive("/nonexistent/path/that/does/not/exist", "keyword")
+	if err != nil {
+		t.Fatalf("RunCaseInsensitive() on non-existent dir should not error, got: %v", err)
+	}
+	if len(results) != 0 {
+		t.Errorf("expected empty results, got: %v", results)
+	}
+}

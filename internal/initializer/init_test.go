@@ -383,3 +383,139 @@ func TestRun_PromoteWorkflowAlreadyExists(t *testing.T) {
 		t.Errorf("existing kizami-promote.yml was overwritten")
 	}
 }
+
+func TestRun_YesAll(t *testing.T) {
+	root := t.TempDir()
+	// Create .git/hooks so InstallHook works.
+	if err := os.MkdirAll(filepath.Join(root, ".git", "hooks"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+
+	var out bytes.Buffer
+	init_ := &Initializer{
+		Root:   root,
+		Input:  strings.NewReader(""), // no input — should not be needed
+		Output: &out,
+		YesAll: true,
+	}
+
+	if err := init_.Run(); err != nil {
+		t.Fatalf("Run() error: %v", err)
+	}
+
+	// All workflows and hook must be created.
+	for _, path := range []string{
+		filepath.Join(root, ".github", "workflows", "adr-check.yml"),
+		filepath.Join(root, ".github", "workflows", "adr-audit.yml"),
+		filepath.Join(root, ".github", "workflows", "kizami-promote.yml"),
+		filepath.Join(root, ".git", "hooks", "pre-commit"),
+		filepath.Join(root, "kizami.toml"),
+	} {
+		if _, err := os.Stat(path); err != nil {
+			t.Errorf("expected %s to be created, got: %v", path, err)
+		}
+	}
+}
+
+func TestRun_YesAll_NoInputRead(t *testing.T) {
+	root := t.TempDir()
+	if err := os.MkdirAll(filepath.Join(root, ".git", "hooks"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+
+	// errReader simulates a closed stdin that returns an error on read.
+	type errReader struct{}
+	_ = errReader{}
+
+	var out bytes.Buffer
+	init_ := &Initializer{
+		Root:   root,
+		Input:  strings.NewReader(""), // EOF immediately
+		Output: &out,
+		YesAll: true,
+	}
+
+	// Must succeed even though stdin is empty.
+	if err := init_.Run(); err != nil {
+		t.Fatalf("Run() with YesAll and empty stdin should not fail: %v", err)
+	}
+}
+
+func TestRun_CreatesDesignDir(t *testing.T) {
+	root := t.TempDir()
+	var out bytes.Buffer
+
+	init_ := &Initializer{
+		Root:   root,
+		Input:  strings.NewReader("n\nn\nn\nn\n"),
+		Output: &out,
+	}
+
+	if err := init_.Run(); err != nil {
+		t.Fatalf("Run() error: %v", err)
+	}
+
+	designDir := filepath.Join(root, "docs", "design")
+	if _, err := os.Stat(designDir); err != nil {
+		t.Errorf("docs/design/ not created: %v", err)
+	}
+
+	output := out.String()
+	if !strings.Contains(output, "✅ Created docs/design/") {
+		t.Errorf("expected design dir creation message, got: %s", output)
+	}
+}
+
+func TestRun_DesignDirAlreadyExists(t *testing.T) {
+	root := t.TempDir()
+
+	designDir := filepath.Join(root, "docs", "design")
+	if err := os.MkdirAll(designDir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+
+	var out bytes.Buffer
+	init_ := &Initializer{
+		Root:   root,
+		Input:  strings.NewReader("n\nn\nn\nn\n"),
+		Output: &out,
+	}
+
+	if err := init_.Run(); err != nil {
+		t.Fatalf("Run() error: %v", err)
+	}
+
+	output := out.String()
+	if !strings.Contains(output, "docs/design/ already exists. Skipping.") {
+		t.Errorf("expected skip message, got: %s", output)
+	}
+}
+
+func TestRun_PromoteWorkflowContainsBranch(t *testing.T) {
+	root := t.TempDir()
+	var out bytes.Buffer
+	init_ := &Initializer{
+		Root:   root,
+		Input:  strings.NewReader("n\nn\nn\ny\n"), // workflow=n, hook=n, audit=n, promote=y
+		Output: &out,
+	}
+
+	if err := init_.Run(); err != nil {
+		t.Fatalf("Run() error: %v", err)
+	}
+
+	promotePath := filepath.Join(root, ".github", "workflows", "kizami-promote.yml")
+	content, err := os.ReadFile(promotePath)
+	if err != nil {
+		t.Fatalf("reading kizami-promote.yml: %v", err)
+	}
+
+	// The placeholder must be replaced; the literal string must not remain.
+	if strings.Contains(string(content), "{{DEFAULT_BRANCH}}") {
+		t.Errorf("kizami-promote.yml still contains unreplaced placeholder {{DEFAULT_BRANCH}}")
+	}
+	// Must have a concrete branch name in the push trigger.
+	if !strings.Contains(string(content), "branches:") {
+		t.Errorf("kizami-promote.yml missing branches: section")
+	}
+}

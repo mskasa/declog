@@ -310,3 +310,10 @@ func containsStr(s, substr string) bool {
 	}
 	return false
 }
+
+func TestFindBySlug_NonExistentDir(t *testing.T) {
+	_, err := FindBySlug("/nonexistent/path/that/does/not/exist", "some-slug")
+	if err == nil {
+		t.Error("FindBySlug() on non-existent dir should return error (not found), got nil")
+	}
+}

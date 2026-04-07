@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 )
@@ -46,6 +47,42 @@ type Initializer struct {
 	Root   string
 	Input  io.Reader
 	Output io.Writer
+	YesAll bool // when true, all prompts are auto-accepted
+}
+
+// prompt prints a y/n question and returns true if the user answers "y".
+// When YesAll is set, it auto-answers "y" without reading input.
+func (i *Initializer) prompt(scanner *bufio.Scanner, question string) bool {
+	if i.YesAll {
+		fmt.Fprintf(i.Output, "%s (y/n): y\n", question)
+		return true
+	}
+	fmt.Fprintf(i.Output, "%s (y/n): ", question)
+	if !scanner.Scan() {
+		return false
+	}
+	return strings.TrimSpace(strings.ToLower(scanner.Text())) == "y"
+}
+
+// detectDefaultBranch returns the default branch name by inspecting the remote HEAD ref.
+// Falls back to "main" if detection fails.
+func detectDefaultBranch(root string) string {
+	out, err := exec.Command("git", "-C", root, "symbolic-ref", "--short", "refs/remotes/origin/HEAD").Output()
+	if err == nil {
+		// output is like "origin/main"
+		parts := strings.SplitN(strings.TrimSpace(string(out)), "/", 2)
+		if len(parts) == 2 && parts[1] != "" {
+			return parts[1]
+		}
+	}
+	// Fallback: use the current branch name
+	out, err = exec.Command("git", "-C", root, "rev-parse", "--abbrev-ref", "HEAD").Output()
+	if err == nil {
+		if b := strings.TrimSpace(string(out)); b != "" && b != "HEAD" {
+			return b
+		}
+	}
+	return "main"
 }
 
 // Run performs the initialization steps sequentially.
@@ -53,6 +90,10 @@ func (i *Initializer) Run() error {
 	fmt.Fprintln(i.Output, "Initializing kizami...")
 
 	if err := i.createDecisionsDir(); err != nil {
+		return err
+	}
+
+	if err := i.createDesignDir(); err != nil {
 		return err
 	}
 
@@ -96,13 +137,21 @@ func (i *Initializer) createDecisionsDir() error {
 	return nil
 }
 
-func (i *Initializer) setupWorkflow(scanner *bufio.Scanner) error {
-	fmt.Fprintf(i.Output, "Add GitHub Actions ADR check workflow? (y/n): ")
-
-	if !scanner.Scan() {
+func (i *Initializer) createDesignDir() error {
+	dir := filepath.Join(i.Root, "docs", "design")
+	if _, err := os.Stat(dir); err == nil {
+		fmt.Fprintf(i.Output, "  ⚠️  docs/design/ already exists. Skipping.\n")
 		return nil
 	}
-	if strings.TrimSpace(strings.ToLower(scanner.Text())) != "y" {
+	if err := os.MkdirAll(dir, 0o755); err != nil {
+		return fmt.Errorf("creating docs/design/: %w", err)
+	}
+	fmt.Fprintf(i.Output, "  ✅ Created docs/design/\n")
+	return nil
+}
+
+func (i *Initializer) setupWorkflow(scanner *bufio.Scanner) error {
+	if !i.prompt(scanner, "Add GitHub Actions ADR check workflow?") {
 		return nil
 	}
 
@@ -120,12 +169,7 @@ func (i *Initializer) setupWorkflow(scanner *bufio.Scanner) error {
 }
 
 func (i *Initializer) setupHook(scanner *bufio.Scanner) error {
-	fmt.Fprintf(i.Output, "Add pre-commit hook to prompt for a decision record? (y/n): ")
-
-	if !scanner.Scan() {
-		return nil
-	}
-	if strings.TrimSpace(strings.ToLower(scanner.Text())) != "y" {
+	if !i.prompt(scanner, "Add pre-commit hook to prompt for a decision record?") {
 		return nil
 	}
 
@@ -147,12 +191,7 @@ func (i *Initializer) setupConfig() error {
 }
 
 func (i *Initializer) setupPromoteWorkflow(scanner *bufio.Scanner) error {
-	fmt.Fprintf(i.Output, "Add auto-promote workflow (Draft → Active on push to main)? (y/n): ")
-
-	if !scanner.Scan() {
-		return nil
-	}
-	if strings.TrimSpace(strings.ToLower(scanner.Text())) != "y" {
+	if !i.prompt(scanner, "Add auto-promote workflow (Draft → Active on push to default branch)?") {
 		return nil
 	}
 
@@ -167,20 +206,17 @@ func (i *Initializer) setupPromoteWorkflow(scanner *bufio.Scanner) error {
 		return nil
 	}
 
-	if err := os.WriteFile(workflowPath, []byte(promoteWorkflow), 0o644); err != nil {
+	branch := detectDefaultBranch(i.Root)
+	content := strings.ReplaceAll(promoteWorkflow, "{{DEFAULT_BRANCH}}", branch)
+	if err := os.WriteFile(workflowPath, []byte(content), 0o644); err != nil {
 		return fmt.Errorf("writing kizami-promote.yml: %w", err)
 	}
-	fmt.Fprintf(i.Output, "  ✅ Created .github/workflows/kizami-promote.yml\n")
+	fmt.Fprintf(i.Output, "  ✅ Created .github/workflows/kizami-promote.yml (branch: %s)\n", branch)
 	return nil
 }
 
 func (i *Initializer) setupAuditWorkflow(scanner *bufio.Scanner) error {
-	fmt.Fprintf(i.Output, "Add weekly audit workflow? (y/n): ")
-
-	if !scanner.Scan() {
-		return nil
-	}
-	if strings.TrimSpace(strings.ToLower(scanner.Text())) != "y" {
+	if !i.prompt(scanner, "Add weekly audit workflow?") {
 		return nil
 	}
 

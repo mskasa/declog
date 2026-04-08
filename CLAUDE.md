@@ -521,24 +521,41 @@ Claude:
 - [ ] Homebrew formula
 - [ ] Color output for `kizami list` and `kizami search`
 
-### Backlog
+### Backlog (prioritized)
 
-- [ ] `kizami list --type <type>` — filter list by document Type field (e.g. `--type adr`, `--type design`)
-- [ ] Drift detection beyond file existence (function/symbol level references)
-- [ ] Generate reverse index (`.kizami/index.json`: file path → ADR IDs mapping) for faster `kizami blame` and external tool integration
+#### 🔴 High — Fix or quality issue
+
+- [ ] **[Bug]** slug collision across directories — `kizami show <slug>` silently returns the first match when the same slug exists in multiple dirs (e.g. `docs/decisions/` and `docs/design/`); should error or list all matches
+- [ ] Relax filename constraint — accept any `.md` file containing kizami-style front-matter (`- Status:`, `## Related Files`) regardless of filename; reduces migration cost for teams with existing docs (requires rethinking `kizami list` sort order)
+- [ ] Include long-stale Draft documents in `kizami audit` — Draft docs older than `review.months_threshold` should be audited (or add `kizami audit --include-draft` flag); currently Draft is always skipped, causing silent drift
+
+#### 🟡 Medium — Usability and discoverability
+
+- [ ] `kizami blame` output enhancement — show a one-line excerpt (Decision section) alongside each result, so the value of accumulated ADRs is immediately visible
 - [ ] `kizami sync` — interactively update Related Files in existing documents
+- [ ] `kizami list --type <type>` — filter list by document Type field (e.g. `--type adr`, `--type design`)
+
+#### 🟢 Low — Nice to have
+
+- [ ] Generate reverse index (`.kizami/index.json`: file path → ADR IDs mapping) for faster `kizami blame` and external tool integration
 - [ ] User-defined templates (configurable template path; whether Related Files section is required is TBD)
 - [ ] `kizami stats`
 - [ ] GitHub Actions Marketplace release
+- [ ] Drift detection beyond file existence (function/symbol level references) — fundamentally hard without AI; see `kizami verify --ai` below
 
 ### AI Integration (Strengthening the "why not just use AI?" answer)
 
 Current state: `kizami adr --ai` exists but AI is used only as a drafting assistant.
 Goal: make kizami + AI clearly superior to "just ask AI" for documentation maintenance.
 
+#### 🟡 Medium
+
 - [ ] `kizami audit --ai` — when drift is detected, use AI + `git log` to suggest fixes (e.g. detect renames and propose updated Related Files entries)
-- [ ] `kizami verify --ai` — read ADR content and current code, flag semantic mismatches (e.g. "ADR says X but code now does Y")
-- [ ] `kizami blame` output enhancement — show a one-line excerpt (Decision section) alongside each result, so the value of accumulated ADRs is immediately visible
+- [ ] Related Files AI suggestions — when running `kizami adr` or `kizami design`, use AI to analyze changed files and suggest additional Related Files beyond the staged file list
+
+#### 🟢 Low
+
+- [ ] `kizami verify --ai` — read ADR/design doc content and current code, flag semantic mismatches (e.g. "ADR says X but code now does Y"); inherently fuzzy, expect false positives
 
 ---
 

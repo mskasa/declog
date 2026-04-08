@@ -495,18 +495,25 @@ Claude:
 - [ ] **[Bug]** ディレクトリをまたいだ slug 衝突 — 複数ディレクトリ（例：`docs/decisions/` と `docs/design/`）に同じ slug が存在する場合、`kizami show <slug>` は最初に見つかったものを黙って返す。エラーにするか全件表示するかを検討
 - [ ] ファイル名制約の緩和 — `YYYY-MM-DD-*.md` 以外のファイルでも、kizami 形式のフロントマター（`- Status:`、`## Related Files`）を含む `.md` ファイルを管理対象として認識する。既存ドキュメントを持つチームの移行コストを下げる（`kizami list` のソート順の再設計が必要）
 - [ ] 長期放置 Draft ドキュメントを `kizami audit` の対象に含める — `review.months_threshold` を超えた Draft は audit 対象にする（または `kizami audit --include-draft` フラグを追加）。現状は Draft を常にスキップするため、サイレントな乖離が発生する
+- [ ] VSCode 拡張 — ファイルを開いたときにサイドバーへ関連 ADR/設計書を表示する。逆引きインデックスを基盤とする。これがないと「読む側」の動線は開発者が能動的に `kizami blame` を打つことだけに依存する
+- [ ] GitHub PR 自動コメント — PR が Related Files に記載されたファイルを変更した場合、CI が関連ドキュメントのリンクを自動コメントする。既存の `adr-check.yml` は「ADR がコミットされているか」を見るだけで、既存 ADR と PR の関連は検出しない
+- [ ] `kizami lint` — CI 向けのドキュメント健全性検証コマンド。`- Status:` フィールドの欠落・Related Files が空・フロントマターの形式不正・存在しないパスの記載などを `kizami audit` より早い段階で検出する
 
 #### 🟡 Medium — 使いやすさ・発見性
 
 - [ ] `kizami blame` の出力強化 — 各結果に Decision セクションの一行要約を表示し、蓄積された ADR の価値をその場で実感できるようにする
 - [ ] `kizami sync` — 既存ドキュメントの Related Files を対話的に更新
 - [ ] `kizami list --type <type>` — Type フィールドでの絞り込み（例：`--type adr`、`--type design`）
+- [ ] Windows の hook サポート — pre-commit hook はシェルスクリプトのため Windows では動作しない。クロスプラットフォーム対応を謳っている以上、hook ロジックを Go バイナリに内包し（`kizami hook run`）、薄いラッパーから呼び出す形に変更する
+- [ ] `kizami search --ai` — AI を使ったセマンティック検索。キーワードが完全一致しなくても概念的に近いドキュメントを発見できる（例：「認証」で検索すると "JWT"・"login"・"session" に関連する設計書が出てくる）
+- [ ] `kizami archive` — `Inactive` / `Superseded` なドキュメントを `docs/archive/` に移動し、`kizami list`・`kizami audit`・`kizami review` の対象から除外する。長期運用でノイズが増えるのを防ぐ
 
 #### 🟢 Low — あると嬉しい
 
-- [ ] 逆引きインデックスの生成（`.kizami/index.json`：ファイルパス → ADR ID のマッピング）による `kizami blame` の高速化と外部ツール連携
+- [ ] 逆引きインデックスの生成（`.kizami/index.json`：ファイルパス → ADR ID のマッピング）による `kizami blame` の高速化と外部ツール連携。VSCode 拡張の前提となる
+- [ ] `kizami import` — adr-tools 形式や Confluence/Notion エクスポートから kizami 形式への一括変換。ファイル名制約の緩和完成後に設計するのが自然
 - [ ] テンプレートのユーザー定義（config でテンプレートパスを指定可能に。Related Files セクションの必須化については要検討）
-- [ ] `kizami stats`
+- [ ] `kizami stats` — カバレッジ指標：関連ドキュメントを持つファイルの割合・陳腐化ドキュメント数・ドキュメントのないディレクトリ一覧など
 - [ ] GitHub Actions Marketplace 公開
 - [ ] ファイル存在確認を超えた乖離検出（関数名・シンボルレベルの参照チェック）— AI なしでの実現は本質的に難しい。下記 `kizami verify --ai` を参照
 

@@ -528,18 +528,25 @@ Claude:
 - [ ] **[Bug]** slug collision across directories — `kizami show <slug>` silently returns the first match when the same slug exists in multiple dirs (e.g. `docs/decisions/` and `docs/design/`); should error or list all matches
 - [ ] Relax filename constraint — accept any `.md` file containing kizami-style front-matter (`- Status:`, `## Related Files`) regardless of filename; reduces migration cost for teams with existing docs (requires rethinking `kizami list` sort order)
 - [ ] Include long-stale Draft documents in `kizami audit` — Draft docs older than `review.months_threshold` should be audited (or add `kizami audit --include-draft` flag); currently Draft is always skipped, causing silent drift
+- [ ] VSCode extension — show related ADRs/design docs in the sidebar when a file is opened, powered by the reverse index; without this, the "read" path relies entirely on developers remembering to run `kizami blame`
+- [ ] GitHub PR auto-comment — when a PR modifies files listed in any document's Related Files section, CI automatically comments with the related document links; the existing `adr-check.yml` only checks whether an ADR was committed, not whether existing ADRs are relevant to the PR
+- [ ] `kizami lint` — validate document health for CI; catch missing `- Status:` field, empty Related Files section, malformed front-matter, and unresolvable paths before `kizami audit` runs
 
 #### 🟡 Medium — Usability and discoverability
 
 - [ ] `kizami blame` output enhancement — show a one-line excerpt (Decision section) alongside each result, so the value of accumulated ADRs is immediately visible
 - [ ] `kizami sync` — interactively update Related Files in existing documents
 - [ ] `kizami list --type <type>` — filter list by document Type field (e.g. `--type adr`, `--type design`)
+- [ ] Windows hook support — the pre-commit hook is a shell script and does not work on Windows despite the tool claiming cross-platform support; move hook logic into a Go binary (`kizami hook run`) invoked by a thin wrapper
+- [ ] `kizami search --ai` — semantic search using AI to find conceptually related documents even when exact keywords do not match (e.g. searching "authentication" surfaces docs mentioning "JWT", "login", "session")
+- [ ] `kizami archive` — move `Inactive` / `Superseded` documents to `docs/archive/` and exclude them from `kizami list`, `kizami audit`, and `kizami review`; prevents noise accumulation over time
 
 #### 🟢 Low — Nice to have
 
-- [ ] Generate reverse index (`.kizami/index.json`: file path → ADR IDs mapping) for faster `kizami blame` and external tool integration
+- [ ] Generate reverse index (`.kizami/index.json`: file path → ADR IDs mapping) for faster `kizami blame` and external tool integration; prerequisite for VSCode extension
+- [ ] `kizami import` — batch-convert documents from adr-tools format or Confluence/Notion exports into kizami format; best designed after the filename constraint relaxation is complete
 - [ ] User-defined templates (configurable template path; whether Related Files section is required is TBD)
-- [ ] `kizami stats`
+- [ ] `kizami stats` — coverage metrics: % of files with associated docs, # stale docs, # orphaned docs, directories with no documentation
 - [ ] GitHub Actions Marketplace release
 - [ ] Drift detection beyond file existence (function/symbol level references) — fundamentally hard without AI; see `kizami verify --ai` below
 

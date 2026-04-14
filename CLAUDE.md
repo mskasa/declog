@@ -526,7 +526,7 @@ Claude:
 #### 🔴 High — Fix or quality issue
 
 - [x] **[Bug]** slug collision across directories — `kizami show <slug>` silently returns the first match when the same slug exists in multiple dirs (e.g. `docs/decisions/` and `docs/design/`); should error or list all matches
-- [ ] Relax filename constraint — accept any `.md` file containing kizami-style front-matter (`- Status:`, `## Related Files`) regardless of filename; reduces migration cost for teams with existing docs (requires rethinking `kizami list` sort order)
+- [x] Relax filename constraint — accept any `.md` file containing kizami-style front-matter (`- Status:`, `## Related Files`) regardless of filename; reduces migration cost for teams with existing docs (requires rethinking `kizami list` sort order)
 - [ ] Include long-stale Draft documents in `kizami audit` — Draft docs older than `review.months_threshold` should be audited (or add `kizami audit --include-draft` flag); currently Draft is always skipped, causing silent drift
 - [ ] VSCode extension — show related ADRs/design docs in the sidebar when a file is opened, powered by the reverse index; without this, the "read" path relies entirely on developers remembering to run `kizami blame`
 - [ ] GitHub PR auto-comment — when a PR modifies files listed in any document's Related Files section, CI automatically comments with the related document links; the existing `adr-check.yml` only checks whether an ADR was committed, not whether existing ADRs are relevant to the PR

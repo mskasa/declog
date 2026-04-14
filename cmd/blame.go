@@ -23,7 +23,7 @@ var blameCmd = &cobra.Command{
 		cfg := loadCfg()
 		dirs := documentDirs(root, cfg)
 
-		seen := make(map[int]struct{})
+		seen := make(map[string]struct{})
 		var decisions []*decision.Decision
 		for _, dir := range dirs {
 			d, err := search.Blame(dir, filePath)
@@ -31,10 +31,10 @@ var blameCmd = &cobra.Command{
 				return err
 			}
 			for _, dec := range d {
-				if _, ok := seen[dec.ID]; ok {
+				if _, ok := seen[dec.File]; ok {
 					continue
 				}
-				seen[dec.ID] = struct{}{}
+				seen[dec.File] = struct{}{}
 				decisions = append(decisions, dec)
 			}
 		}

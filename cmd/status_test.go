@@ -36,6 +36,7 @@ func TestStatusCmd_ValidUpdate(t *testing.T) {
 }
 
 func TestStatusCmd_ByFlagWithoutSuperseded(t *testing.T) {
+	t.Cleanup(func() { supersededBySlug = "" })
 	root := newTestRepo(t)
 	dir := decisionsPath(root)
 	seedDecision(t, dir, 1, "Use Go", "Draft")
@@ -44,5 +45,21 @@ func TestStatusCmd_ByFlagWithoutSuperseded(t *testing.T) {
 	_, err := executeCmd(t, "status", "use-go", "accepted", "--by", "use-another")
 	if err == nil {
 		t.Fatal("expected error when --by is used without superseded status")
+	}
+}
+
+func TestStatusCmd_SlugCollision_Errors(t *testing.T) {
+	root := newTestRepo(t)
+	seedMultiDirConfig(t, root)
+	seedDecision(t, decisionsPath(root), 1, "Use Go", "Draft")
+	seedDecision(t, designPath(root), 1, "Use Go", "Draft")
+	setTestRoot(t, root)
+
+	_, err := executeCmd(t, "status", "use-go", "accepted")
+	if err == nil {
+		t.Fatal("expected error when slug is ambiguous across directories")
+	}
+	if !strings.Contains(err.Error(), "multiple") {
+		t.Errorf("expected 'multiple' in error message, got: %v", err)
 	}
 }

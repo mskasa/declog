@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/spf13/cobra"
 )
@@ -17,17 +18,24 @@ var showCmd = &cobra.Command{
 			return err
 		}
 
-		d, err := findBySlug(root, loadCfg(), args[0])
+		matches, err := findAllBySlug(root, loadCfg(), args[0])
 		if err != nil {
 			return err
 		}
 
-		content, err := os.ReadFile(d.File)
-		if err != nil {
-			return fmt.Errorf("reading file: %w", err)
+		for i, d := range matches {
+			if len(matches) > 1 {
+				fmt.Fprintf(os.Stdout, "=== %s ===\n", d.File)
+			}
+			content, err := os.ReadFile(d.File)
+			if err != nil {
+				return fmt.Errorf("reading file: %w", err)
+			}
+			fmt.Fprint(os.Stdout, string(content))
+			if len(matches) > 1 && i < len(matches)-1 {
+				fmt.Fprintln(os.Stdout, strings.Repeat("=", 60))
+			}
 		}
-
-		fmt.Fprint(os.Stdout, string(content))
 		return nil
 	},
 }

@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"runtime/debug"
+	"strings"
 
 	"github.com/mskasa/kizami/internal/config"
 	"github.com/mskasa/kizami/internal/decision"
@@ -88,15 +89,38 @@ func auditDirs(root string, cfg *config.Config) []string {
 	return documentDirs(root, cfg)
 }
 
-// findBySlug searches for a decision by slug across all document directories.
-func findBySlug(root string, cfg *config.Config, slug string) (*decision.Decision, error) {
+// findAllBySlug searches for a decision by slug across all document directories
+// and returns all matches.
+func findAllBySlug(root string, cfg *config.Config, slug string) ([]*decision.Decision, error) {
+	var matches []*decision.Decision
 	for _, dir := range documentDirs(root, cfg) {
 		d, err := decision.FindBySlug(dir, slug)
 		if err == nil {
-			return d, nil
+			matches = append(matches, d)
 		}
 	}
-	return nil, fmt.Errorf("document %q not found", slug)
+	if len(matches) == 0 {
+		return nil, fmt.Errorf("document %q not found", slug)
+	}
+	return matches, nil
+}
+
+// findBySlug searches for a decision by slug across all document directories.
+// Returns an error if the slug is ambiguous (found in multiple directories).
+func findBySlug(root string, cfg *config.Config, slug string) (*decision.Decision, error) {
+	matches, err := findAllBySlug(root, cfg, slug)
+	if err != nil {
+		return nil, err
+	}
+	if len(matches) > 1 {
+		var b strings.Builder
+		fmt.Fprintf(&b, "slug %q found in multiple documents — specify which file you mean:\n", slug)
+		for _, m := range matches {
+			fmt.Fprintf(&b, "  %s\n", m.File)
+		}
+		return nil, fmt.Errorf("%s", b.String())
+	}
+	return matches[0], nil
 }
 
 // Execute runs the root command.

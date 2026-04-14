@@ -87,6 +87,22 @@ func decisionsPath(root string) string {
 	return filepath.Join(root, "docs", "decisions")
 }
 
+// designPath returns the default design directory for a given repo root.
+func designPath(root string) string {
+	return filepath.Join(root, "docs", "design")
+}
+
+// seedMultiDirConfig writes a kizami.toml that includes both decisions and design dirs.
+func seedMultiDirConfig(t *testing.T, root string) {
+	t.Helper()
+	content := `[documents]
+dirs = ["docs/decisions", "docs/design"]
+`
+	if err := os.WriteFile(filepath.Join(root, "kizami.toml"), []byte(content), 0o644); err != nil {
+		t.Fatalf("WriteFile kizami.toml: %v", err)
+	}
+}
+
 // appendRelatedFile appends a file entry to the Related Files section of a decision.
 func appendRelatedFile(t *testing.T, decisionPath, file string) {
 	t.Helper()

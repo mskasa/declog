@@ -188,7 +188,7 @@ YYYY-MM-DD-kebab-case-title.md
 
 チームにすでに確立されたファイル名のMarkdownドキュメント（`ARCHITECTURE.md`、`API-SPEC.md` など）がある場合、リネームは不要です。kizamiは以下の **両方** を含む `.md` ファイルを管理対象ドキュメントとして認識します：
 
-- フロントマターに `- Status:` 行がある
+- `- Status:` で始まる行がある
 - `## Related Files` セクションがある
 
 この2つのマーカーを既存ファイルに追加するだけで、`kizami list`・`kizami audit` などすべてのコマンドから参照できるようになります。slugは `.md` 拡張子を除いたファイル名になります（例：`ARCHITECTURE`）。

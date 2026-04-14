@@ -14,7 +14,7 @@ This naming constraint created friction for teams migrating from other documenta
 
 Recognise any `.md` file as a kizami document if it contains **both** of the following markers:
 
-1. A line beginning with `- Status:` (required front-matter field)
+1. A line beginning with `- Status:`
 2. A `## Related Files` section heading (required for drift detection)
 
 Both markers must be present. A file containing only one of them is not treated as a kizami document.
@@ -24,7 +24,7 @@ Files matching the existing naming convention (`YYYY-MM-DD-*.md`, `NNNN-*.md`) c
 **Slug for arbitrary filenames**: the filename without the `.md` extension.
 For example, `ARCHITECTURE.md` → slug `ARCHITECTURE`.
 
-**Sort order in `kizami list`**: uses the `- Date:` front-matter field when present, falls back to the file's modification time, and places files where both are unavailable at the end of the list.
+**Sort order in `kizami list`**: uses the value of the `- Date:` line when present, falls back to the file's modification time, and places files where both are unavailable at the end of the list.
 
 ## Consequences
 

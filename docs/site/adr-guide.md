@@ -185,7 +185,7 @@ The date prefix ensures chronological sort order. The title is automatically con
 
 If your team already has Markdown documents with established names (e.g. `ARCHITECTURE.md`, `API-SPEC.md`), you do not need to rename them. kizami recognises any `.md` file as a managed document as long as it contains **both**:
 
-- A `- Status:` line in the front-matter
+- A line beginning with `- Status:`
 - A `## Related Files` section
 
 Add these two markers to an existing file, and it becomes visible to `kizami list`, `kizami audit`, and all other commands. Its slug is the filename without the `.md` extension (e.g. `ARCHITECTURE`).

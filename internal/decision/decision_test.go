@@ -37,14 +37,127 @@ func TestSlugFromFilename(t *testing.T) {
 		{"2026-03-23-use-go-over-shell-script.md", "use-go-over-shell-script"},
 		{"0003-madr-format-compatibility.md", "madr-format-compatibility"},
 		{"2026-01-15-use-postgresql.md", "use-postgresql"},
-		{"not-a-doc.md", ""},
-		{"README.md", ""},
+		// Arbitrary filenames: slug is the filename without .md extension.
+		{"not-a-doc.md", "not-a-doc"},
+		{"README.md", "README"},
+		{"ARCHITECTURE.md", "ARCHITECTURE"},
 	}
 	for _, tt := range tests {
 		got := slugFromFilename(tt.name)
 		if got != tt.want {
 			t.Errorf("slugFromFilename(%q) = %q, want %q", tt.name, got, tt.want)
 		}
+	}
+}
+
+func writeArbitraryDoc(t *testing.T, path, title string) {
+	t.Helper()
+	content := "# " + title + "\n\n- Status: Active\n- Author: test\n\n## Related Files\n\n- some/file.go\n"
+	if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
+		t.Fatalf("WriteFile: %v", err)
+	}
+}
+
+func TestIsKizamiDocument_BothMarkers(t *testing.T) {
+	dir := t.TempDir()
+	path := filepath.Join(dir, "ARCHITECTURE.md")
+	writeArbitraryDoc(t, path, "Architecture")
+	if !isKizamiDocument(path) {
+		t.Error("expected isKizamiDocument=true for file with both markers")
+	}
+}
+
+func TestIsKizamiDocument_MissingRelatedFiles(t *testing.T) {
+	dir := t.TempDir()
+	path := filepath.Join(dir, "NOTES.md")
+	content := "# Notes\n\n- Status: Active\n\nSome content without Related Files section.\n"
+	if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if isKizamiDocument(path) {
+		t.Error("expected isKizamiDocument=false when ## Related Files is absent")
+	}
+}
+
+func TestIsKizamiDocument_MissingStatus(t *testing.T) {
+	dir := t.TempDir()
+	path := filepath.Join(dir, "NOTES.md")
+	content := "# Notes\n\nSome content.\n\n## Related Files\n\n- some/file.go\n"
+	if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if isKizamiDocument(path) {
+		t.Error("expected isKizamiDocument=false when - Status: is absent")
+	}
+}
+
+func TestList_IncludesArbitraryFilename(t *testing.T) {
+	dir := t.TempDir()
+	// Standard date-prefixed file.
+	if _, err := Create(dir, "Use Go", ""); err != nil {
+		t.Fatal(err)
+	}
+	// Arbitrary filename with kizami markers.
+	writeArbitraryDoc(t, filepath.Join(dir, "ARCHITECTURE.md"), "Architecture Overview")
+
+	decisions, err := List(dir)
+	if err != nil {
+		t.Fatalf("List() error: %v", err)
+	}
+	if len(decisions) != 2 {
+		t.Fatalf("List() = %d docs, want 2", len(decisions))
+	}
+	slugs := map[string]bool{}
+	for _, d := range decisions {
+		slugs[d.Slug] = true
+	}
+	if !slugs["ARCHITECTURE"] {
+		t.Error("expected slug 'ARCHITECTURE' in list results")
+	}
+}
+
+func TestList_ExcludesArbitraryFilenameWithoutMarkers(t *testing.T) {
+	dir := t.TempDir()
+	if _, err := Create(dir, "Use Go", ""); err != nil {
+		t.Fatal(err)
+	}
+	// Plain .md file without kizami markers — should be excluded.
+	if err := os.WriteFile(filepath.Join(dir, "README.md"), []byte("# README\n\nJust a readme.\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	decisions, err := List(dir)
+	if err != nil {
+		t.Fatalf("List() error: %v", err)
+	}
+	if len(decisions) != 1 {
+		t.Fatalf("List() = %d docs, want 1 (README.md should be excluded)", len(decisions))
+	}
+}
+
+func TestFindBySlug_ArbitraryFilename(t *testing.T) {
+	dir := t.TempDir()
+	writeArbitraryDoc(t, filepath.Join(dir, "ARCHITECTURE.md"), "Architecture Overview")
+
+	d, err := FindBySlug(dir, "ARCHITECTURE")
+	if err != nil {
+		t.Fatalf("FindBySlug() error: %v", err)
+	}
+	if d.Slug != "ARCHITECTURE" {
+		t.Errorf("Slug = %q, want %q", d.Slug, "ARCHITECTURE")
+	}
+}
+
+func TestFindBySlug_ArbitraryFilename_ExcludesWithoutMarkers(t *testing.T) {
+	dir := t.TempDir()
+	// File with slug match but no kizami markers — should not be found.
+	if err := os.WriteFile(filepath.Join(dir, "ARCHITECTURE.md"), []byte("# README\n\nNo markers.\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	_, err := FindBySlug(dir, "ARCHITECTURE")
+	if err == nil {
+		t.Error("FindBySlug() should return error for file without kizami markers")
 	}
 }
 

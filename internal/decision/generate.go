@@ -1,6 +1,7 @@
 package decision
 
 import (
+	"bufio"
 	"fmt"
 	"os"
 	"os/exec"
@@ -18,14 +19,42 @@ var legacyFilePattern = regexp.MustCompile(`^(\d{4})-([a-z].*)\.md$`)
 // dateFilePattern matches new YYYY-MM-DD-slug.md filenames.
 var dateFilePattern = regexp.MustCompile(`^(\d{4}-\d{2}-\d{2})-(.+)\.md$`)
 
-// isDocumentFile reports whether a filename is a document file (either format).
+// isDocumentFile reports whether a filename matches the kizami naming convention.
 func isDocumentFile(name string) bool {
 	return dateFilePattern.MatchString(name) || legacyFilePattern.MatchString(name)
+}
+
+// isKizamiDocument reads a .md file and returns true if it contains both
+// "- Status:" and "## Related Files", the two required markers for kizami documents.
+// This allows arbitrary .md filenames (e.g. ARCHITECTURE.md) to be recognised.
+func isKizamiDocument(path string) bool {
+	f, err := os.Open(path)
+	if err != nil {
+		return false
+	}
+	defer f.Close()
+	hasStatus := false
+	hasRelatedFiles := false
+	scanner := bufio.NewScanner(f)
+	for scanner.Scan() {
+		line := scanner.Text()
+		if strings.HasPrefix(line, "- Status:") {
+			hasStatus = true
+		}
+		if line == "## Related Files" {
+			hasRelatedFiles = true
+		}
+		if hasStatus && hasRelatedFiles {
+			return true
+		}
+	}
+	return false
 }
 
 // slugFromFilename extracts the semantic slug from a document filename.
 // For "2026-03-23-use-go.md" returns "use-go".
 // For "0001-use-go.md" returns "use-go".
+// For arbitrary filenames like "ARCHITECTURE.md" returns "ARCHITECTURE".
 func slugFromFilename(name string) string {
 	if m := dateFilePattern.FindStringSubmatch(name); m != nil {
 		return strings.TrimSuffix(m[2], ".md")
@@ -33,7 +62,21 @@ func slugFromFilename(name string) string {
 	if m := legacyFilePattern.FindStringSubmatch(name); m != nil {
 		return strings.TrimSuffix(m[2], ".md")
 	}
-	return ""
+	return strings.TrimSuffix(name, ".md")
+}
+
+// sortKey returns a date string used for descending sort in List.
+// Uses the Date field from front-matter if present, falls back to the file's
+// modification time, and finally to "0000-00-00" if stat fails.
+func sortKey(d *Decision) string {
+	if d.Date != "" {
+		return d.Date
+	}
+	info, err := os.Stat(d.File)
+	if err == nil {
+		return info.ModTime().Format("2006-01-02")
+	}
+	return "0000-00-00"
 }
 
 // Slugify converts a title to kebab-case.
@@ -56,6 +99,8 @@ func AuthorFromGit() string {
 }
 
 // List returns all decisions in dir (recursively) sorted by date descending (newest first).
+// Recognises both filename-patterned files (YYYY-MM-DD-*.md, NNNN-*.md) and arbitrary
+// .md files that contain both "- Status:" and "## Related Files" markers.
 func List(dir string) ([]*Decision, error) {
 	if _, err := os.Stat(dir); os.IsNotExist(err) {
 		return nil, nil
@@ -69,7 +114,12 @@ func List(dir string) ([]*Decision, error) {
 		if d.IsDir() {
 			return nil
 		}
-		if !isDocumentFile(d.Name()) {
+		if !strings.HasSuffix(d.Name(), ".md") {
+			return nil
+		}
+		// Fast path: filename pattern match (no I/O).
+		// Slow path: content check for non-pattern filenames.
+		if !isDocumentFile(d.Name()) && !isKizamiDocument(path) {
 			return nil
 		}
 		doc, parseErr := Parse(path)
@@ -84,10 +134,11 @@ func List(dir string) ([]*Decision, error) {
 	}
 
 	// Sort by date descending, then by filename descending as tiebreaker.
+	// Files without a Date field are sorted by mtime (see sortKey).
 	for i := 0; i < len(decisions)-1; i++ {
 		for j := i + 1; j < len(decisions); j++ {
-			less := decisions[i].Date < decisions[j].Date ||
-				(decisions[i].Date == decisions[j].Date && decisions[i].File < decisions[j].File)
+			ki, kj := sortKey(decisions[i]), sortKey(decisions[j])
+			less := ki < kj || (ki == kj && decisions[i].File < decisions[j].File)
 			if less {
 				decisions[i], decisions[j] = decisions[j], decisions[i]
 			}
@@ -97,7 +148,9 @@ func List(dir string) ([]*Decision, error) {
 }
 
 // FindBySlug returns the decision whose filename slug matches the given slug, or an error if not found.
-// Both legacy (NNNN-slug.md) and new (YYYY-MM-DD-slug.md) formats are searched recursively.
+// Both legacy (NNNN-slug.md), date-prefixed (YYYY-MM-DD-slug.md), and arbitrary .md filenames
+// are searched recursively. Arbitrary filenames are only considered if they contain both
+// "- Status:" and "## Related Files" markers.
 // Returns "not found" without error if dir does not exist.
 func FindBySlug(dir, slug string) (*Decision, error) {
 	if _, err := os.Stat(dir); os.IsNotExist(err) {
@@ -111,18 +164,22 @@ func FindBySlug(dir, slug string) (*Decision, error) {
 		if d.IsDir() {
 			return nil
 		}
-		if !isDocumentFile(d.Name()) {
+		if !strings.HasSuffix(d.Name(), ".md") {
 			return nil
 		}
-		if slugFromFilename(d.Name()) == slug {
-			doc, parseErr := Parse(path)
-			if parseErr != nil {
-				return parseErr
-			}
-			found = doc
-			return filepath.SkipAll
+		if slugFromFilename(d.Name()) != slug {
+			return nil
 		}
-		return nil
+		// Verify it is a kizami document.
+		if !isDocumentFile(d.Name()) && !isKizamiDocument(path) {
+			return nil
+		}
+		doc, parseErr := Parse(path)
+		if parseErr != nil {
+			return parseErr
+		}
+		found = doc
+		return filepath.SkipAll
 	})
 	if err != nil {
 		return nil, fmt.Errorf("reading decisions dir: %w", err)

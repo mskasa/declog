@@ -208,4 +208,4 @@ related:
 
 サイドカーファイルは `kizami list`・`kizami show`・`kizami blame`・`kizami audit` のすべてでサポートされます。slugは管理対象ファイル名になります（例：`test_matrix.csv`）。
 
-サイドカーには `status` フィールドがなく、常に `kizami audit` の対象になります。「1つの関心事 = 1ドキュメント」の原則に従い、ファイルごとに1つのサイドカーを作成することを推奨します。
+サイドカーには `status` フィールドがなく、常に `kizami audit` の対象になります。サイドカーはファイルごとに1つ作成する設計です（1ファイル = 1サイドカー）。

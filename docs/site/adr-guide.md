@@ -205,4 +205,4 @@ related:
 
 The sidecar file is fully supported by `kizami list`, `kizami show`, `kizami blame`, and `kizami audit`. Its slug is the managed filename (e.g. `test_matrix.csv`).
 
-Sidecars have no `status` field — they are always included in `kizami audit`. One sidecar per file is the recommended granularity, consistent with the "one concern = one document" principle.
+Sidecars have no `status` field — they are always included in `kizami audit`. Each managed file gets its own sidecar — one file, one sidecar.

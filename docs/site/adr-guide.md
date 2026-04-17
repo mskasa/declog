@@ -189,3 +189,20 @@ If your team already has Markdown documents with established names (e.g. `ARCHIT
 - A `## Related Files` section
 
 Add these two markers to an existing file, and it becomes visible to `kizami list`, `kizami audit`, and all other commands. Its slug is the filename without the `.md` extension (e.g. `ARCHITECTURE`).
+
+### Managing non-Markdown files
+
+For files that cannot carry kizami markers — CSV, YAML, SQL, images, etc. — place a `.kizami` sidecar file alongside them:
+
+```yaml
+# data/test_matrix.csv.kizami
+title: Test matrix for user flow
+date: 2026-04-17
+author: your name
+related:
+  - tests/user_flow_test.go
+```
+
+The sidecar file is fully supported by `kizami list`, `kizami show`, `kizami blame`, and `kizami audit`. Its slug is the managed filename (e.g. `test_matrix.csv`).
+
+Sidecars have no `status` field — they are always included in `kizami audit`. Each managed file gets its own sidecar — one file, one sidecar.

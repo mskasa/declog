@@ -78,6 +78,8 @@ kizami init
 
 The generated workflow runs weekly and opens a GitHub Issue automatically if drift is detected. This ensures nothing slips through the cracks even if nobody remembers to run it manually.
 
+The audit covers both Markdown documents and `.kizami` sidecar files, so any non-Markdown artifact tracked via a sidecar is automatically included.
+
 ---
 
 ## Keep ADRs short

@@ -108,7 +108,7 @@ kizami review
 kizami audit
 ```
 
-全ドキュメントの `## Related Files` エントリを確認します。参照されているファイルが削除・移動されていた場合に報告します。
+Markdownドキュメントの `## Related Files` エントリと `.kizami` サイドカーファイルの `related:` エントリを確認します。参照されているファイルが削除・移動されていた場合に報告します。
 
 `kizami init` で生成されるGitHub Actionsワークフローで自動化することもできます：
 
@@ -116,6 +116,47 @@ kizami audit
 kizami init
 # → .github/workflows/kizami-audit.yml が生成される
 ```
+
+---
+
+## Markdown以外のファイルを管理する
+
+CSVテストマトリクス・OpenAPI仕様書・SQLスキーマ・画像など、kizamiのマーカーを直接書けないファイルも、`.kizami` サイドカーファイルを使って追跡できます。
+サイドカーは管理対象ファイルの隣に置きます：
+
+```
+data/
+  test_matrix.csv
+  test_matrix.csv.kizami   ← サイドカー
+```
+
+```yaml
+# data/test_matrix.csv.kizami
+title: ユーザーフローのテストマトリクス
+date: 2026-04-17
+author: your name
+related:
+  - tests/user_flow_test.go
+```
+
+サイドカーはkizamiのファーストクラスのドキュメントとして扱われます：
+
+```bash
+# ソースファイルに関連するドキュメントを逆引き（サイドカーも対象）
+kizami blame tests/user_flow_test.go
+
+# Markdownドキュメントと並んでサイドカーも表示される
+kizami list
+
+# サイドカーの内容を表示
+kizami show test_matrix.csv
+
+# test_matrix.csv が削除・移動された場合にサイドカーを報告
+kizami audit
+```
+
+サイドカーには `status` フィールドがなく、常に `kizami audit` の対象になります。
+`date` フィールドは作成日を記録し、更新履歴はgitで管理されます。
 
 ---
 

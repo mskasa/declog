@@ -12,10 +12,11 @@ import (
 	"github.com/mskasa/kizami/internal/decision"
 )
 
-// Blame searches for ADRs in dir that mention the given file path.
-// It also matches ADRs whose Related Files section contains a directory entry
+// Blame searches for documents in dir that mention the given file path.
+// It also matches documents whose Related Files section contains a directory entry
 // (trailing slash convention, e.g. "internal/") that is a prefix of filePath.
-// Results are deduplicated by ADR file and sorted by decision ID.
+// Both .md and .kizami sidecar files are searched.
+// Results are deduplicated by file and sorted by decision ID.
 func Blame(dir, filePath string) ([]*decision.Decision, error) {
 	if _, err := os.Stat(dir); os.IsNotExist(err) {
 		return nil, nil
@@ -33,7 +34,7 @@ func Blame(dir, filePath string) ([]*decision.Decision, error) {
 		return nil, err
 	}
 
-	// Also match ADRs with directory entries in Related Files.
+	// Also match documents with directory entries in Related Files.
 	dirMatches, err := blameDirEntries(dir, filePath)
 	if err != nil {
 		return nil, err
@@ -48,7 +49,12 @@ func Blame(dir, filePath string) ([]*decision.Decision, error) {
 		}
 		seen[f] = struct{}{}
 
-		d, err := decision.Parse(f)
+		var d *decision.Decision
+		if decision.IsSidecarFile(f) {
+			d, err = decision.ParseSidecar(f)
+		} else {
+			d, err = decision.Parse(f)
+		}
 		if err != nil {
 			return nil, fmt.Errorf("parsing %s: %w", f, err)
 		}
@@ -62,15 +68,19 @@ func Blame(dir, filePath string) ([]*decision.Decision, error) {
 	return decisions, nil
 }
 
-// blameDirEntries returns ADR files whose Related Files section contains a
+// blameDirEntries returns document files whose Related Files section contains a
 // directory entry (ending with "/") that is a prefix of filePath.
+// Both .md and .kizami sidecar files are checked.
 func blameDirEntries(dir, filePath string) ([]string, error) {
 	var files []string
 	err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
-		if info.IsDir() || !strings.HasSuffix(path, ".md") {
+		if info.IsDir() {
+			return nil
+		}
+		if !strings.HasSuffix(path, ".md") && !decision.IsSidecarFile(path) {
 			return nil
 		}
 		entries, parseErr := decision.ParseRelatedFiles(path)
@@ -92,7 +102,7 @@ func blameDirEntries(dir, filePath string) ([]string, error) {
 }
 
 func blameRipgrep(dir, filePath string) ([]string, error) {
-	out, err := exec.Command("rg", "--files-with-matches", "--glob", "*.md", filePath, dir).Output()
+	out, err := exec.Command("rg", "--files-with-matches", "--glob", "*.{md,kizami}", filePath, dir).Output()
 	if err != nil {
 		if exitErr, ok := err.(*exec.ExitError); ok && exitErr.ExitCode() == 1 {
 			return nil, nil
@@ -115,7 +125,10 @@ func blameStdlib(dir, filePath string) ([]string, error) {
 		if err != nil {
 			return err
 		}
-		if info.IsDir() || !strings.HasSuffix(path, ".md") {
+		if info.IsDir() {
+			return nil
+		}
+		if !strings.HasSuffix(path, ".md") && !decision.IsSidecarFile(path) {
 			return nil
 		}
 

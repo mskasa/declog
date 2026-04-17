@@ -13,9 +13,14 @@ type AuditResult struct {
 	MissingFiles []string
 }
 
-// ParseRelatedFiles reads the Related Files section of an ADR file and returns
-// the listed file paths. Backtick wrappers and comment lines are stripped.
+// ParseRelatedFiles reads the Related Files section of a kizami document and returns
+// the listed file paths. For .kizami sidecar files the related: YAML list is read;
+// for Markdown files the ## Related Files section is parsed.
+// Backtick wrappers and comment lines are stripped.
 func ParseRelatedFiles(path string) ([]string, error) {
+	if IsSidecarFile(path) {
+		return ParseSidecarRelatedFiles(path)
+	}
 	f, err := os.Open(path)
 	if err != nil {
 		return nil, err

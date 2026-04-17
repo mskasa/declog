@@ -36,6 +36,10 @@ Key design choices:
 - **No external YAML library**: the format is simple enough to parse line-by-line, keeping zero new dependencies.
 - **Slug = managed filename**: for `test_matrix.csv.kizami` the slug is `test_matrix.csv`,
   so `kizami show test_matrix.csv` finds it naturally.
+- **One sidecar per file, not one per project**: each managed file gets its own `.kizami` file placed
+  alongside it. A single project-wide registry file was considered but rejected: it would grow large,
+  cause merge conflicts when multiple contributors add entries simultaneously, and break the
+  "one concern = one document" principle that kizami already follows for Markdown ADRs.
 
 ## Consequences
 

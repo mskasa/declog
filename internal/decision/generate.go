@@ -114,6 +114,14 @@ func List(dir string) ([]*Decision, error) {
 		if d.IsDir() {
 			return nil
 		}
+		if IsSidecarFile(d.Name()) {
+			doc, parseErr := ParseSidecar(path)
+			if parseErr != nil {
+				return parseErr
+			}
+			decisions = append(decisions, doc)
+			return nil
+		}
 		if !strings.HasSuffix(d.Name(), ".md") {
 			return nil
 		}
@@ -163,6 +171,17 @@ func FindBySlug(dir, slug string) (*Decision, error) {
 		}
 		if d.IsDir() {
 			return nil
+		}
+		if IsSidecarFile(d.Name()) {
+			if slugFromSidecar(d.Name()) != slug {
+				return nil
+			}
+			doc, parseErr := ParseSidecar(path)
+			if parseErr != nil {
+				return parseErr
+			}
+			found = doc
+			return filepath.SkipAll
 		}
 		if !strings.HasSuffix(d.Name(), ".md") {
 			return nil

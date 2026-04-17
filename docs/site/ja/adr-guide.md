@@ -192,3 +192,20 @@ YYYY-MM-DD-kebab-case-title.md
 - `## Related Files` セクションがある
 
 この2つのマーカーを既存ファイルに追加するだけで、`kizami list`・`kizami audit` などすべてのコマンドから参照できるようになります。slugは `.md` 拡張子を除いたファイル名になります（例：`ARCHITECTURE`）。
+
+### Markdown以外のファイルの管理
+
+CSV・YAML・SQL・画像など、kizamiのマーカーを直接書けないファイルには `.kizami` サイドカーファイルを使います：
+
+```yaml
+# data/test_matrix.csv.kizami
+title: ユーザーフローのテストマトリクス
+date: 2026-04-17
+author: your name
+related:
+  - tests/user_flow_test.go
+```
+
+サイドカーファイルは `kizami list`・`kizami show`・`kizami blame`・`kizami audit` のすべてでサポートされます。slugは管理対象ファイル名になります（例：`test_matrix.csv`）。
+
+サイドカーには `status` フィールドがなく、常に `kizami audit` の対象になります。「1つの関心事 = 1ドキュメント」の原則に従い、ファイルごとに1つのサイドカーを作成することを推奨します。

@@ -498,7 +498,7 @@ Claude:
 
 - [x] **[Bug]** ディレクトリをまたいだ slug 衝突 — 複数ディレクトリ（例：`docs/decisions/` と `docs/design/`）に同じ slug が存在する場合、`kizami show <slug>` は最初に見つかったものを黙って返す。エラーにするか全件表示するかを検討
 - [x] ファイル名制約の緩和 — `YYYY-MM-DD-*.md` 以外のファイルでも、kizami 形式のフロントマター（`- Status:`、`## Related Files`）を含む `.md` ファイルを管理対象として認識する。既存ドキュメントを持つチームの移行コストを下げる（`kizami list` のソート順の再設計が必要）
-- [x] VSCode 拡張プロトタイプ — [mskasa/kizami-vscode](https://github.com/mskasa/kizami-vscode)；`kizami blame` を呼び出すサイドバー TreeView を実装済み。以降の開発はそのリポジトリの CLAUDE.md で管理
+- [x] VSCode 拡張機能 — [mskasa/kizami-vscode](https://github.com/mskasa/kizami-vscode)；VS Code Marketplace に公開済み。`kizami blame` を呼び出すサイドバー TreeView・クリックプレビュー・エクスプローラーコンテキストメニューを実装。ドキュメント：[docs/site/ja/editor-integration.md](docs/site/ja/editor-integration.md)
 - [ ] GitHub PR 自動コメント — PR が Related Files に記載されたファイルを変更した場合、CI が関連ドキュメントのリンクを自動コメントする。既存の `adr-check.yml` は「ADR がコミットされているか」を見るだけで、既存 ADR と PR の関連は検出しない
 - [ ] `kizami lint` — CI 向けのドキュメント健全性検証コマンド。`- Status:` フィールドの欠落・Related Files が空・フロントマターの形式不正・存在しないパスの記載などを `kizami audit` より早い段階で検出する
 

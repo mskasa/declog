@@ -37,6 +37,7 @@ This site is for users who have already installed kizami. It covers how to use i
 | [Development Workflow](workflow) | How kizami fits into your daily development process |
 | [ADR Guide](adr-guide) | How to write ADRs: granularity, templates, and status management |
 | [Best Practices](best-practices) | Tips for getting the most out of kizami |
+| [Editor Integration](editor-integration) | VS Code extension: related documents in the sidebar |
 
 ---
 

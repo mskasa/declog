@@ -90,6 +90,8 @@ kizami blame internal/db/db.go
 kizami search "コネクションプール"
 ```
 
+VS Codeをお使いの場合は、[kizami拡張機能](editor-integration)を使うとファイルを開くたびにサイドバーに関連ドキュメントが自動表示されます。`kizami blame` を手動で実行する必要はありません。
+
 ---
 
 ## 定期メンテナンス

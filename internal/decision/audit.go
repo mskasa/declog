@@ -29,9 +29,17 @@ func ParseRelatedFiles(path string) ([]string, error) {
 
 	var files []string
 	inSection := false
+	inFence := false
 	scanner := bufio.NewScanner(f)
 	for scanner.Scan() {
 		line := scanner.Text()
+		if strings.HasPrefix(line, "```") {
+			inFence = !inFence
+			continue
+		}
+		if inFence {
+			continue
+		}
 		if line == "## Related Files" {
 			inSection = true
 			continue
@@ -47,14 +55,12 @@ func ParseRelatedFiles(path string) ([]string, error) {
 				continue
 			}
 			// List item: "- `path`" or "- path"
-			if strings.HasPrefix(trimmed, "- ") {
-				entry := strings.TrimPrefix(trimmed, "- ")
+			if entry, ok := strings.CutPrefix(trimmed, "- "); ok {
 				entry = strings.Trim(entry, "`")
 				entry = strings.TrimSpace(entry)
 				if entry != "" {
 					files = append(files, entry)
 				}
-
 			}
 		}
 	}

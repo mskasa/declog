@@ -89,6 +89,8 @@ kizami blame internal/db/db.go
 kizami search "connection pool"
 ```
 
+If you use VS Code, the [kizami extension](editor-integration) shows related documents automatically in the sidebar whenever you open a file — no need to run `kizami blame` manually.
+
 ---
 
 ## Periodic Maintenance

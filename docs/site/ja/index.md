@@ -38,6 +38,7 @@ kizamiは、その意思決定をMarkdownファイルとしてコードと並べ
 | [開発ワークフロー](workflow) | kizamiを日常の開発プロセスに組み込む方法 |
 | [ADR運用ガイド](adr-guide) | ADRの書き方・粒度・ステータス管理 |
 | [ベストプラクティス](best-practices) | kizamiを最大限に活用するためのヒント |
+| [エディタ連携](editor-integration) | VS Code拡張機能：サイドバーで関連ドキュメントを表示 |
 
 ---
 

@@ -521,6 +521,10 @@ Claude:
 - [ ] Homebrew formula
 - [ ] Color output for `kizami list` and `kizami search`
 
+### v1.1.0
+
+- [x] `.kizami` sidecar file support — manage any file type (CSV, YAML, SQL, etc.) without modifying the file itself; `kizami blame`, `audit`, `list`, `show` all support sidecars automatically
+
 ### Backlog (prioritized)
 
 #### 🔴 High — Fix or quality issue

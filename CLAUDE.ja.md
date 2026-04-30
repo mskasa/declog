@@ -488,6 +488,10 @@ Claude:
 - [ ] Homebrew formula
 - [ ] カラー出力（kizami list / kizami search）
 
+### v1.1.0
+
+- [x] `.kizami` サイドカーファイルサポート — CSV・YAML・SQLなど任意の拡張子のファイルをファイル自体を変更せずに管理可能；`kizami blame`・`audit`・`list`・`show` がサイドカーを自動的にサポート
+
 ### バックログ（優先度順）
 
 #### 🔴 High — バグ修正・品質問題

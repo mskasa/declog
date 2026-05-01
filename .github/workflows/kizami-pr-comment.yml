@@ -1,0 +1,130 @@
+name: kizami PR Comment
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  comment:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff # v5.6.0
+        with:
+          go-version-file: go.mod
+
+      - name: Install kizami
+        run: go install github.com/mskasa/kizami@latest
+
+      - name: Find related documents
+        id: find
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          # Collect non-doc files changed in this PR.
+          mapfile -t changed_files < <(
+            git diff --name-only "origin/$BASE_REF"...HEAD \
+              | grep -vE '\.(md|kizami)$' \
+              || true
+          )
+
+          if [ ${#changed_files[@]} -eq 0 ]; then
+            echo "found=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          > /tmp/kizami_results.md
+          found=false
+
+          for file in "${changed_files[@]}"; do
+            blame_out=$(kizami blame "$file" 2>/dev/null || true)
+            # Skip files with no related documents.
+            echo "$blame_out" | grep -q "^Path:" || continue
+
+            titles=()
+            paths=()
+            while IFS= read -r line; do
+              if [[ "$line" =~ ^Title:\ (.*) ]]; then
+                titles+=("${BASH_REMATCH[1]}")
+              elif [[ "$line" =~ ^Path:\ (.*) ]]; then
+                paths+=("${BASH_REMATCH[1]}")
+              fi
+            done <<< "$blame_out"
+
+            for i in "${!paths[@]}"; do
+              title="${titles[$i]:-Untitled}"
+              path="${paths[$i]}"
+              echo "- \`$file\` → [$title]($path)" >> /tmp/kizami_results.md
+              found=true
+            done
+          done
+
+          echo "found=$found" >> "$GITHUB_OUTPUT"
+
+      - name: Post or update PR comment
+        if: steps.find.outputs.found == 'true'
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
+        with:
+          script: |
+            const fs = require('fs');
+            const marker = '<!-- kizami-pr-comment -->';
+            const results = fs.readFileSync('/tmp/kizami_results.md', 'utf8').trim();
+            const body = [
+              marker,
+              '## Related kizami Documents',
+              '',
+              'The following kizami documents reference files changed in this PR:',
+              '',
+              results,
+              '',
+              '> Run `kizami blame <file>` locally to explore related documents.',
+            ].join('\n');
+
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            const existing = comments.find(c => c.body.includes(marker));
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body,
+              });
+            }
+
+      - name: Remove stale comment if no related documents found
+        if: steps.find.outputs.found == 'false'
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
+        with:
+          script: |
+            const marker = '<!-- kizami-pr-comment -->';
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            const existing = comments.find(c => c.body.includes(marker));
+            if (existing) {
+              await github.rest.issues.deleteComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+              });
+            }

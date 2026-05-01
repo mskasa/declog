@@ -533,7 +533,7 @@ Claude:
 - [x] Relax filename constraint — accept any `.md` file containing kizami-style front-matter (`- Status:`, `## Related Files`) regardless of filename; reduces migration cost for teams with existing docs (requires rethinking `kizami list` sort order)
 - [x] VSCode extension — [mskasa/kizami-vscode](https://github.com/mskasa/kizami-vscode); published to VS Code Marketplace; sidebar TreeView calling `kizami blame`, click-to-preview, Explorer context menu; documented at [docs/site/editor-integration.md](docs/site/editor-integration.md)
 - [ ] GitHub PR auto-comment — when a PR modifies files listed in any document's Related Files section, CI automatically comments with the related document links; the existing `adr-check.yml` only checks whether an ADR was committed, not whether existing ADRs are relevant to the PR
-- [ ] `kizami lint` — validate document health for CI; catch missing `- Status:` field, empty Related Files section, malformed front-matter, and unresolvable paths before `kizami audit` runs
+- [x] `kizami lint` — validate document health for CI; catch missing `- Status:` field, empty Related Files section, malformed front-matter, and unresolvable paths before `kizami audit` runs
 
 #### 🟡 Medium — Usability and discoverability
 

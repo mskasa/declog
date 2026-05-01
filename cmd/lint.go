@@ -9,11 +9,11 @@ import (
 )
 
 var lintCmd = &cobra.Command{
-	Use:          "lint",
-	Short:        "Validate document structure and report issues",
+	Use:           "lint",
+	Short:         "Validate document structure and report issues",
 	SilenceErrors: true,
 	SilenceUsage:  true,
-	Args:         cobra.NoArgs,
+	Args:          cobra.NoArgs,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		root, err := gitRepoRootFn()
 		if err != nil {

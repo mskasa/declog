@@ -26,6 +26,10 @@ var adrCmd = &cobra.Command{
 	Short: "Create a new ADR and open it in your editor",
 	Args:  cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
+		if aiFlag && os.Getenv("ANTHROPIC_API_KEY") == "" {
+			return fmt.Errorf("ANTHROPIC_API_KEY is not set.\nPlease set the environment variable and try again.\n\n  export ANTHROPIC_API_KEY=your-api-key")
+		}
+
 		root, err := gitRepoRootFn()
 		if err != nil {
 			return err
@@ -75,6 +79,10 @@ var designCmd = &cobra.Command{
 	Short: "Create a new design document and open it in your editor",
 	Args:  cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
+		if designAIFlag && os.Getenv("ANTHROPIC_API_KEY") == "" {
+			return fmt.Errorf("ANTHROPIC_API_KEY is not set.\nPlease set the environment variable and try again.\n\n  export ANTHROPIC_API_KEY=your-api-key")
+		}
+
 		root, err := gitRepoRootFn()
 		if err != nil {
 			return err

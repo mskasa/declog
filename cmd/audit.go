@@ -43,7 +43,7 @@ var auditCmd = &cobra.Command{
 			if err != nil {
 				rel = r.File
 			}
-			fmt.Fprintf(os.Stdout, "  [%04d] %s\n", r.ID, rel)
+			fmt.Fprintf(os.Stdout, "  [%s] %s\n", r.Slug, rel)
 			fmt.Fprintf(os.Stdout, "  Title: %s\n", r.Title)
 			fmt.Fprintf(os.Stdout, "  Missing paths:\n")
 			for _, f := range r.MissingFiles {

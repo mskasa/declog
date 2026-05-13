@@ -504,7 +504,6 @@ Claude:
 
 #### 🟡 Medium — 使いやすさ・発見性
 
-- [ ] `kizami blame` の出力強化 — 各結果に Decision セクションの一行要約を表示し、蓄積された ADR の価値をその場で実感できるようにする
 - [ ] `kizami list --type <type>` — Type フィールドでの絞り込み（例：`--type adr`、`--type design`）
 - [ ] Windows の hook サポート — pre-commit hook はシェルスクリプトのため Windows では動作しない。クロスプラットフォーム対応を謳っている以上、hook ロジックを Go バイナリに内包し（`kizami hook run`）、薄いラッパーから呼び出す形に変更する
 - [ ] `kizami archive` — `Inactive` / `Superseded` なドキュメントを `docs/archive/` に移動し、`kizami list`・`kizami audit`・`kizami review` の対象から除外する。長期運用でノイズが増えるのを防ぐ

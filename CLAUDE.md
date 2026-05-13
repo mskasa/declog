@@ -537,7 +537,7 @@ Claude:
 
 #### 🟡 Medium — Usability and discoverability
 
-- [ ] `kizami blame` output enhancement — show a one-line excerpt (Decision section) alongside each result, so the value of accumulated ADRs is immediately visible
+- [x] `kizami blame` output enhancement — show a one-line excerpt (Decision section) alongside each result, so the value of accumulated ADRs is immediately visible
 - [ ] `kizami sync` — interactively update Related Files in existing documents
 - [ ] `kizami list --type <type>` — filter list by document Type field (e.g. `--type adr`, `--type design`)
 - [ ] Windows hook support — the pre-commit hook is a shell script and does not work on Windows despite the tool claiming cross-platform support; move hook logic into a Go binary (`kizami hook run`) invoked by a thin wrapper

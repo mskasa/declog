@@ -505,34 +505,15 @@ Claude:
 #### 🟡 Medium — 使いやすさ・発見性
 
 - [ ] `kizami blame` の出力強化 — 各結果に Decision セクションの一行要約を表示し、蓄積された ADR の価値をその場で実感できるようにする
-- [ ] `kizami sync` — 既存ドキュメントの Related Files を対話的に更新
 - [ ] `kizami list --type <type>` — Type フィールドでの絞り込み（例：`--type adr`、`--type design`）
 - [ ] Windows の hook サポート — pre-commit hook はシェルスクリプトのため Windows では動作しない。クロスプラットフォーム対応を謳っている以上、hook ロジックを Go バイナリに内包し（`kizami hook run`）、薄いラッパーから呼び出す形に変更する
-- [ ] `kizami search --ai` — AI を使ったセマンティック検索。キーワードが完全一致しなくても概念的に近いドキュメントを発見できる（例：「認証」で検索すると "JWT"・"login"・"session" に関連する設計書が出てくる）
 - [ ] `kizami archive` — `Inactive` / `Superseded` なドキュメントを `docs/archive/` に移動し、`kizami list`・`kizami audit`・`kizami review` の対象から除外する。長期運用でノイズが増えるのを防ぐ
 
 #### 🟢 Low — あると嬉しい
 
-- [ ] 逆引きインデックスの生成（`.kizami/index.json`：ファイルパス → ADR ID のマッピング）による `kizami blame` の高速化と外部ツール連携。VSCode 拡張の前提となる
 - [ ] `kizami import` — adr-tools 形式や Confluence/Notion エクスポートから kizami 形式への一括変換。ファイル名制約の緩和完成後に設計するのが自然
 - [ ] テンプレートのユーザー定義（config でテンプレートパスを指定可能に。Related Files セクションの必須化については要検討）
-- [ ] `kizami stats` — カバレッジ指標：関連ドキュメントを持つファイルの割合・陳腐化ドキュメント数・ドキュメントのないディレクトリ一覧など
 - [ ] GitHub Actions Marketplace 公開
-- [ ] ファイル存在確認を超えた乖離検出（関数名・シンボルレベルの参照チェック）— AI なしでの実現は本質的に難しい。下記 `kizami verify --ai` を参照
-
-### AI 連携強化（「AIに頼めばいい」への回答を補強する）
-
-現状：`kizami adr --ai` はあるが、AI はドラフト生成の補助にとどまっている。
-目標：kizami + AI が「AIに聞くだけ」より明らかに優れていることを体験として示す。
-
-#### 🟡 Medium
-
-- [ ] `kizami audit --ai` — 乖離検出時に AI + `git log` で修正案を提示（例：リネームを検出して Related Files の更新を提案）
-- [ ] Related Files の AI 提案強化 — `kizami adr` / `kizami design` 実行時に、AI が変更ファイルのコードを解析し、ステージング済みファイル一覧を超えた Related Files 候補を提案する
-
-#### 🟢 Low
-
-- [ ] `kizami verify --ai` — ADR/設計書の内容と現在のコードを照合し、意味的なずれを検出（例：「ADR には X と書いてあるが、コードは今 Y をしている」）。誤検知は避けられないため精度の期待値は低めに設定
 
 ---
 

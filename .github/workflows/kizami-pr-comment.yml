@@ -80,7 +80,7 @@ jobs:
               marker,
               '## Related Documents',
               '',
-              'The following kizami documents reference files changed in this PR:',
+              'The following documents reference files changed in this PR:',
               '',
               results,
               '',

@@ -39,12 +39,11 @@ func Parse(path string) (*Decision, error) {
 		case strings.HasPrefix(line, "# "):
 			body := strings.TrimPrefix(line, "# ")
 			// Legacy format: # NNNN: Title
-			if idx := strings.Index(body, ": "); idx != -1 {
-				idStr := body[:idx]
+			if idStr, rest, ok := strings.Cut(body, ": "); ok {
 				n, err := strconv.Atoi(idStr)
 				if err == nil {
 					d.ID = n
-					d.Title = body[idx+2:]
+					d.Title = rest
 					continue
 				}
 			}
@@ -62,4 +61,52 @@ func Parse(path string) (*Decision, error) {
 		return nil, fmt.Errorf("reading file: %w", err)
 	}
 	return d, nil
+}
+
+const excerptMaxLen = 100
+
+// ParseDecisionExcerpt returns the first non-blank line of the ## Decision section,
+// truncated to 100 characters. Returns "" for sidecar files or documents without
+// a ## Decision section.
+func ParseDecisionExcerpt(path string) (string, error) {
+	if IsSidecarFile(path) {
+		return "", nil
+	}
+	f, err := os.Open(path)
+	if err != nil {
+		return "", fmt.Errorf("opening file: %w", err)
+	}
+	defer f.Close()
+
+	inSection := false
+	inFence := false
+	scanner := bufio.NewScanner(f)
+	for scanner.Scan() {
+		line := scanner.Text()
+		if strings.HasPrefix(line, "```") {
+			inFence = !inFence
+			continue
+		}
+		if inFence {
+			continue
+		}
+		if line == "## Decision" {
+			inSection = true
+			continue
+		}
+		if inSection {
+			if strings.HasPrefix(line, "## ") {
+				break
+			}
+			trimmed := strings.TrimSpace(line)
+			if trimmed == "" || strings.HasPrefix(trimmed, "<!--") {
+				continue
+			}
+			if len(trimmed) > excerptMaxLen {
+				return trimmed[:excerptMaxLen] + "...", nil
+			}
+			return trimmed, nil
+		}
+	}
+	return "", scanner.Err()
 }

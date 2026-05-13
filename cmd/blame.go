@@ -45,8 +45,11 @@ var blameCmd = &cobra.Command{
 
 		fmt.Fprintf(os.Stdout, "Found %d decision(s) mentioning %q:\n\n", len(decisions), filePath)
 		for _, d := range decisions {
-			fmt.Fprintf(os.Stdout, "[%04d] %s | %s\n", d.ID, d.Date, d.Status)
+			fmt.Fprintf(os.Stdout, "[%s] %s | %s\n", d.Slug, d.Date, d.Status)
 			fmt.Fprintf(os.Stdout, "Title: %s\n", d.Title)
+			if excerpt, err := decision.ParseDecisionExcerpt(d.File); err == nil && excerpt != "" {
+				fmt.Fprintf(os.Stdout, "Decision: %s\n", excerpt)
+			}
 			fmt.Fprintf(os.Stdout, "Path: %s\n\n", d.File)
 		}
 		return nil

@@ -19,7 +19,19 @@ jobs:
         run: go install github.com/mskasa/kizami@latest
       - name: Run kizami audit
         id: audit
-        run: kizami audit
+        run: |
+          output=$(kizami audit 2>&1)
+          echo "$output"
+          if echo "$output" | grep -q "Stale path references detected"; then
+            echo "stale_found=true" >> "$GITHUB_OUTPUT"
+            {
+              echo 'AUDIT_RESULT<<EOF'
+              echo "$output"
+              echo 'EOF'
+            } >> "$GITHUB_ENV"
+          else
+            echo "stale_found=false" >> "$GITHUB_OUTPUT"
+          fi
       - name: Create GitHub Issue if stale documents found
         if: steps.audit.outputs.stale_found == 'true'
         uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0

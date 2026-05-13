@@ -430,4 +430,3 @@ func TestFindBySlug_NonExistentDir(t *testing.T) {
 		t.Error("FindBySlug() on non-existent dir should return error (not found), got nil")
 	}
 }
-

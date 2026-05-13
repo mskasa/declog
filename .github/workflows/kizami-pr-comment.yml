@@ -78,7 +78,7 @@ jobs:
             const results = fs.readFileSync('/tmp/kizami_results.md', 'utf8').trim();
             const body = [
               marker,
-              '## Related kizami Documents',
+              '## Related Documents',
               '',
               'The following kizami documents reference files changed in this PR:',
               '',

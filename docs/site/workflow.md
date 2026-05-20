@@ -51,7 +51,12 @@ Triggers on every pull request. Passes if the PR body references a document dire
 
 ### Pre-commit hook
 
-Runs on every commit. If no document is staged and the commit includes non-Markdown changes, it prints a reminder to consider creating a document. It **never blocks the commit** — it is a soft reminder only.
+Runs on every commit and performs two checks:
+
+1. **Related Files check** — If any staged file is referenced in the Related Files section of an existing Active document, but that document is not staged, a reminder is printed to review or update it.
+2. **New document check** — If no document is staged and the commit includes non-Markdown changes, a reminder is printed to consider creating a document.
+
+It **never blocks the commit** — both checks are soft reminders only.
 
 ---
 

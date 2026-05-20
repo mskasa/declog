@@ -7,14 +7,14 @@
   </picture>
 </p>
 
-**`kizami`** — ドキュメントとコードの乖離を防ぐ、Go製のリビングドキュメント管理CLIツールです。
+**`kizami`** — ADRや設計ドキュメントをコードと並べて管理し、乖離を自動検出するGo製のCLIツールです。
 
 [English README](README.md)
 
 ---
 
 設計上の意思決定は、IssueやPR、Slackに散らばり、やがて失われてしまいがちです。
-`kizami` は、その意思決定をMarkdownファイルとしてコードと並べて保存します。すべての判断の理由が、リポジトリの中に永続的に残ります。
+`kizami` は、その意思決定をMarkdownファイルとしてコードと並べて保存します。すべての判断の理由が、コードの隣に記録され、正確に維持されます。
 
 ```
 $ kizami adr "use PostgreSQL over SQLite"

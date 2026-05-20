@@ -14,7 +14,7 @@
 ---
 
 Design decisions tend to get scattered across Issues, PRs, and Slack — and eventually lost.
-`kizami` saves them as Markdown files alongside your code, so the reasoning behind every choice stays in the repository forever.
+`kizami` saves them as Markdown files alongside your code, so the reasoning behind every choice is recorded and kept accurate over time.
 
 ```
 $ kizami adr "use PostgreSQL over SQLite"

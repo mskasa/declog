@@ -18,13 +18,13 @@ You've been here before. You open a file written six months ago and stare at an 
 
 The code works fine. But nobody knows *why* it works that way. Changing it feels risky. Code review takes longer than it should. Onboarding new teammates means explaining things that should already be written down.
 
-This is the documentation problem — and it's not a matter of effort or discipline. It's a matter of timing. **The reasoning behind a decision only exists at the moment the decision is made.** Once the conversation ends, it's gone. No amount of reading the code will bring it back.
+This is the documentation problem. **The reasoning behind a decision only exists at the moment the decision is made.** Once the conversation ends, it's gone. No amount of reading the code will bring it back.
 
 kizami is built around this insight. It gives teams a lightweight workflow for capturing the *why* at the right moment, storing it in Git, and keeping it honest as the codebase evolves.
 
 ---
 
-## "Just ask AI to read the code and update the docs" — is that enough?
+## "Just ask AI to update the docs" — is that enough?
 
 With AI assistants able to read entire codebases, a reasonable question arises:
 **why bother with a dedicated tool when you can just ask AI to keep your docs up to date?**
@@ -48,13 +48,9 @@ Things AI cannot recover from reading code:
 
 ---
 
-## "Just ask AI" assumes someone remembers to ask
+## AI is a reactive tool
 
-For the "ask AI" approach to work, three things need to happen:
-
-1. Someone notices the documentation is stale
-2. Someone remembers to ask AI about it
-3. Someone actually follows through
+The "just ask AI" approach requires someone to notice that documentation is stale and actually follow through on asking. But by the time someone notices, the original context is already gone.
 
 The reason documentation goes stale in the first place is that no one remembers to do these things. kizami automates the enforcement layer with CI and git hooks — so the prompt happens automatically, not when someone happens to think of it.
 
@@ -62,9 +58,9 @@ AI is a reactive tool: it answers when asked. kizami is proactive infrastructure
 
 ---
 
-## kizami makes AI output permanent
+## In the AI era, accurate documentation is a force multiplier
 
-When you use `kizami adr --ai`, AI reads the staged diff and drafts the Context, Decision, and Consequences sections for you. The difference from a chat session: the output is saved to a file, committed to Git, and becomes part of the repository's auditable history.
+AI can read code, suggest changes, and write tests. But it cannot know why a design is the way it is, or what trade-offs shaped it. To understand intent, AI needs context — and that context is natural language.
 
-kizami is not a replacement for AI — it's the layer that makes AI-generated documentation **persistent, versioned, and verifiable**.
+Accurate documentation is a blueprint for AI. The better your docs, the more precisely AI can assist. kizami is the system that keeps those docs accurate.
 

@@ -13,7 +13,7 @@ nav_order: 1
 **kizami** is a minimal CLI tool to maintain living documentation alongside code, with automatic drift detection.
 
 Design decisions tend to get scattered across Issues, PRs, and Slack — and eventually lost.
-kizami saves them as Markdown files alongside your code, so the reasoning behind every choice stays in the repository forever.
+kizami saves them as Markdown files alongside your code, so the reasoning behind every choice is recorded and kept accurate over time.
 
 [日本語版はこちら](ja/)
 
@@ -29,7 +29,7 @@ Looking for installation instructions or a quick start guide?
 
 ## Documentation
 
-This site is for users who have already installed kizami. It covers how to use it day-to-day and how to run it effectively as part of your team's workflow.
+This site covers how to use kizami day-to-day and how to run it effectively as part of your team's workflow.
 
 | Page | Contents |
 |---|---|

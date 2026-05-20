@@ -18,18 +18,22 @@ Design decisions tend to get scattered across Issues, PRs, and Slack — and eve
 
 ```
 $ kizami adr "use PostgreSQL over SQLite"
-Created: docs/decisions/0007-use-postgresql-over-sqlite.md
+Created: docs/decisions/2026-03-12-use-postgresql-over-sqlite.md
 
 $ kizami list
-ID    Date        Status    Title
---    ----        ------    -----
-0007  2026-03-12  Draft     use PostgreSQL over SQLite
-0006  2026-03-12  Active    Command Name "kizami"
+Slug                            Date        Status    Title
+----                            ----        ------    -----
+use-postgresql-over-sqlite      2026-03-12  Draft     use PostgreSQL over SQLite
+command-name-kizami             2026-03-12  Active    Command name "kizami"
 ...
 
 $ kizami search "PostgreSQL"
-docs/decisions/0007-use-postgresql-over-sqlite.md:1: # 0007: use PostgreSQL over SQLite
+docs/decisions/2026-03-12-use-postgresql-over-sqlite.md:1: # use PostgreSQL over SQLite
 ```
+
+## Documentation
+
+Full documentation is available at **[mskasa.github.io/kizami](https://mskasa.github.io/kizami/)** — workflow guides, ADR writing tips, configuration reference, and more.
 
 ## Installation
 
@@ -86,30 +90,32 @@ kizami design "connection pool design"
 kizami list
 
 # 4. View a specific decision
-kizami show 7
+kizami show use-postgresql-over-sqlite
 
 # 5. Search by keyword
 kizami search "PostgreSQL"
 
 # 6. Update a status
-kizami status 7 inactive
-kizami status 3 superseded --by 7
+kizami status use-postgresql-over-sqlite inactive
+kizami status use-sqlite superseded --by use-postgresql-over-sqlite
 ```
 
 ## Commands
 
 | Command | Description |
 |---|---|
-| `kizami init` | Initialize the decisions directory and optional GitHub Actions workflow |
+| `kizami init` | Initialize the decisions directory and optional GitHub Actions workflows |
 | `kizami adr "<title>"` | Create a new ADR and open it in `$EDITOR` |
 | `kizami design "<title>"` | Create a new design document and open it in `$EDITOR` |
-| `kizami list` | List all decisions in reverse chronological order |
-| `kizami show <id>` | Print the full content of a decision |
-| `kizami search <keyword>` | Search decisions by keyword |
-| `kizami status <id> <status>` | Update the status of a decision |
-| `kizami blame <file>` | Find decisions that reference a given file |
+| `kizami list` | List all documents in reverse chronological order |
+| `kizami show <slug>` | Print the full content of a document |
+| `kizami search <keyword>` | Search documents by keyword |
+| `kizami status <slug> <status>` | Update the status of a document |
+| `kizami supersede <slug> "<title>"` | Supersede an existing document and create a new one |
+| `kizami blame <file>` | Find documents that reference a given file |
 | `kizami audit` | Detect drift between Related Files sections and actual code |
-| `kizami review` | Detect long-stale decisions |
+| `kizami lint` | Validate document structure for CI |
+| `kizami review` | Detect long-stale documents |
 
 ### Statuses
 
@@ -117,13 +123,13 @@ kizami status 3 superseded --by 7
 |---|---|
 | `Active` | Currently valid decision (default) |
 | `Inactive` | No longer applicable, no replacement |
-| `Superseded by NNNN` | Replaced by another decision |
+| `Superseded by <slug>` | Replaced by another document |
 
 ### `kizami status` examples
 
 ```bash
-kizami status 3 inactive
-kizami status 3 superseded --by 5   # marks 0003 as superseded by 0005
+kizami status use-sqlite inactive
+kizami status use-sqlite superseded --by use-postgresql-over-sqlite
 ```
 
 ## Decision File Format
@@ -132,15 +138,15 @@ Decisions are saved as Markdown files under `docs/decisions/` using a [MADR](htt
 
 ```
 docs/decisions/
-├── 0001-use-go-over-shell-script.md
-├── 0002-use-cobra-for-cli-framework.md
+├── 2026-03-12-use-go-over-shell-script.md
+├── 2026-03-12-use-cobra-for-cli-framework.md
 └── ...
 ```
 
-File naming: `NNNN-kebab-case-title.md` — the number is auto-incremented.
+File naming: `YYYY-MM-DD-kebab-case-title.md`
 
 ```markdown
-# 0007: Use PostgreSQL over SQLite
+# Use PostgreSQL over SQLite
 
 - Date: 2026-03-12
 - Status: Active

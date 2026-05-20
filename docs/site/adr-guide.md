@@ -93,6 +93,13 @@ kizami adr --ai "use connection pooling for database access"
 kizami design --ai "connection pool design"
 ```
 
+**Additional flags:**
+
+| Flag | Description |
+|---|---|
+| `--dry-run` | Print the prompt that would be sent to the API without calling it — useful for reviewing input before incurring API cost |
+| `--model <model-id>` | Override the Anthropic model for this run (default: `claude-sonnet-4-20250514`, or the value in `kizami.toml`) |
+
 Treat the generated content as a starting point — always review and edit before committing.
 
 ### Writing tips
@@ -143,6 +150,8 @@ kizami init
 # Edit the file to enable the workflow
 ```
 
+The default trigger is a push to the main branch. Edit the generated workflow file to match your team's branching strategy — for example, triggering on a different branch or on pull request merge.
+
 ---
 
 ## Updating ADRs
@@ -192,7 +201,9 @@ Add these two markers to an existing file, and it becomes visible to `kizami lis
 
 ### Managing non-Markdown files
 
-For files that cannot carry kizami markers — CSV, YAML, SQL, images, etc. — place a `.kizami` sidecar file alongside them:
+Not every important artifact is a Markdown file. A SQL schema, an OpenAPI spec, a CSV test matrix — these can drift just as silently as your documentation, but you can't embed kizami markers in them.
+
+For these files, place a `.kizami` sidecar alongside them:
 
 ```yaml
 # data/test_matrix.csv.kizami

@@ -21,14 +21,38 @@ kizamiを日常の開発プロセスにどう組み込むかを説明します�
 flowchart TD
     A[コードを変更] --> B[git add]
     B --> C[kizami adr / kizami design]
-    C --> D{類似ADRはある?}
-    D -- ある --> E[既存ADRを確認\n必要なら Superseded にする]
+    C --> D{類似ドキュメントはある?}
+    D -- ある --> E[既存ドキュメントを確認\n必要なら Superseded にする]
     D -- ない --> F[テンプレートを記入\nRelated Filesは自動挿入済み]
     E --> F
     F --> G[新しいドキュメントをgit add]
     G --> H[git commit\nコードとドキュメントをまとめて]
     H --> I[後から kizami blame / search\n過去の判断を参照]
 ```
+
+---
+
+## 初期セットアップ
+
+リポジトリで一度 `kizami init` を実行します。以下を対話形式で作成します。すべてオプションで、一つずつ確認しながら進みます：
+
+| 生成物 | 用途 |
+|---|---|
+| `docs/decisions/` | ADRの保存ディレクトリ |
+| `docs/design/` | 設計ドキュメントの保存ディレクトリ |
+| `kizami.toml` | デフォルト値入りの設定ファイル |
+| `.github/workflows/adr-check.yml` | ドキュメントなしのPRに警告するワークフロー |
+| `.git/hooks/pre-commit` | コミット前にドキュメント作成を促すフック |
+| `.github/workflows/adr-audit.yml` | 週次の乖離検出・GitHub Issue自動作成 |
+| `.github/workflows/kizami-promote.yml` | mainへのpush時にDraft→Activeを自動昇格 |
+
+### PRドキュメントチェック（`adr-check.yml`）
+
+すべてのプルリクエストでトリガーします。PR本文にドキュメントディレクトリへの言及があるか、変更ファイルにドキュメントが含まれていれば通過します。いずれでもなければ**警告を表示しますが、CIをブロックしません**。PRタイトルに `[skip-doc]` を含めるとスキップできます。
+
+### pre-commitフック
+
+すべてのコミットで実行されます。ドキュメントファイルがステージされておらず、かつMarkdown以外のファイルが含まれている場合に、ドキュメント作成を促すメッセージを表示します。**コミットはブロックしません**。あくまで通知のみです。
 
 ---
 
@@ -43,6 +67,8 @@ git add internal/db/db.go
 ```
 
 ### 2. ADRを作成する
+
+> ここでは例としてADRを使って説明します。設計ドキュメントの場合は `kizami design` を使います。
 
 `kizami adr` に意思決定を表すタイトルをつけて実行します。
 
@@ -66,7 +92,7 @@ kizami adr --ai "データベースアクセスにコネクションプールを
 新しいADRが既存のADRを置き換える場合は、コミット前に Superseded 状態にしておきます。
 
 ```bash
-kizami supersede 2026-03-01-use-single-db-connection --by 2026-03-12-use-connection-pooling
+kizami status 2026-03-01-use-single-db-connection superseded --by 2026-03-12-use-connection-pooling
 ```
 
 ### 4. コードとドキュメントをまとめてコミット
@@ -102,7 +128,15 @@ VS Codeをお使いの場合は、[kizami拡張機能](editor-integration)を使
 kizami review
 ```
 
-長期間更新されていないADRを一覧表示します（閾値は設定で変更可能）。定期的なチームレビューに活用できます。
+長期間更新されていないドキュメントを一覧表示します。デフォルトの閾値は6ヶ月で、`--months N` フラグまたは `kizami.toml` の `months_threshold` で変更できます。定期的なチームレビューに活用できます。
+
+### ドキュメント構造を検証する
+
+```bash
+kizami lint
+```
+
+すべてのドキュメントの構造上の問題を検出します。`- Status:` フィールドの欠落・`## Related Files` セクションが空・パスが解決不能など。問題があると終了コードが非ゼロになるため、CIでの利用に適しています。
 
 ### ドキュメントとコードの乖離を検出する
 
@@ -110,21 +144,17 @@ kizami review
 kizami audit
 ```
 
-Markdownドキュメントの `## Related Files` エントリと `.kizami` サイドカーファイルの `related:` エントリを確認します。参照されているファイルが削除・移動されていた場合に報告します。
+Markdownドキュメントの `## Related Files` エントリと `.kizami` サイドカーファイル（後述）の `related:` エントリを確認します。参照されているファイルが削除・移動されていた場合に報告します。
 
-`kizami init` で生成されるGitHub Actionsワークフローで自動化することもできます：
-
-```bash
-kizami init
-# → .github/workflows/kizami-audit.yml が生成される
-```
+`kizami init` で生成される `adr-audit.yml` で自動化できます（[初期セットアップ](#初期セットアップ)を参照）。
 
 ---
 
 ## Markdown以外のファイルを管理する
 
-CSVテストマトリクス・OpenAPI仕様書・SQLスキーマ・画像など、kizamiのマーカーを直接書けないファイルも、`.kizami` サイドカーファイルを使って追跡できます。
-サイドカーは管理対象ファイルの隣に置きます：
+追跡すべきファイルはMarkdownだけではありません。CSVテストマトリクス・OpenAPI仕様書・SQLスキーマ——これらはコードと同様に重要であり、同様に静かに乖離していきます。しかし、kizamiのマーカーを直接書くことはできません。
+
+そのような場合は、`.kizami` サイドカーファイルを管理対象ファイルの隣に置きます：
 
 ```
 data/
@@ -141,35 +171,5 @@ related:
   - tests/user_flow_test.go
 ```
 
-サイドカーはkizamiのファーストクラスのドキュメントとして扱われます：
-
-```bash
-# ソースファイルに関連するドキュメントを逆引き（サイドカーも対象）
-kizami blame tests/user_flow_test.go
-
-# Markdownドキュメントと並んでサイドカーも表示される
-kizami list
-
-# サイドカーの内容を表示
-kizami show test_matrix.csv
-
-# test_matrix.csv が削除・移動された場合にサイドカーを報告
-kizami audit
-```
-
 サイドカーには `status` フィールドがなく、常に `kizami audit` の対象になります。
 `date` フィールドは作成日を記録し、更新履歴はgitで管理されます。
-
----
-
-## 設計ドキュメントとADRの使い分け
-
-| | ADR（`kizami adr`） | 設計ドキュメント（`kizami design`） |
-|---|---|---|
-| **目的** | 意思決定の*理由*を記録 | 設計の*内容*を記述 |
-| **デフォルトステータス** | Draft | Draft |
-| **デフォルトディレクトリ** | `docs/decisions/` | `docs/design/` |
-| **典型的なライフサイクル** | Draft → Active → （Inactive / Superseded） | Draft → Active |
-| **auditの対象** | あり（Active のみ） | あり（Active のみ） |
-
-どちらも同じMADR互換テンプレートを使用し、`## Related Files` をサポートしています。

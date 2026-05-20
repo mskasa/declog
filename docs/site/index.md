@@ -33,31 +33,10 @@ This site is for users who have already installed kizami. It covers how to use i
 
 | Page | Contents |
 |---|---|
-| [Why kizami?](why-kizami) | Why kizami exists alongside AI assistants |
+| [Why kizami?](why-kizami) | The problem kizami solves, and why it matters |
 | [Development Workflow](workflow) | How kizami fits into your daily development process |
-| [ADR Guide](adr-guide) | How to write ADRs: granularity, templates, and status management |
+| [ADR Guide](adr-guide) | How to write documents: granularity, templates, and status management |
+| [Configuration](configuration) | All `kizami.toml` options |
 | [Best Practices](best-practices) | Tips for getting the most out of kizami |
 | [Editor Integration](editor-integration) | VS Code extension: related documents in the sidebar |
 
----
-
-## What is kizami?
-
-kizami records two types of documents:
-
-**ADRs (Architecture Decision Records)** — Capture *why* a technical decision was made.
-Stored under `docs/decisions/` by default.
-
-**Design Documents** — Capture *how* something is designed.
-Stored under `docs/design/` by default.
-
-Both types support a `## Related Files` section that links the document to source files.
-`kizami audit` detects when those files are deleted or moved — keeping your documentation honest.
-
-```bash
-$ kizami adr "use PostgreSQL over SQLite"
-Created: docs/decisions/2026-03-12-use-postgresql-over-sqlite.md
-
-$ kizami audit
-✓ All related files exist.
-```

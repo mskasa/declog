@@ -116,18 +116,18 @@ This surfaces the *history* of decisions that shaped the current design. It's an
 
 ## Frequently Asked Questions
 
-**Q: How many ADRs is too many?**
+**Q: How many documents is too many?**
 
-There's no fixed limit, but if you're creating more than one or two ADRs per week, consider whether some decisions are too small to warrant one. A good heuristic: if a future developer reading the code could figure out *why* from context alone, skip the ADR.
+There's no fixed limit, but if you're creating more than one or two documents per week, consider whether some decisions are too small to warrant one. A good heuristic: if a future developer reading the code could figure out *why* from context alone, skip the document.
 
-**Q: Should I write ADRs for decisions made in the past?**
+**Q: Should I document decisions made in the past?**
 
-Yes, ADRs written after the fact are valuable — especially for decisions that are still shaping the codebase today. Use the actual decision date (even if it was years ago) in the `Date` field, and note in the Context section that this was recorded after the decision was made.
+Yes, documents written after the fact are valuable — especially for decisions that are still shaping the codebase today. Use the actual decision date (even if it was years ago) in the `Date` field, and note in the Context section that this was recorded after the decision was made.
 
 **Q: Can I use kizami for non-code decisions?**
 
-Yes. ADRs work for any significant decision: team processes, API contracts, deployment strategies, data retention policies. As long as the decision is worth preserving and has related files (or can be left without them), kizami can track it.
+Yes. kizami works for any significant decision: team processes, API contracts, deployment strategies, data retention policies. As long as the decision is worth preserving and has related files (or can be left without them), kizami can track it.
 
-**Q: What if I disagree with an old ADR?**
+**Q: What if I disagree with an old document?**
 
-Don't delete it — create a new ADR explaining the new direction and mark the old one as `Superseded by <slug>`. The history of the disagreement and resolution is itself valuable context.
+Don't delete it — create a new document explaining the new direction and mark the old one as `Superseded by <slug>`. The history of the disagreement and resolution is itself valuable context.

@@ -17,19 +17,23 @@
 `kizami` は、その意思決定をMarkdownファイルとしてコードと並べて保存します。すべての判断の理由が、リポジトリの中に永続的に残ります。
 
 ```
-$ kizami adr "SQLiteではなくPostgreSQLを使う"
-Created: docs/decisions/0007-sqliteではなくpostgresqlを使う.md
+$ kizami adr "use PostgreSQL over SQLite"
+Created: docs/decisions/2026-03-12-use-postgresql-over-sqlite.md
 
 $ kizami list
-ID    Date        Status    Title
---    ----        ------    -----
-0007  2026-03-12  Draft     SQLiteではなくPostgreSQLを使う
-0006  2026-03-12  Active    Command Name "kizami"
+Slug                            Date        Status    Title
+----                            ----        ------    -----
+use-postgresql-over-sqlite      2026-03-12  Draft     use PostgreSQL over SQLite
+command-name-kizami             2026-03-12  Active    Command name "kizami"
 ...
 
 $ kizami search "PostgreSQL"
-docs/decisions/0007-sqliteではなくpostgresqlを使う.md:1: # 0007: SQLiteではなくPostgreSQLを使う
+docs/decisions/2026-03-12-use-postgresql-over-sqlite.md:1: # use PostgreSQL over SQLite
 ```
+
+## ドキュメント
+
+詳細なドキュメントは **[mskasa.github.io/kizami](https://mskasa.github.io/kizami/)** で参照できます。ワークフローガイド・ADRの書き方・設定リファレンスなどを掲載しています。
 
 ## インストール
 
@@ -86,14 +90,14 @@ kizami design "コネクションプール設計"
 kizami list
 
 # 4. 特定の意思決定を表示する
-kizami show 7
+kizami show use-postgresql-over-sqlite
 
 # 5. キーワードで検索する
 kizami search "PostgreSQL"
 
 # 6. ステータスを更新する
-kizami status 7 inactive
-kizami status 3 superseded --by 7
+kizami status use-postgresql-over-sqlite inactive
+kizami status use-sqlite superseded --by use-postgresql-over-sqlite
 ```
 
 ## コマンド一覧
@@ -103,13 +107,15 @@ kizami status 3 superseded --by 7
 | `kizami init` | decisionsディレクトリとGitHub Actionsワークフローを初期化する |
 | `kizami adr "<タイトル>"` | 新しいADRを作成し、`$EDITOR` で開く |
 | `kizami design "<タイトル>"` | 新しい設計ドキュメントを作成し、`$EDITOR` で開く |
-| `kizami list` | すべての意思決定を新しい順に一覧表示する |
-| `kizami show <id>` | 指定した意思決定の全文を表示する |
-| `kizami search <キーワード>` | キーワードで意思決定を検索する |
-| `kizami status <id> <ステータス>` | 意思決定のステータスを更新する |
-| `kizami blame <ファイル>` | 指定ファイルを参照している意思決定を逆引きする |
+| `kizami list` | すべてのドキュメントを新しい順に一覧表示する |
+| `kizami show <slug>` | 指定したドキュメントの全文を表示する |
+| `kizami search <キーワード>` | キーワードでドキュメントを検索する |
+| `kizami status <slug> <ステータス>` | ドキュメントのステータスを更新する |
+| `kizami supersede <slug> "<タイトル>"` | 既存のドキュメントを置き換え、新しいドキュメントを作成する |
+| `kizami blame <ファイル>` | 指定ファイルを参照しているドキュメントを逆引きする |
 | `kizami audit` | Related Filesセクションとコードの乖離を検出する |
-| `kizami review` | 長期未更新の意思決定を検出する |
+| `kizami lint` | CIでドキュメント構造を検証する |
+| `kizami review` | 長期未更新のドキュメントを検出する |
 
 ### ステータス一覧
 
@@ -117,13 +123,13 @@ kizami status 3 superseded --by 7
 |---|---|
 | `Active` | 現在有効な意思決定（デフォルト） |
 | `Inactive` | 無効になった意思決定（代替なし） |
-| `Superseded by NNNN` | 別の意思決定に置き換えられた |
+| `Superseded by <slug>` | 別のドキュメントに置き換えられた |
 
 ### `kizami status` の使用例
 
 ```bash
-kizami status 3 inactive
-kizami status 3 superseded --by 5   # 0003 が 0005 に置き換えられたことを記録
+kizami status use-sqlite inactive
+kizami status use-sqlite superseded --by use-postgresql-over-sqlite
 ```
 
 ## 意思決定ファイルのフォーマット
@@ -132,15 +138,15 @@ kizami status 3 superseded --by 5   # 0003 が 0005 に置き換えられたこ�
 
 ```
 docs/decisions/
-├── 0001-use-go-over-shell-script.md
-├── 0002-use-cobra-for-cli-framework.md
+├── 2026-03-12-use-go-over-shell-script.md
+├── 2026-03-12-use-cobra-for-cli-framework.md
 └── ...
 ```
 
-ファイル名は `NNNN-kebab-case-title.md` の形式で、番号は自動でインクリメントされます。
+ファイル名は `YYYY-MM-DD-kebab-case-title.md` の形式です。
 
 ```markdown
-# 0007: SQLiteではなくPostgreSQLを使う
+# use PostgreSQL over SQLite
 
 - Date: 2026-03-12
 - Status: Active

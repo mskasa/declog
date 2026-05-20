@@ -25,7 +25,8 @@ type Config struct {
 
 // AIConfig holds AI-related configuration.
 type AIConfig struct {
-	Model string
+	Model   string
+	Backend string // "anthropic" (default) or "bedrock"
 }
 
 // DocumentsConfig holds the list of document directories for commands like
@@ -141,8 +142,11 @@ func parse(r io.Reader) (*Config, error) {
 		val := strings.Trim(strings.TrimSpace(parts[1]), `"`)
 		switch section {
 		case "ai":
-			if key == "model" {
+			switch key {
+			case "model":
 				cfg.AI.Model = val
+			case "backend":
+				cfg.AI.Backend = val
 			}
 		case "documents":
 			if key == "dirs" {

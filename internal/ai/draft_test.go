@@ -93,7 +93,7 @@ func TestDryRun_ShowsPromptAndConfirms(t *testing.T) {
 		t.Error("expected true for 'y' input")
 	}
 	got := out.String()
-	if !strings.Contains(got, "--- Prompt to be sent to Anthropic API ---") {
+	if !strings.Contains(got, "--- Prompt to be sent to AI backend ---") {
 		t.Errorf("missing header in output: %s", got)
 	}
 	if !strings.Contains(got, prompt) {

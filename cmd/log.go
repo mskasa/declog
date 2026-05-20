@@ -26,8 +26,10 @@ var adrCmd = &cobra.Command{
 	Short: "Create a new ADR and open it in your editor",
 	Args:  cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
-		if aiFlag && os.Getenv("ANTHROPIC_API_KEY") == "" {
-			return fmt.Errorf("ANTHROPIC_API_KEY is not set.\nPlease set the environment variable and try again.\n\n  export ANTHROPIC_API_KEY=your-api-key")
+		if aiFlag {
+			if err := validateAIBackend(loadCfg()); err != nil {
+				return err
+			}
 		}
 
 		root, err := gitRepoRootFn()
@@ -79,8 +81,10 @@ var designCmd = &cobra.Command{
 	Short: "Create a new design document and open it in your editor",
 	Args:  cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
-		if designAIFlag && os.Getenv("ANTHROPIC_API_KEY") == "" {
-			return fmt.Errorf("ANTHROPIC_API_KEY is not set.\nPlease set the environment variable and try again.\n\n  export ANTHROPIC_API_KEY=your-api-key")
+		if designAIFlag {
+			if err := validateAIBackend(loadCfg()); err != nil {
+				return err
+			}
 		}
 
 		root, err := gitRepoRootFn()
@@ -123,13 +127,36 @@ var designCmd = &cobra.Command{
 	},
 }
 
-// runWithAIDesign generates a design document draft via the Anthropic API and writes the file.
-func runWithAIDesign(dir, root, title, supersededSlug string) (string, error) {
-	apiKey := os.Getenv("ANTHROPIC_API_KEY")
-	if apiKey == "" {
-		return "", fmt.Errorf("ANTHROPIC_API_KEY is not set.\nPlease set the environment variable and try again.\n\n  export ANTHROPIC_API_KEY=your-api-key")
+// validateAIBackend checks that the required credentials are present for the selected backend.
+func validateAIBackend(cfg *config.Config) error {
+	if useBedrockBackend(cfg) {
+		return nil // AWS credentials are resolved at call time by the SDK
 	}
+	if os.Getenv("ANTHROPIC_API_KEY") == "" {
+		return fmt.Errorf("ANTHROPIC_API_KEY is not set.\nPlease set the environment variable and try again.\n\n  export ANTHROPIC_API_KEY=your-api-key\n\nAlternatively, set CLAUDE_CODE_USE_BEDROCK=1 to use AWS Bedrock.")
+	}
+	return nil
+}
 
+// useBedrockBackend reports whether the Bedrock backend should be used.
+// Priority: CLAUDE_CODE_USE_BEDROCK env var > [ai] backend in config.
+func useBedrockBackend(cfg *config.Config) bool {
+	if os.Getenv("CLAUDE_CODE_USE_BEDROCK") == "1" {
+		return true
+	}
+	return cfg != nil && strings.EqualFold(cfg.AI.Backend, "bedrock")
+}
+
+// callAI dispatches to the appropriate AI backend and returns the generated draft.
+func callAI(prompt, model string, cfg *config.Config) (string, error) {
+	if useBedrockBackend(cfg) {
+		return ai.GenerateDraftBedrock(prompt, model)
+	}
+	return ai.GenerateDraft(prompt, model, os.Getenv("ANTHROPIC_API_KEY"))
+}
+
+// runWithAIDesign generates a design document draft via AI and writes the file.
+func runWithAIDesign(dir, root, title, supersededSlug string) (string, error) {
 	cfg, err := config.Load(root)
 	if err != nil {
 		return "", fmt.Errorf("loading config: %w", err)
@@ -146,7 +173,7 @@ func runWithAIDesign(dir, root, title, supersededSlug string) (string, error) {
 	}
 
 	fmt.Fprintln(os.Stdout, "Generating design document draft with AI...")
-	draft, err := ai.GenerateDraft(prompt, model, apiKey)
+	draft, err := callAI(prompt, model, cfg)
 	if err != nil {
 		return "", err
 	}
@@ -154,13 +181,8 @@ func runWithAIDesign(dir, root, title, supersededSlug string) (string, error) {
 	return decision.CreateDesignFromDraft(dir, title, draft, supersededSlug)
 }
 
-// runWithAI generates an ADR draft via the Anthropic API and writes the file.
+// runWithAI generates an ADR draft via AI and writes the file.
 func runWithAI(dir, root, title, supersededSlug string) (string, error) {
-	apiKey := os.Getenv("ANTHROPIC_API_KEY")
-	if apiKey == "" {
-		return "", fmt.Errorf("ANTHROPIC_API_KEY is not set.\nPlease set the environment variable and try again.\n\n  export ANTHROPIC_API_KEY=your-api-key")
-	}
-
 	cfg, err := config.Load(root)
 	if err != nil {
 		return "", fmt.Errorf("loading config: %w", err)
@@ -177,7 +199,7 @@ func runWithAI(dir, root, title, supersededSlug string) (string, error) {
 	}
 
 	fmt.Fprintln(os.Stdout, "Generating ADR draft with AI...")
-	draft, err := ai.GenerateDraft(prompt, model, apiKey)
+	draft, err := callAI(prompt, model, cfg)
 	if err != nil {
 		return "", err
 	}

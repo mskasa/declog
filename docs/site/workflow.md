@@ -14,7 +14,7 @@ This page shows how kizami fits into your day-to-day development process.
 
 ## The Core Loop
 
-When you make a code change that involves a meaningful technical decision, record it alongside the code change — in the same commit.
+Whenever a change involves a meaningful technical decision, record it as an ADR or design document in the same commit.
 
 ```mermaid
 flowchart TD

@@ -84,7 +84,21 @@ command = "code --wait"
 model = "claude-sonnet-4-20250514"
 ```
 
-`kizami adr --ai` / `kizami design --ai` で使用するAnthropicのモデルです。`--model` フラグでコマンド実行時に上書きできます。
+`kizami adr --ai` / `kizami design --ai` で使用するモデルです。`--model` フラグでコマンド実行時に上書きできます。
+
+**Anthropic API（デフォルト）：** `claude-sonnet-4-20250514` などの標準モデルIDを指定します。`ANTHROPIC_API_KEY` が必要です。
+
+**AWS Bedrock：** BedrockのモデルIDを設定するだけで、kizamiが自動的にBedrockへルーティングします。追加設定は不要です。対応パターン：
+
+| パターン | 例 |
+|---|---|
+| Application / Provisioned Inference Profile ARN | `arn:aws:bedrock:ap-northeast-1:123456789012:application-inference-profile/abc123` |
+| クロスリージョン推論プロファイル | `us.anthropic.claude-3-5-sonnet-20241022-v2:0` |
+| プロバイダープレフィックス付きモデルID | `anthropic.claude-3-5-sonnet-20241022-v2:0` |
+
+AWSクレデンシャルは標準の環境変数（`AWS_PROFILE`、`AWS_REGION`、`AWS_ACCESS_KEY_ID` など）から解決されます。
+
+明示的にBedrockを指定したい場合は `[ai] backend = "bedrock"` または環境変数 `CLAUDE_CODE_USE_BEDROCK=1` も使用できます。
 
 ---
 

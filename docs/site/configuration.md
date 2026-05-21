@@ -83,7 +83,21 @@ Editor command used to open documents after creation. Overridden by the `$EDITOR
 model = "claude-sonnet-4-20250514"
 ```
 
-Anthropic model used by `kizami adr --ai` and `kizami design --ai`. Can be overridden per run with `--model`.
+Model used by `kizami adr --ai` and `kizami design --ai`. Can be overridden per run with `--model`.
+
+**Anthropic API (default):** set a standard model ID such as `claude-sonnet-4-20250514`. Requires `ANTHROPIC_API_KEY`.
+
+**AWS Bedrock:** set a Bedrock model ID and kizami automatically routes to Bedrock — no extra configuration needed. Supported patterns:
+
+| Pattern | Example |
+|---|---|
+| Application / Provisioned Inference Profile ARN | `arn:aws:bedrock:ap-northeast-1:123456789012:application-inference-profile/abc123` |
+| Cross-region inference profile | `us.anthropic.claude-3-5-sonnet-20241022-v2:0` |
+| Provider-prefixed model ID | `anthropic.claude-3-5-sonnet-20241022-v2:0` |
+
+AWS credentials are resolved from the standard environment (`AWS_PROFILE`, `AWS_REGION`, `AWS_ACCESS_KEY_ID`, etc.).
+
+You can also force Bedrock explicitly via `[ai] backend = "bedrock"` or the `CLAUDE_CODE_USE_BEDROCK=1` environment variable.
 
 ---
 

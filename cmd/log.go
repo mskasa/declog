@@ -26,8 +26,10 @@ var adrCmd = &cobra.Command{
 	Short: "Create a new ADR and open it in your editor",
 	Args:  cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
-		if aiFlag && os.Getenv("ANTHROPIC_API_KEY") == "" {
-			return fmt.Errorf("ANTHROPIC_API_KEY is not set.\nPlease set the environment variable and try again.\n\n  export ANTHROPIC_API_KEY=your-api-key")
+		if aiFlag {
+			if err := validateAIBackend(loadCfg()); err != nil {
+				return err
+			}
 		}
 
 		root, err := gitRepoRootFn()
@@ -79,8 +81,10 @@ var designCmd = &cobra.Command{
 	Short: "Create a new design document and open it in your editor",
 	Args:  cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
-		if designAIFlag && os.Getenv("ANTHROPIC_API_KEY") == "" {
-			return fmt.Errorf("ANTHROPIC_API_KEY is not set.\nPlease set the environment variable and try again.\n\n  export ANTHROPIC_API_KEY=your-api-key")
+		if designAIFlag {
+			if err := validateAIBackend(loadCfg()); err != nil {
+				return err
+			}
 		}
 
 		root, err := gitRepoRootFn()
@@ -123,13 +127,40 @@ var designCmd = &cobra.Command{
 	},
 }
 
-// runWithAIDesign generates a design document draft via the Anthropic API and writes the file.
-func runWithAIDesign(dir, root, title, supersededSlug string) (string, error) {
-	apiKey := os.Getenv("ANTHROPIC_API_KEY")
-	if apiKey == "" {
-		return "", fmt.Errorf("ANTHROPIC_API_KEY is not set.\nPlease set the environment variable and try again.\n\n  export ANTHROPIC_API_KEY=your-api-key")
+// validateAIBackend checks that the required credentials are present for the selected backend.
+func validateAIBackend(cfg *config.Config) error {
+	model := config.ResolveModel(modelFlag, cfg)
+	if useBedrockBackend(cfg, model) {
+		return nil // AWS credentials are resolved at call time by the SDK
 	}
+	if os.Getenv("ANTHROPIC_API_KEY") == "" {
+		return fmt.Errorf("ANTHROPIC_API_KEY is not set.\nPlease set the environment variable and try again.\n\n  export ANTHROPIC_API_KEY=your-api-key\n\nAlternatively, use AWS Bedrock by setting a Bedrock model ID in kizami.toml:\n\n  [ai]\n  model = \"anthropic.claude-3-5-sonnet-20241022-v2:0\"")
+	}
+	return nil
+}
 
+// useBedrockBackend reports whether the Bedrock backend should be used.
+// Priority: CLAUDE_CODE_USE_BEDROCK env var > [ai] backend in config > model ID auto-detection.
+func useBedrockBackend(cfg *config.Config, model string) bool {
+	if os.Getenv("CLAUDE_CODE_USE_BEDROCK") == "1" {
+		return true
+	}
+	if cfg != nil && strings.EqualFold(cfg.AI.Backend, "bedrock") {
+		return true
+	}
+	return config.IsBedrockModel(model)
+}
+
+// callAI dispatches to the appropriate AI backend and returns the generated draft.
+func callAI(prompt, model string, cfg *config.Config) (string, error) {
+	if useBedrockBackend(cfg, model) {
+		return ai.GenerateDraftBedrock(prompt, model)
+	}
+	return ai.GenerateDraft(prompt, model, os.Getenv("ANTHROPIC_API_KEY"))
+}
+
+// runWithAIDesign generates a design document draft via AI and writes the file.
+func runWithAIDesign(dir, root, title, supersededSlug string) (string, error) {
 	cfg, err := config.Load(root)
 	if err != nil {
 		return "", fmt.Errorf("loading config: %w", err)
@@ -146,7 +177,7 @@ func runWithAIDesign(dir, root, title, supersededSlug string) (string, error) {
 	}
 
 	fmt.Fprintln(os.Stdout, "Generating design document draft with AI...")
-	draft, err := ai.GenerateDraft(prompt, model, apiKey)
+	draft, err := callAI(prompt, model, cfg)
 	if err != nil {
 		return "", err
 	}
@@ -154,13 +185,8 @@ func runWithAIDesign(dir, root, title, supersededSlug string) (string, error) {
 	return decision.CreateDesignFromDraft(dir, title, draft, supersededSlug)
 }
 
-// runWithAI generates an ADR draft via the Anthropic API and writes the file.
+// runWithAI generates an ADR draft via AI and writes the file.
 func runWithAI(dir, root, title, supersededSlug string) (string, error) {
-	apiKey := os.Getenv("ANTHROPIC_API_KEY")
-	if apiKey == "" {
-		return "", fmt.Errorf("ANTHROPIC_API_KEY is not set.\nPlease set the environment variable and try again.\n\n  export ANTHROPIC_API_KEY=your-api-key")
-	}
-
 	cfg, err := config.Load(root)
 	if err != nil {
 		return "", fmt.Errorf("loading config: %w", err)
@@ -177,7 +203,7 @@ func runWithAI(dir, root, title, supersededSlug string) (string, error) {
 	}
 
 	fmt.Fprintln(os.Stdout, "Generating ADR draft with AI...")
-	draft, err := ai.GenerateDraft(prompt, model, apiKey)
+	draft, err := callAI(prompt, model, cfg)
 	if err != nil {
 		return "", err
 	}
@@ -220,13 +246,13 @@ func promptSimilar(dir, title string) (string, error) {
 
 func init() {
 	rootCmd.AddCommand(adrCmd)
-	adrCmd.Flags().BoolVar(&aiFlag, "ai", false, "Generate ADR draft using Anthropic API")
-	adrCmd.Flags().StringVar(&modelFlag, "model", "", "Anthropic model to use (overrides config file)")
-	adrCmd.Flags().BoolVar(&dryRunFlag, "dry-run", false, "Show the prompt to be sent to the API without calling it")
+	adrCmd.Flags().BoolVar(&aiFlag, "ai", false, "Generate ADR draft using AI (Anthropic API or AWS Bedrock)")
+	adrCmd.Flags().StringVar(&modelFlag, "model", "", "Model to use (overrides config file; a Bedrock model ID enables Bedrock automatically)")
+	adrCmd.Flags().BoolVar(&dryRunFlag, "dry-run", false, "Show the prompt to be sent to the AI backend without calling it")
 
 	rootCmd.AddCommand(designCmd)
-	designCmd.Flags().BoolVar(&designAIFlag, "ai", false, "Generate design document draft using Anthropic API")
-	designCmd.Flags().StringVar(&modelFlag, "model", "", "Anthropic model to use (overrides config file)")
+	designCmd.Flags().BoolVar(&designAIFlag, "ai", false, "Generate design document draft using AI (Anthropic API or AWS Bedrock)")
+	designCmd.Flags().StringVar(&modelFlag, "model", "", "Model to use (overrides config file; a Bedrock model ID enables Bedrock automatically)")
 	designCmd.Flags().BoolVar(&designDryRunFlag, "dry-run", false, "Show the prompt to be sent to the API without calling it")
 }
 

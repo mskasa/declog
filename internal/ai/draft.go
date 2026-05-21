@@ -89,7 +89,7 @@ func generateDraft(prompt, model, apiKey string, client *http.Client) (string, e
 // DryRun prints the prompt to w and asks the user to confirm via r.
 // Returns true if the user confirms (enters "y").
 func DryRun(prompt string, r io.Reader, w io.Writer) bool {
-	fmt.Fprintln(w, "--- Prompt to be sent to Anthropic API ---")
+	fmt.Fprintln(w, "--- Prompt to be sent to AI backend ---")
 	fmt.Fprint(w, prompt)
 	fmt.Fprintln(w, "------------------------------------------")
 	fmt.Fprint(w, "Proceed? (y/n): ")

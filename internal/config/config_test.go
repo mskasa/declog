@@ -203,3 +203,48 @@ func TestResolveModel_Priority(t *testing.T) {
 		})
 	}
 }
+
+func TestIsBedrockModel(t *testing.T) {
+	tests := []struct {
+		model string
+		want  bool
+	}{
+		{"arn:aws:bedrock:ap-northeast-1:123456789012:application-inference-profile/abc", true},
+		{"us.anthropic.claude-3-5-sonnet-20241022-v2:0", true},
+		{"eu.anthropic.claude-3-haiku-20240307-v1:0", true},
+		{"ap.anthropic.claude-3-opus-20240229-v1:0", true},
+		{"anthropic.claude-3-5-sonnet-20241022-v2:0", true},
+		{"amazon.nova-pro-v1:0", true},
+		{"meta.llama3-8b-instruct-v1:0", true},
+		{"mistral.mistral-7b-instruct-v0:2", true},
+		{"claude-sonnet-4-20250514", false},
+		{"claude-opus-4-20250514", false},
+		{"", false},
+	}
+	for _, tt := range tests {
+		t.Run(tt.model, func(t *testing.T) {
+			got := IsBedrockModel(tt.model)
+			if got != tt.want {
+				t.Errorf("IsBedrockModel(%q) = %v, want %v", tt.model, got, tt.want)
+			}
+		})
+	}
+}
+
+func TestResolveModel_EnvVar(t *testing.T) {
+	t.Setenv(EnvModel, "env-model")
+
+	t.Run("env var wins over config and default", func(t *testing.T) {
+		cfg := &Config{AI: AIConfig{Model: "config-model"}}
+		got := ResolveModel("", cfg)
+		if got != "env-model" {
+			t.Errorf("got %q, want %q", got, "env-model")
+		}
+	})
+	t.Run("flag wins over env var", func(t *testing.T) {
+		got := ResolveModel("flag-model", nil)
+		if got != "flag-model" {
+			t.Errorf("got %q, want %q", got, "flag-model")
+		}
+	})
+}

@@ -97,8 +97,8 @@ kizami design --ai "connection pool design"
 
 | Flag | Description |
 |---|---|
-| `--dry-run` | Print the prompt that would be sent to the API without calling it — useful for reviewing input before incurring API cost |
-| `--model <model-id>` | Override the Anthropic model for this run (default: `claude-sonnet-4-20250514`, or the value in `kizami.toml`) |
+| `--dry-run` | Print the prompt that would be sent to the AI backend without calling it — useful for reviewing input before incurring API cost |
+| `--model <model-id>` | Override the model for this run (default: `claude-sonnet-4-20250514`, or the value in `kizami.toml`). Passing a Bedrock model ID automatically enables the Bedrock backend. |
 
 Treat the generated content as a starting point — always review and edit before committing.
 

@@ -10,6 +10,10 @@ import (
 	"strings"
 )
 
+// EnvModel is the environment variable kizami reads for the model name,
+// following the same convention as Claude Code (CLAUDE_CODE_USE_BEDROCK=1).
+const EnvModel = "ANTHROPIC_MODEL"
+
 const DefaultModel = "claude-sonnet-4-20250514"
 
 // Config holds kizami configuration.
@@ -25,7 +29,8 @@ type Config struct {
 
 // AIConfig holds AI-related configuration.
 type AIConfig struct {
-	Model string
+	Model   string
+	Backend string // "anthropic" (default) or "bedrock"
 }
 
 // DocumentsConfig holds the list of document directories for commands like
@@ -88,15 +93,40 @@ func Load(root string) (*Config, error) {
 }
 
 // ResolveModel returns the model to use, applying priority:
-// flagModel > config file model > default.
+// flagModel > ANTHROPIC_MODEL env var > config file model > default.
 func ResolveModel(flagModel string, cfg *Config) string {
 	if flagModel != "" {
 		return flagModel
+	}
+	if env := os.Getenv(EnvModel); env != "" {
+		return env
 	}
 	if cfg != nil && cfg.AI.Model != "" {
 		return cfg.AI.Model
 	}
 	return DefaultModel
+}
+
+// IsBedrockModel reports whether the model ID indicates an AWS Bedrock model.
+// Recognised patterns:
+//   - ARN: "arn:aws:bedrock:..."  (Application/Provisioned Inference Profile)
+//   - Cross-region inference profile: "us.*", "eu.*", "ap.*"
+//   - Standard Bedrock model ID: provider-prefixed format such as "anthropic.claude-*", "amazon.nova-*"
+func IsBedrockModel(model string) bool {
+	if strings.HasPrefix(model, "arn:aws:bedrock:") {
+		return true
+	}
+	for _, prefix := range []string{"us.", "eu.", "ap."} {
+		if strings.HasPrefix(model, prefix) {
+			return true
+		}
+	}
+	for _, provider := range []string{"anthropic.", "amazon.", "meta.", "mistral.", "cohere.", "ai21.", "stability."} {
+		if strings.HasPrefix(model, provider) {
+			return true
+		}
+	}
+	return false
 }
 
 func globalConfigPath() string {
@@ -141,8 +171,11 @@ func parse(r io.Reader) (*Config, error) {
 		val := strings.Trim(strings.TrimSpace(parts[1]), `"`)
 		switch section {
 		case "ai":
-			if key == "model" {
+			switch key {
+			case "model":
 				cfg.AI.Model = val
+			case "backend":
+				cfg.AI.Backend = val
 			}
 		case "documents":
 			if key == "dirs" {

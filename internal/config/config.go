@@ -107,6 +107,28 @@ func ResolveModel(flagModel string, cfg *Config) string {
 	return DefaultModel
 }
 
+// IsBedrockModel reports whether the model ID indicates an AWS Bedrock model.
+// Recognised patterns:
+//   - ARN: "arn:aws:bedrock:..."  (Application/Provisioned Inference Profile)
+//   - Cross-region inference profile: "us.*", "eu.*", "ap.*"
+//   - Standard Bedrock model ID: provider-prefixed format such as "anthropic.claude-*", "amazon.nova-*"
+func IsBedrockModel(model string) bool {
+	if strings.HasPrefix(model, "arn:aws:bedrock:") {
+		return true
+	}
+	for _, prefix := range []string{"us.", "eu.", "ap."} {
+		if strings.HasPrefix(model, prefix) {
+			return true
+		}
+	}
+	for _, provider := range []string{"anthropic.", "amazon.", "meta.", "mistral.", "cohere.", "ai21.", "stability."} {
+		if strings.HasPrefix(model, provider) {
+			return true
+		}
+	}
+	return false
+}
+
 func globalConfigPath() string {
 	home, _ := os.UserHomeDir()
 	return filepath.Join(home, ".config", "kizami", "config.toml")

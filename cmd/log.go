@@ -129,27 +129,31 @@ var designCmd = &cobra.Command{
 
 // validateAIBackend checks that the required credentials are present for the selected backend.
 func validateAIBackend(cfg *config.Config) error {
-	if useBedrockBackend(cfg) {
+	model := config.ResolveModel(modelFlag, cfg)
+	if useBedrockBackend(cfg, model) {
 		return nil // AWS credentials are resolved at call time by the SDK
 	}
 	if os.Getenv("ANTHROPIC_API_KEY") == "" {
-		return fmt.Errorf("ANTHROPIC_API_KEY is not set.\nPlease set the environment variable and try again.\n\n  export ANTHROPIC_API_KEY=your-api-key\n\nAlternatively, set CLAUDE_CODE_USE_BEDROCK=1 to use AWS Bedrock.")
+		return fmt.Errorf("ANTHROPIC_API_KEY is not set.\nPlease set the environment variable and try again.\n\n  export ANTHROPIC_API_KEY=your-api-key\n\nAlternatively, use AWS Bedrock by setting a Bedrock model ID in kizami.toml:\n\n  [ai]\n  model = \"anthropic.claude-3-5-sonnet-20241022-v2:0\"")
 	}
 	return nil
 }
 
 // useBedrockBackend reports whether the Bedrock backend should be used.
-// Priority: CLAUDE_CODE_USE_BEDROCK env var > [ai] backend in config.
-func useBedrockBackend(cfg *config.Config) bool {
+// Priority: CLAUDE_CODE_USE_BEDROCK env var > [ai] backend in config > model ID auto-detection.
+func useBedrockBackend(cfg *config.Config, model string) bool {
 	if os.Getenv("CLAUDE_CODE_USE_BEDROCK") == "1" {
 		return true
 	}
-	return cfg != nil && strings.EqualFold(cfg.AI.Backend, "bedrock")
+	if cfg != nil && strings.EqualFold(cfg.AI.Backend, "bedrock") {
+		return true
+	}
+	return config.IsBedrockModel(model)
 }
 
 // callAI dispatches to the appropriate AI backend and returns the generated draft.
 func callAI(prompt, model string, cfg *config.Config) (string, error) {
-	if useBedrockBackend(cfg) {
+	if useBedrockBackend(cfg, model) {
 		return ai.GenerateDraftBedrock(prompt, model)
 	}
 	return ai.GenerateDraft(prompt, model, os.Getenv("ANTHROPIC_API_KEY"))
@@ -242,13 +246,13 @@ func promptSimilar(dir, title string) (string, error) {
 
 func init() {
 	rootCmd.AddCommand(adrCmd)
-	adrCmd.Flags().BoolVar(&aiFlag, "ai", false, "Generate ADR draft using Anthropic API")
-	adrCmd.Flags().StringVar(&modelFlag, "model", "", "Anthropic model to use (overrides config file)")
-	adrCmd.Flags().BoolVar(&dryRunFlag, "dry-run", false, "Show the prompt to be sent to the API without calling it")
+	adrCmd.Flags().BoolVar(&aiFlag, "ai", false, "Generate ADR draft using AI (Anthropic API or AWS Bedrock)")
+	adrCmd.Flags().StringVar(&modelFlag, "model", "", "Model to use (overrides config file; a Bedrock model ID enables Bedrock automatically)")
+	adrCmd.Flags().BoolVar(&dryRunFlag, "dry-run", false, "Show the prompt to be sent to the AI backend without calling it")
 
 	rootCmd.AddCommand(designCmd)
-	designCmd.Flags().BoolVar(&designAIFlag, "ai", false, "Generate design document draft using Anthropic API")
-	designCmd.Flags().StringVar(&modelFlag, "model", "", "Anthropic model to use (overrides config file)")
+	designCmd.Flags().BoolVar(&designAIFlag, "ai", false, "Generate design document draft using AI (Anthropic API or AWS Bedrock)")
+	designCmd.Flags().StringVar(&modelFlag, "model", "", "Model to use (overrides config file; a Bedrock model ID enables Bedrock automatically)")
 	designCmd.Flags().BoolVar(&designDryRunFlag, "dry-run", false, "Show the prompt to be sent to the API without calling it")
 }
 

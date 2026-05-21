@@ -525,6 +525,12 @@ Claude:
 
 - [x] `.kizami` sidecar file support — manage any file type (CSV, YAML, SQL, etc.) without modifying the file itself; `kizami blame`, `audit`, `list`, `show` all support sidecars automatically
 
+### v0.8.0
+
+- [x] AWS Bedrock support for `--ai` flag — auto-detected from model ID; set a Bedrock model ID in `kizami.toml` and no extra env var is needed
+- [x] `ANTHROPIC_MODEL` env var support for model selection
+- [x] `kizami hook pre-commit` Go command — replaces shell script logic; config-aware, Related Files check, cross-platform
+
 ### Backlog (prioritized)
 
 #### 🔴 High — Fix or quality issue
@@ -538,7 +544,7 @@ Claude:
 #### 🟡 Medium — Usability and discoverability
 
 - [ ] `kizami list --type <type>` — filter list by document Type field (e.g. `--type adr`, `--type design`)
-- [ ] Windows hook support — the pre-commit hook is a shell script and does not work on Windows despite the tool claiming cross-platform support; move hook logic into a Go binary (`kizami hook run`) invoked by a thin wrapper
+- [x] Windows hook support — hook logic moved into `kizami hook pre-commit` Go binary; shell script is now a thin wrapper
 - [ ] `kizami archive` — move `Inactive` / `Superseded` documents to `docs/archive/` and exclude them from `kizami list`, `kizami audit`, and `kizami review`; prevents noise accumulation over time
 
 #### 🟢 Low — Nice to have

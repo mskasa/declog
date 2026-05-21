@@ -492,6 +492,12 @@ Claude:
 
 - [x] `.kizami` サイドカーファイルサポート — CSV・YAML・SQLなど任意の拡張子のファイルをファイル自体を変更せずに管理可能；`kizami blame`・`audit`・`list`・`show` がサイドカーを自動的にサポート
 
+### v0.8.0
+
+- [x] `--ai` フラグの AWS Bedrock 対応 — モデルIDからバックエンドを自動検出；`kizami.toml` に Bedrock モデルIDを設定するだけで追加環境変数不要
+- [x] モデル選択に `ANTHROPIC_MODEL` 環境変数を対応
+- [x] `kizami hook pre-commit` Go コマンド — シェルスクリプトのロジックを置き換え；config 認識・Related Files チェック・クロスプラットフォーム対応
+
 ### バックログ（優先度順）
 
 #### 🔴 High — バグ修正・品質問題
@@ -505,7 +511,7 @@ Claude:
 #### 🟡 Medium — 使いやすさ・発見性
 
 - [ ] `kizami list --type <type>` — Type フィールドでの絞り込み（例：`--type adr`、`--type design`）
-- [ ] Windows の hook サポート — pre-commit hook はシェルスクリプトのため Windows では動作しない。クロスプラットフォーム対応を謳っている以上、hook ロジックを Go バイナリに内包し（`kizami hook run`）、薄いラッパーから呼び出す形に変更する
+- [x] Windows の hook サポート — hook ロジックを `kizami hook pre-commit` Go バイナリに移行。シェルスクリプトは薄いラッパーとして機能
 - [ ] `kizami archive` — `Inactive` / `Superseded` なドキュメントを `docs/archive/` に移動し、`kizami list`・`kizami audit`・`kizami review` の対象から除外する。長期運用でノイズが増えるのを防ぐ
 
 #### 🟢 Low — あると嬉しい

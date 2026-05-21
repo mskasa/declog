@@ -10,6 +10,10 @@ import (
 	"strings"
 )
 
+// EnvModel is the environment variable kizami reads for the model name,
+// following the same convention as Claude Code (CLAUDE_CODE_USE_BEDROCK=1).
+const EnvModel = "ANTHROPIC_MODEL"
+
 const DefaultModel = "claude-sonnet-4-20250514"
 
 // Config holds kizami configuration.
@@ -89,10 +93,13 @@ func Load(root string) (*Config, error) {
 }
 
 // ResolveModel returns the model to use, applying priority:
-// flagModel > config file model > default.
+// flagModel > ANTHROPIC_MODEL env var > config file model > default.
 func ResolveModel(flagModel string, cfg *Config) string {
 	if flagModel != "" {
 		return flagModel
+	}
+	if env := os.Getenv(EnvModel); env != "" {
+		return env
 	}
 	if cfg != nil && cfg.AI.Model != "" {
 		return cfg.AI.Model

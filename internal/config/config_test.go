@@ -203,3 +203,21 @@ func TestResolveModel_Priority(t *testing.T) {
 		})
 	}
 }
+
+func TestResolveModel_EnvVar(t *testing.T) {
+	t.Setenv(EnvModel, "env-model")
+
+	t.Run("env var wins over config and default", func(t *testing.T) {
+		cfg := &Config{AI: AIConfig{Model: "config-model"}}
+		got := ResolveModel("", cfg)
+		if got != "env-model" {
+			t.Errorf("got %q, want %q", got, "env-model")
+		}
+	})
+	t.Run("flag wins over env var", func(t *testing.T) {
+		got := ResolveModel("flag-model", nil)
+		if got != "flag-model" {
+			t.Errorf("got %q, want %q", got, "flag-model")
+		}
+	})
+}

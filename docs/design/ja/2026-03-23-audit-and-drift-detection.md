@@ -108,7 +108,7 @@ cmd/audit.go:
 
 ### CI インテグレーション
 
-`kizami init` が生成する `.github/workflows/adr-audit.yml` は以下を行います。
+`kizami init` が生成する `.github/workflows/kizami-audit.yml` は以下を行います。
 
 1. 週次スケジュール（`cron: '0 0 * * 1'`）で `kizami audit` を実行
 2. `workflow_dispatch` による手動トリガーもサポート
@@ -137,5 +137,5 @@ cmd/audit.go:
 - `internal/decision/audit.go`
 - `internal/search/blame.go`
 - `cmd/audit.go`
-- `internal/initializer/templates/adr-audit.yml`
+- `internal/initializer/templates/kizami-audit.yml`
 - `kizami.toml`

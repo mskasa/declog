@@ -21,9 +21,9 @@ kizami を新たに導入するユーザーは、ドキュメントディレク�
 - `docs/decisions/` が存在しない場合に作成する
 - 全セクションとデフォルト値を含む `kizami.toml` を生成する
 - 以下の4つのオプションコンポーネントを `y/n` プロンプトで選択してインストールできる：
-  - ADR チェック CI ワークフロー（`adr-check.yml`）
+  - ADR チェック CI ワークフロー（`kizami-check.yml`）
   - pre-commit フック
-  - 週次 audit CI ワークフロー（`adr-audit.yml`）
+  - 週次 audit CI ワークフロー（`kizami-audit.yml`）
   - 自動プロモートワークフロー（`kizami-promote.yml`）
 - 冪等性：既に存在するファイルはスキップ（警告を表示）
 - グローバル設定は `kizami init --global` で `~/.config/kizami/config.toml` を生成
@@ -43,9 +43,9 @@ kizami を新たに導入するユーザーは、ドキュメントディレク�
 kizami init
   │
   ├── 1. createDecisionsDir()     — docs/decisions/ を作成（存在する場合はスキップ）
-  ├── 2. setupWorkflow()          — プロンプト: adr-check.yml
+  ├── 2. setupWorkflow()          — プロンプト: kizami-check.yml
   ├── 3. setupHook()              — プロンプト: pre-commit フック
-  ├── 4. setupAuditWorkflow()     — プロンプト: adr-audit.yml
+  ├── 4. setupAuditWorkflow()     — プロンプト: kizami-audit.yml
   ├── 5. setupPromoteWorkflow()   — プロンプト: kizami-promote.yml
   └── 6. setupConfig()            — kizami.toml を書き込む（存在する場合はスキップ）
 ```
@@ -89,7 +89,7 @@ months_threshold = 6
 command = "code --wait"
 ```
 
-#### `.github/workflows/adr-check.yml`
+#### `.github/workflows/kizami-check.yml`
 
 プルリクエストごとに実行される。ソースファイル（非 docs・非 config パス）に触れるコミットに、対応するドキュメント変更が含まれているかどうかをチェックする。デフォルトではマージをブロックせず、リマインダーとして機能する設計。
 
@@ -97,7 +97,7 @@ command = "code --wait"
 
 `//go:embed templates/pre-commit` で埋め込まれたシェルスクリプト。コミット前に kizami の利用可能性をチェックし、意思決定記録の作成を検討するよう開発者に促す。既に pre-commit フックが存在する場合は、スクリプト内容を stdout に出力して手動での追記を促す（既存フックを上書きすると他のツールのフックを無言で壊してしまうため）。
 
-#### `.github/workflows/adr-audit.yml`
+#### `.github/workflows/kizami-audit.yml`
 
 週次スケジュール（`cron: '0 0 * * 1'`）と `workflow_dispatch` で `kizami audit` を実行する。陳腐化した参照が見つかった場合、`[kizami audit]` タグ付きの GitHub Issue を作成する（重複防止のため、同タグの Issue は1つのみオープン状態に保つ）。詳細は Audit and Drift Detection 設計書を参照。
 
@@ -110,10 +110,10 @@ command = "code --wait"
 すべてのワークフローとフックのテンプレートは、Go の `//go:embed` ディレクティブによりビルド時に埋め込まれる：
 
 ```go
-//go:embed templates/adr-check.yml
+//go:embed templates/kizami-check.yml
 var adrCheckWorkflow string
 
-//go:embed templates/adr-audit.yml
+//go:embed templates/kizami-audit.yml
 var adrAuditWorkflow string
 
 //go:embed templates/kizami-promote.yml
@@ -147,8 +147,8 @@ type Initializer struct {
 
 - `internal/initializer/init.go`
 - `internal/initializer/hook.go`
-- `internal/initializer/templates/adr-check.yml`
-- `internal/initializer/templates/adr-audit.yml`
+- `internal/initializer/templates/kizami-check.yml`
+- `internal/initializer/templates/kizami-audit.yml`
 - `internal/initializer/templates/kizami-promote.yml`
 - `internal/initializer/templates/pre-commit`
 - `cmd/init.go`

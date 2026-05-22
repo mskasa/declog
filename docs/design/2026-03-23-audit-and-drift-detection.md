@@ -106,7 +106,7 @@ The `audit.dirs` config key defaults to `documents.dirs`, ensuring both ADRs and
 
 ### CI Integration
 
-`kizami init` generates `.github/workflows/adr-audit.yml`, which:
+`kizami init` generates `.github/workflows/kizami-audit.yml`, which:
 1. Runs `kizami audit` on a weekly schedule (`cron: '0 0 * * 1'`)
 2. Also supports manual trigger via `workflow_dispatch`
 3. If stale references are found (exit via `stale_found` output), creates a GitHub Issue with the full audit report
@@ -133,5 +133,5 @@ This is the inverse operation to audit: audit finds documents whose related file
 - `internal/decision/audit.go`
 - `internal/search/blame.go`
 - `cmd/audit.go`
-- `internal/initializer/templates/adr-audit.yml`
+- `internal/initializer/templates/kizami-audit.yml`
 - `kizami.toml`

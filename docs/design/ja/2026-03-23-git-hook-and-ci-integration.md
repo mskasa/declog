@@ -7,7 +7,7 @@
 
 ## Overview
 
-kizami は開発ワークフローの2つのポイントで統合される。ドキュメントなしのコミットを警告するローカルの pre-commit フックと、プルリクエストのドキュメントカバレッジをチェックする GitHub Actions ワークフロー（`adr-check.yml`）。どちらもオプトインで `kizami init` によりインストールされる。
+kizami は開発ワークフローの2つのポイントで統合される。ドキュメントなしのコミットを警告するローカルの pre-commit フックと、プルリクエストのドキュメントカバレッジをチェックする GitHub Actions ワークフロー（`kizami-check.yml`）。どちらもオプトインで `kizami init` によりインストールされる。
 
 ## Background
 
@@ -54,7 +54,7 @@ kizami は開発ワークフローの2つのポイントで統合される。ド
 
 `kizami init` 実行時に `.git/hooks/pre-commit` が既に存在する場合、`InstallHook` は上書きしない。代わりにフックスクリプトの内容を stdout に出力し、手動追記を促すメッセージを表示する。既存フックを無言で上書きすると、他のツール（リンター、フォーマッターなど）のフックが壊れてしまうため。
 
-### CI ワークフロー（adr-check.yml）
+### CI ワークフロー（kizami-check.yml）
 
 GitHub Actions ワークフローはすべてのプルリクエストで実行される（`opened`、`edited`、`synchronize` イベント）。
 
@@ -107,6 +107,6 @@ GitHub Actions ワークフローはすべてのプルリクエストで実行�
 
 - `internal/initializer/hook.go`
 - `internal/initializer/templates/pre-commit`
-- `internal/initializer/templates/adr-check.yml`
+- `internal/initializer/templates/kizami-check.yml`
 - `internal/initializer/init.go`
 - `cmd/init.go`

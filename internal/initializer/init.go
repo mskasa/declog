@@ -11,10 +11,10 @@ import (
 	"strings"
 )
 
-//go:embed templates/adr-check.yml
+//go:embed templates/kizami-check.yml
 var adrCheckWorkflow string
 
-//go:embed templates/adr-audit.yml
+//go:embed templates/kizami-audit.yml
 var adrAuditWorkflow string
 
 //go:embed templates/kizami-promote.yml
@@ -160,11 +160,11 @@ func (i *Initializer) setupWorkflow(scanner *bufio.Scanner) error {
 		return fmt.Errorf("creating .github/workflows/: %w", err)
 	}
 
-	workflowPath := filepath.Join(workflowDir, "adr-check.yml")
+	workflowPath := filepath.Join(workflowDir, "kizami-check.yml")
 	if err := os.WriteFile(workflowPath, []byte(adrCheckWorkflow), 0o644); err != nil {
-		return fmt.Errorf("writing adr-check.yml: %w", err)
+		return fmt.Errorf("writing kizami-check.yml: %w", err)
 	}
-	fmt.Fprintf(i.Output, "  ✅ Created .github/workflows/adr-check.yml\n")
+	fmt.Fprintf(i.Output, "  ✅ Created .github/workflows/kizami-check.yml\n")
 	return nil
 }
 
@@ -225,15 +225,15 @@ func (i *Initializer) setupAuditWorkflow(scanner *bufio.Scanner) error {
 		return fmt.Errorf("creating .github/workflows/: %w", err)
 	}
 
-	workflowPath := filepath.Join(workflowDir, "adr-audit.yml")
+	workflowPath := filepath.Join(workflowDir, "kizami-audit.yml")
 	if _, err := os.Stat(workflowPath); err == nil {
-		fmt.Fprintf(i.Output, "  ⚠️  .github/workflows/adr-audit.yml already exists. Skipping.\n")
+		fmt.Fprintf(i.Output, "  ⚠️  .github/workflows/kizami-audit.yml already exists. Skipping.\n")
 		return nil
 	}
 
 	if err := os.WriteFile(workflowPath, []byte(adrAuditWorkflow), 0o644); err != nil {
-		return fmt.Errorf("writing adr-audit.yml: %w", err)
+		return fmt.Errorf("writing kizami-audit.yml: %w", err)
 	}
-	fmt.Fprintf(i.Output, "  ✅ Created .github/workflows/adr-audit.yml\n")
+	fmt.Fprintf(i.Output, "  ✅ Created .github/workflows/kizami-audit.yml\n")
 	return nil
 }

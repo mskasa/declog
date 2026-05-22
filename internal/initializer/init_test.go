@@ -27,16 +27,16 @@ func TestRun_FreshInit_WithWorkflow(t *testing.T) {
 		t.Errorf("docs/decisions/ not created: %v", err)
 	}
 
-	workflowPath := filepath.Join(root, ".github", "workflows", "adr-check.yml")
+	workflowPath := filepath.Join(root, ".github", "workflows", "kizami-check.yml")
 	if _, err := os.Stat(workflowPath); err != nil {
-		t.Errorf("adr-check.yml not created: %v", err)
+		t.Errorf("kizami-check.yml not created: %v", err)
 	}
 
 	output := out.String()
 	if !strings.Contains(output, "✅ Created docs/decisions/") {
 		t.Errorf("expected creation message, got: %s", output)
 	}
-	if !strings.Contains(output, "✅ Created .github/workflows/adr-check.yml") {
+	if !strings.Contains(output, "✅ Created .github/workflows/kizami-check.yml") {
 		t.Errorf("expected workflow creation message, got: %s", output)
 	}
 	if !strings.Contains(output, "Done!") {
@@ -58,9 +58,9 @@ func TestRun_FreshInit_SkipWorkflow(t *testing.T) {
 		t.Fatalf("Run() error: %v", err)
 	}
 
-	workflowPath := filepath.Join(root, ".github", "workflows", "adr-check.yml")
+	workflowPath := filepath.Join(root, ".github", "workflows", "kizami-check.yml")
 	if _, err := os.Stat(workflowPath); err == nil {
-		t.Errorf("adr-check.yml should not be created when answering n")
+		t.Errorf("kizami-check.yml should not be created when answering n")
 	}
 }
 
@@ -106,15 +106,15 @@ func TestRun_WorkflowContent(t *testing.T) {
 		t.Fatalf("Run() error: %v", err)
 	}
 
-	workflowPath := filepath.Join(root, ".github", "workflows", "adr-check.yml")
+	workflowPath := filepath.Join(root, ".github", "workflows", "kizami-check.yml")
 	content, err := os.ReadFile(workflowPath)
 	if err != nil {
-		t.Fatalf("reading adr-check.yml: %v", err)
+		t.Fatalf("reading kizami-check.yml: %v", err)
 	}
 
 	for _, want := range []string{"Document Check", "pull_request", "[skip-doc]", "docs/decisions/", "docs/design/"} {
 		if !strings.Contains(string(content), want) {
-			t.Errorf("adr-check.yml missing %q", want)
+			t.Errorf("kizami-check.yml missing %q", want)
 		}
 	}
 }
@@ -132,13 +132,13 @@ func TestRun_WithAuditWorkflow(t *testing.T) {
 		t.Fatalf("Run() error: %v", err)
 	}
 
-	auditPath := filepath.Join(root, ".github", "workflows", "adr-audit.yml")
+	auditPath := filepath.Join(root, ".github", "workflows", "kizami-audit.yml")
 	if _, err := os.Stat(auditPath); err != nil {
-		t.Errorf("adr-audit.yml not created: %v", err)
+		t.Errorf("kizami-audit.yml not created: %v", err)
 	}
 
 	output := out.String()
-	if !strings.Contains(output, "✅ Created .github/workflows/adr-audit.yml") {
+	if !strings.Contains(output, "✅ Created .github/workflows/kizami-audit.yml") {
 		t.Errorf("expected audit workflow creation message, got: %s", output)
 	}
 }
@@ -150,7 +150,7 @@ func TestRun_AuditWorkflowAlreadyExists(t *testing.T) {
 	if err := os.MkdirAll(workflowDir, 0o755); err != nil {
 		t.Fatal(err)
 	}
-	auditPath := filepath.Join(workflowDir, "adr-audit.yml")
+	auditPath := filepath.Join(workflowDir, "kizami-audit.yml")
 	if err := os.WriteFile(auditPath, []byte("existing"), 0o644); err != nil {
 		t.Fatal(err)
 	}
@@ -167,14 +167,14 @@ func TestRun_AuditWorkflowAlreadyExists(t *testing.T) {
 	}
 
 	output := out.String()
-	if !strings.Contains(output, "adr-audit.yml already exists. Skipping.") {
+	if !strings.Contains(output, "kizami-audit.yml already exists. Skipping.") {
 		t.Errorf("expected skip message, got: %s", output)
 	}
 
 	// Existing file must not be overwritten.
 	content, _ := os.ReadFile(auditPath)
 	if string(content) != "existing" {
-		t.Errorf("existing adr-audit.yml was overwritten")
+		t.Errorf("existing kizami-audit.yml was overwritten")
 	}
 }
 
@@ -191,15 +191,15 @@ func TestRun_AuditWorkflowContent(t *testing.T) {
 		t.Fatalf("Run() error: %v", err)
 	}
 
-	auditPath := filepath.Join(root, ".github", "workflows", "adr-audit.yml")
+	auditPath := filepath.Join(root, ".github", "workflows", "kizami-audit.yml")
 	content, err := os.ReadFile(auditPath)
 	if err != nil {
-		t.Fatalf("reading adr-audit.yml: %v", err)
+		t.Fatalf("reading kizami-audit.yml: %v", err)
 	}
 
 	for _, want := range []string{"kizami Audit", "schedule", "cron", "kizami audit", "[kizami audit]"} {
 		if !strings.Contains(string(content), want) {
-			t.Errorf("adr-audit.yml missing %q", want)
+			t.Errorf("kizami-audit.yml missing %q", want)
 		}
 	}
 }
@@ -405,8 +405,8 @@ func TestRun_YesAll(t *testing.T) {
 
 	// All workflows and hook must be created.
 	for _, path := range []string{
-		filepath.Join(root, ".github", "workflows", "adr-check.yml"),
-		filepath.Join(root, ".github", "workflows", "adr-audit.yml"),
+		filepath.Join(root, ".github", "workflows", "kizami-check.yml"),
+		filepath.Join(root, ".github", "workflows", "kizami-audit.yml"),
 		filepath.Join(root, ".github", "workflows", "kizami-promote.yml"),
 		filepath.Join(root, ".git", "hooks", "pre-commit"),
 		filepath.Join(root, "kizami.toml"),

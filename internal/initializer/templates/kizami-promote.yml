@@ -45,4 +45,4 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add docs/
           git commit -m "docs: auto-promote Draft documents to Active [skip ci]"
-          git push
+          git push origin HEAD:${GITHUB_REF#refs/heads/}

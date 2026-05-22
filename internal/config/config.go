@@ -66,30 +66,86 @@ type EditorConfig struct {
 
 // Load reads the config for the given project root.
 // It first looks for kizami.toml in root, then falls back to ~/.config/kizami/config.toml.
+// If kizami.local.toml exists in root, its non-zero values override the base config.
 // Returns a default Config if neither file exists.
 func Load(root string) (*Config, error) {
+	var cfg *Config
+	var err error
+
 	if root != "" {
 		projectPath := filepath.Join(root, "kizami.toml")
-		f, err := os.Open(projectPath)
-		if err == nil {
-			defer f.Close()
-			return parse(f)
-		}
-		if !os.IsNotExist(err) {
-			return nil, fmt.Errorf("opening config: %w", err)
+		f, ferr := os.Open(projectPath)
+		if ferr == nil {
+			cfg, err = parse(f)
+			f.Close()
+			if err != nil {
+				return nil, err
+			}
+		} else if !os.IsNotExist(ferr) {
+			return nil, fmt.Errorf("opening config: %w", ferr)
 		}
 	}
 
-	path := globalConfigPath()
-	f, err := os.Open(path)
-	if os.IsNotExist(err) {
-		return &Config{}, nil
+	if cfg == nil {
+		path := globalConfigPath()
+		f, ferr := os.Open(path)
+		if os.IsNotExist(ferr) {
+			cfg = &Config{}
+		} else if ferr != nil {
+			return nil, fmt.Errorf("opening config: %w", ferr)
+		} else {
+			cfg, err = parse(f)
+			f.Close()
+			if err != nil {
+				return nil, err
+			}
+		}
 	}
-	if err != nil {
-		return nil, fmt.Errorf("opening config: %w", err)
+
+	if root != "" {
+		localPath := filepath.Join(root, "kizami.local.toml")
+		f, ferr := os.Open(localPath)
+		if ferr == nil {
+			local, lerr := parse(f)
+			f.Close()
+			if lerr != nil {
+				return nil, fmt.Errorf("opening local config: %w", lerr)
+			}
+			merge(cfg, local)
+		} else if !os.IsNotExist(ferr) {
+			return nil, fmt.Errorf("opening local config: %w", ferr)
+		}
 	}
-	defer f.Close()
-	return parse(f)
+
+	return cfg, nil
+}
+
+// merge overlays non-zero values from local into base.
+func merge(base, local *Config) {
+	if local.AI.Model != "" {
+		base.AI.Model = local.AI.Model
+	}
+	if local.AI.Backend != "" {
+		base.AI.Backend = local.AI.Backend
+	}
+	if len(local.Documents.Dirs) > 0 {
+		base.Documents.Dirs = local.Documents.Dirs
+	}
+	if local.Decisions.Dir != "" {
+		base.Decisions.Dir = local.Decisions.Dir
+	}
+	if local.Design.Dir != "" {
+		base.Design.Dir = local.Design.Dir
+	}
+	if len(local.Audit.Dirs) > 0 {
+		base.Audit.Dirs = local.Audit.Dirs
+	}
+	if local.Review.MonthsThreshold != 0 {
+		base.Review.MonthsThreshold = local.Review.MonthsThreshold
+	}
+	if local.Editor.Command != "" {
+		base.Editor.Command = local.Editor.Command
+	}
 }
 
 // ResolveModel returns the model to use, applying priority:

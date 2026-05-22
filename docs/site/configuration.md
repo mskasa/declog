@@ -10,6 +10,14 @@ kizami can be configured via a `kizami.toml` file in the repository root, or a g
 
 Project-level config (`kizami.toml`) takes precedence over the global config.
 
+For environment-specific values that should not be committed (e.g. a personal AWS Bedrock model ARN), create a `kizami.local.toml` in the same directory. Its values override `kizami.toml`. Add it to `.gitignore` to keep it out of version control.
+
+```toml
+# kizami.local.toml  (add to .gitignore)
+[ai]
+model = "arn:aws:bedrock:ap-northeast-1:123456789012:application-inference-profile/abc123"
+```
+
 [← Back to Documentation](.)
 
 ---

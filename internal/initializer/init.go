@@ -187,6 +187,7 @@ func (i *Initializer) setupConfig() error {
 		return fmt.Errorf("writing kizami.toml: %w", err)
 	}
 	fmt.Fprintf(i.Output, "  ✅ Created kizami.toml\n")
+	fmt.Fprintf(i.Output, "  💡 For environment-specific settings (e.g. a Bedrock model ARN), create kizami.local.toml and add it to .gitignore.\n")
 	return nil
 }
 

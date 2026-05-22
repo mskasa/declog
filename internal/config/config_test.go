@@ -170,6 +170,59 @@ func TestLoad_ProjectConfigTakesPriority(t *testing.T) {
 	}
 }
 
+func TestLoad_LocalConfigOverridesProject(t *testing.T) {
+	root := t.TempDir()
+	if err := os.WriteFile(filepath.Join(root, "kizami.toml"), []byte("[ai]\nmodel = \"project-model\"\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(root, "kizami.local.toml"), []byte("[ai]\nmodel = \"local-model\"\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	cfg, err := Load(root)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if cfg.AI.Model != "local-model" {
+		t.Errorf("expected local-model, got %q", cfg.AI.Model)
+	}
+}
+
+func TestLoad_LocalConfigPartialOverride(t *testing.T) {
+	root := t.TempDir()
+	if err := os.WriteFile(filepath.Join(root, "kizami.toml"), []byte("[ai]\nmodel = \"project-model\"\nbackend = \"anthropic\"\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	// local only overrides model, not backend
+	if err := os.WriteFile(filepath.Join(root, "kizami.local.toml"), []byte("[ai]\nmodel = \"local-model\"\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	cfg, err := Load(root)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if cfg.AI.Model != "local-model" {
+		t.Errorf("AI.Model: expected local-model, got %q", cfg.AI.Model)
+	}
+	if cfg.AI.Backend != "anthropic" {
+		t.Errorf("AI.Backend: expected anthropic, got %q", cfg.AI.Backend)
+	}
+}
+
+func TestLoad_LocalConfigOnlyNoProject(t *testing.T) {
+	root := t.TempDir()
+	// no kizami.toml, only kizami.local.toml
+	if err := os.WriteFile(filepath.Join(root, "kizami.local.toml"), []byte("[ai]\nmodel = \"local-model\"\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	cfg, err := Load(root)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if cfg.AI.Model != "local-model" {
+		t.Errorf("expected local-model, got %q", cfg.AI.Model)
+	}
+}
+
 func TestLoad_FallbackWhenNoProjectConfig(t *testing.T) {
 	root := t.TempDir() // no kizami.toml here
 	cfg, err := Load(root)

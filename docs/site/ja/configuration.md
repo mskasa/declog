@@ -11,6 +11,14 @@ kizamiはリポジトリルートの `kizami.toml`、またはグローバル設
 
 プロジェクトレベルの設定（`kizami.toml`）がグローバル設定より優先されます。
 
+コミットしたくない環境固有の値（個人の AWS Bedrock モデル ARN など）は、同じディレクトリに `kizami.local.toml` を作成してください。`kizami.toml` の値を上書きします。`.gitignore` に追加してバージョン管理から除外してください。
+
+```toml
+# kizami.local.toml  (.gitignore に追加)
+[ai]
+model = "arn:aws:bedrock:ap-northeast-1:123456789012:application-inference-profile/abc123"
+```
+
 [← ドキュメントトップへ](.)
 
 ---

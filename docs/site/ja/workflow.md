@@ -41,12 +41,12 @@ flowchart TD
 | `docs/decisions/` | ADRの保存ディレクトリ |
 | `docs/design/` | 設計ドキュメントの保存ディレクトリ |
 | `kizami.toml` | デフォルト値入りの設定ファイル |
-| `.github/workflows/adr-check.yml` | ドキュメントなしのPRに警告するワークフロー |
+| `.github/workflows/kizami-check.yml` | ドキュメントなしのPRに警告するワークフロー |
 | `.git/hooks/pre-commit` | コミット前にドキュメント作成を促すフック |
-| `.github/workflows/adr-audit.yml` | 週次の乖離検出・GitHub Issue自動作成 |
+| `.github/workflows/kizami-audit.yml` | 週次の乖離検出・GitHub Issue自動作成 |
 | `.github/workflows/kizami-promote.yml` | mainへのpush時にDraft→Activeを自動昇格 |
 
-### PRドキュメントチェック（`adr-check.yml`）
+### PRドキュメントチェック（`kizami-check.yml`）
 
 すべてのプルリクエストでトリガーします。PR本文にドキュメントディレクトリへの言及があるか、変更ファイルにドキュメントが含まれていれば通過します。いずれでもなければ**警告を表示しますが、CIをブロックしません**。PRタイトルに `[skip-doc]` を含めるとスキップできます。
 
@@ -151,7 +151,7 @@ kizami audit
 
 Markdownドキュメントの `## Related Files` エントリと `.kizami` サイドカーファイル（後述）の `related:` エントリを確認します。参照されているファイルが削除・移動されていた場合に報告します。
 
-`kizami init` で生成される `adr-audit.yml` で自動化できます（[初期セットアップ](#初期セットアップ)を参照）。
+`kizami init` で生成される `kizami-audit.yml` で自動化できます（[初期セットアップ](#初期セットアップ)を参照）。
 
 ---
 

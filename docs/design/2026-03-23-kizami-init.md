@@ -21,9 +21,9 @@ A new user adopting kizami needs to perform several setup steps: create the docu
 - Create `docs/decisions/` if it does not exist
 - Generate `kizami.toml` with all sections and commented defaults
 - Optionally install each of the four optional components via `y/n` prompts:
-  - ADR check CI workflow (`adr-check.yml`)
+  - ADR check CI workflow (`kizami-check.yml`)
   - pre-commit hook
-  - weekly audit CI workflow (`adr-audit.yml`)
+  - weekly audit CI workflow (`kizami-audit.yml`)
   - auto-promote workflow (`kizami-promote.yml`)
 - Be idempotent: skip (with a warning) any artifact that already exists
 - Also write `~/.config/kizami/config.toml` as a global fallback (via separate `kizami init --global`)
@@ -43,9 +43,9 @@ A new user adopting kizami needs to perform several setup steps: create the docu
 kizami init
   │
   ├── 1. createDecisionsDir()     — mkdir docs/decisions/ (skip if exists)
-  ├── 2. setupWorkflow()          — prompt: adr-check.yml
+  ├── 2. setupWorkflow()          — prompt: kizami-check.yml
   ├── 3. setupHook()              — prompt: pre-commit hook
-  ├── 4. setupAuditWorkflow()     — prompt: adr-audit.yml
+  ├── 4. setupAuditWorkflow()     — prompt: kizami-audit.yml
   ├── 5. setupPromoteWorkflow()   — prompt: kizami-promote.yml
   └── 6. setupConfig()            — write kizami.toml (skip if exists)
 ```
@@ -89,7 +89,7 @@ months_threshold = 6
 command = "code --wait"
 ```
 
-#### `.github/workflows/adr-check.yml`
+#### `.github/workflows/kizami-check.yml`
 
 Runs on every pull request. Checks whether commits touching source files (non-docs, non-config paths) include a corresponding document change. Designed as a soft reminder rather than a hard gate — it posts a comment or warning but does not block merges by default.
 
@@ -97,7 +97,7 @@ Runs on every pull request. Checks whether commits touching source files (non-do
 
 Shell script embedded via `//go:embed templates/pre-commit`. Runs `kizami` availability check and prompts the developer to consider creating a decision record before committing. If a pre-commit hook already exists, the script content is printed to stdout so the user can append it manually — overwriting an existing hook would silently break other tooling.
 
-#### `.github/workflows/adr-audit.yml`
+#### `.github/workflows/kizami-audit.yml`
 
 Runs `kizami audit` on a weekly schedule (`cron: '0 0 * * 1'`) and on `workflow_dispatch`. If stale references are found, it creates a GitHub Issue tagged `[kizami audit]`, deduplicating so only one such issue is open at a time. See the Audit and Drift Detection design document for details.
 
@@ -110,10 +110,10 @@ Runs on push to `main`. Promotes documents with `Status: Draft` to `Status: Acti
 All workflow and hook templates are embedded at build time using Go's `//go:embed` directive:
 
 ```go
-//go:embed templates/adr-check.yml
+//go:embed templates/kizami-check.yml
 var adrCheckWorkflow string
 
-//go:embed templates/adr-audit.yml
+//go:embed templates/kizami-audit.yml
 var adrAuditWorkflow string
 
 //go:embed templates/kizami-promote.yml
@@ -147,8 +147,8 @@ type Initializer struct {
 
 - `internal/initializer/init.go`
 - `internal/initializer/hook.go`
-- `internal/initializer/templates/adr-check.yml`
-- `internal/initializer/templates/adr-audit.yml`
+- `internal/initializer/templates/kizami-check.yml`
+- `internal/initializer/templates/kizami-audit.yml`
 - `internal/initializer/templates/kizami-promote.yml`
 - `internal/initializer/templates/pre-commit`
 - `cmd/init.go`

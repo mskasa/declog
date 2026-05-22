@@ -7,7 +7,7 @@
 
 ## Overview
 
-kizami は2つのスケジュール GitHub Actions ワークフローを生成する。`adr-audit.yml` は週次で `kizami audit` を実行し、陳腐化した参照が見つかった場合に GitHub Issue を作成する。`kizami-promote.yml` は `main` へのプッシュごとにドキュメントを `Status: Draft` から `Status: Active` へ自動昇格させる。
+kizami は2つのスケジュール GitHub Actions ワークフローを生成する。`kizami-audit.yml` は週次で `kizami audit` を実行し、陳腐化した参照が見つかった場合に GitHub Issue を作成する。`kizami-promote.yml` は `main` へのプッシュごとにドキュメントを `Status: Draft` から `Status: Active` へ自動昇格させる。
 
 ## Background
 
@@ -18,7 +18,7 @@ kizami は2つのスケジュール GitHub Actions ワークフローを生成�
 ## Goals / Non-Goals
 
 **Goals:**
-- `adr-audit.yml`: 週次スケジュールと手動トリガーで `kizami audit` を実行し、陳腐化した参照が見つかった場合に GitHub Issue を作成し、スパム防止のために Issue を重複排除する
+- `kizami-audit.yml`: 週次スケジュールと手動トリガーで `kizami audit` を実行し、陳腐化した参照が見つかった場合に GitHub Issue を作成し、スパム防止のために Issue を重複排除する
 - `kizami-promote.yml`: `main` へのプッシュ時にすべての `Status: Draft` ドキュメントを `Status: Active` に昇格させ、`[skip ci]` 付きボットコミットとして変更をコミットして CI ループを防ぐ
 - どちらのワークフローも `kizami init` で生成（オプトイン）
 - どちらも自己完結型 — 公開リリースから kizami をインストールし、他のツールを必要としない
@@ -30,7 +30,7 @@ kizami は2つのスケジュール GitHub Actions ワークフローを生成�
 
 ## Design
 
-### Audit ワークフロー（`adr-audit.yml`）
+### Audit ワークフロー（`kizami-audit.yml`）
 
 #### トリガー
 
@@ -102,7 +102,7 @@ user.email: github-actions[bot]@users.noreply.github.com
 
 ## Related Files
 
-- `internal/initializer/templates/adr-audit.yml`
+- `internal/initializer/templates/kizami-audit.yml`
 - `internal/initializer/templates/kizami-promote.yml`
 - `internal/initializer/init.go`
 - `internal/decision/audit.go`

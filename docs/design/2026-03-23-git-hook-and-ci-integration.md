@@ -7,7 +7,7 @@
 
 ## Overview
 
-kizami integrates with the development workflow at two points: a local pre-commit hook that warns when a commit lacks a document, and a GitHub Actions workflow (`adr-check.yml`) that checks each pull request for document coverage. Both are opt-in and installed by `kizami init`.
+kizami integrates with the development workflow at two points: a local pre-commit hook that warns when a commit lacks a document, and a GitHub Actions workflow (`kizami-check.yml`) that checks each pull request for document coverage. Both are opt-in and installed by `kizami init`.
 
 ## Background
 
@@ -54,7 +54,7 @@ The hook does **not** fail (exit 1) — it always exits 0. This is intentional: 
 
 If `.git/hooks/pre-commit` already exists when `kizami init` runs, `InstallHook` does not overwrite it. Instead, it prints the hook script content to stdout with a message asking the user to append it manually. Silently overwriting an existing hook would break other tooling (e.g., linters, formatters) without warning.
 
-### CI Workflow (adr-check.yml)
+### CI Workflow (kizami-check.yml)
 
 The GitHub Actions workflow runs on every pull request (`opened`, `edited`, `synchronize` events).
 
@@ -107,6 +107,6 @@ The hook catches the issue as early as possible (at commit time); the CI workflo
 
 - `internal/initializer/hook.go`
 - `internal/initializer/templates/pre-commit`
-- `internal/initializer/templates/adr-check.yml`
+- `internal/initializer/templates/kizami-check.yml`
 - `internal/initializer/init.go`
 - `cmd/init.go`

@@ -76,7 +76,7 @@ func Load(root string) (*Config, error) {
 		projectPath := filepath.Join(root, "kizami.toml")
 		f, ferr := os.Open(projectPath)
 		if ferr == nil {
-			defer f.Close() //nolint:errcheck
+			defer f.Close()
 			cfg, err = parse(f)
 			if err != nil {
 				return nil, err
@@ -94,7 +94,7 @@ func Load(root string) (*Config, error) {
 		} else if ferr != nil {
 			return nil, fmt.Errorf("opening config: %w", ferr)
 		} else {
-			defer f.Close() //nolint:errcheck
+			defer f.Close()
 			cfg, err = parse(f)
 			if err != nil {
 				return nil, err
@@ -106,7 +106,7 @@ func Load(root string) (*Config, error) {
 		localPath := filepath.Join(root, "kizami.local.toml")
 		f, ferr := os.Open(localPath)
 		if ferr == nil {
-			defer f.Close() //nolint:errcheck
+			defer f.Close()
 			local, lerr := parse(f)
 			if lerr != nil {
 				return nil, fmt.Errorf("opening local config: %w", lerr)

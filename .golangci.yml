@@ -11,11 +11,15 @@ linters:
     - ineffassign
   settings:
     errcheck:
-      # Don't require error checks on fmt.Fprint* (CLI output)
+      # Don't require error checks on fmt.Fprint* (CLI output) or file/body Close.
+      # Closing a read-only *os.File or an HTTP response body is a best-effort
+      # operation whose error is not actionable in practice.
       exclude-functions:
         - fmt.Fprint
         - fmt.Fprintf
         - fmt.Fprintln
+        - (*os.File).Close
+        - (io.ReadCloser).Close
   exclusions:
     rules:
       # Test files are allowed to use t.Fatal without checking errors

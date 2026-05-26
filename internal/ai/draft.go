@@ -67,7 +67,7 @@ func generateDraft(prompt, model, apiKey string, client *http.Client) (string, e
 	if err != nil {
 		return "", fmt.Errorf("calling Anthropic API: %w", err)
 	}
-	defer resp.Body.Close() //nolint:errcheck
+	defer resp.Body.Close()
 
 	var apiResp apiResponse
 	if err := json.NewDecoder(resp.Body).Decode(&apiResp); err != nil {

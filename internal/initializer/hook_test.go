@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"testing"
 )
@@ -36,6 +37,9 @@ func TestInstallHook_CreatesFile(t *testing.T) {
 }
 
 func TestInstallHook_FileIsExecutable(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("Windows does not support Unix-style executable bits")
+	}
 	root := setupGitHooksDir(t)
 	var out bytes.Buffer
 

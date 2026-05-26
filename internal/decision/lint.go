@@ -9,8 +9,17 @@ import (
 
 // LintIssue represents a structural problem found in a kizami document.
 type LintIssue struct {
-	File    string
-	Message string
+	File     string
+	Message  string
+	Severity string // "error" or "warning"
+}
+
+func errIssue(file, message string) *LintIssue {
+	return &LintIssue{File: file, Message: message, Severity: "error"}
+}
+
+func warnIssue(file, message string) *LintIssue {
+	return &LintIssue{File: file, Message: message, Severity: "warning"}
 }
 
 var lintDatePattern = regexp.MustCompile(`^\d{4}-\d{2}-\d{2}$`)
@@ -40,23 +49,25 @@ func lintMarkdown(d *Decision, repoRoot string) []*LintIssue {
 	rel := lintRelPath(d.File, repoRoot)
 
 	if d.Status == "" {
-		issues = append(issues, &LintIssue{File: rel, Message: `missing "- Status:" field`})
+		issues = append(issues, errIssue(rel, `missing "- Status:" field`))
 	}
 	if d.Date != "" && !lintDatePattern.MatchString(d.Date) {
-		issues = append(issues, &LintIssue{File: rel, Message: fmt.Sprintf(`"- Date:" value %q is not in YYYY-MM-DD format`, d.Date)})
+		issues = append(issues, errIssue(rel, fmt.Sprintf(`"- Date:" value %q is not in YYYY-MM-DD format`, d.Date)))
 	}
 
 	related, err := ParseRelatedFiles(d.File)
 	if err != nil {
-		issues = append(issues, &LintIssue{File: rel, Message: fmt.Sprintf("error reading Related Files: %v", err)})
+		issues = append(issues, errIssue(rel, fmt.Sprintf("error reading Related Files: %v", err)))
 		return issues
 	}
 	if len(related) == 0 {
-		issues = append(issues, &LintIssue{File: rel, Message: `"## Related Files" section is missing or empty`})
+		// Empty Related Files is a warning: the document may not yet have related code.
+		// kizami audit and kizami blame simply skip documents with no entries.
+		issues = append(issues, warnIssue(rel, `"## Related Files" section is missing or empty`))
 	} else {
 		for _, path := range related {
 			if _, statErr := os.Stat(filepath.Join(repoRoot, path)); os.IsNotExist(statErr) {
-				issues = append(issues, &LintIssue{File: rel, Message: fmt.Sprintf("Related Files: path does not exist: %s", path)})
+				issues = append(issues, errIssue(rel, fmt.Sprintf("Related Files: path does not exist: %s", path)))
 			}
 		}
 	}
@@ -68,23 +79,24 @@ func lintSidecar(d *Decision, repoRoot string) []*LintIssue {
 	rel := lintRelPath(d.File, repoRoot)
 
 	if d.Title == "" {
-		issues = append(issues, &LintIssue{File: rel, Message: `missing "title:" field`})
+		issues = append(issues, errIssue(rel, `missing "title:" field`))
 	}
 	if d.Date != "" && !lintDatePattern.MatchString(d.Date) {
-		issues = append(issues, &LintIssue{File: rel, Message: fmt.Sprintf(`"date:" value %q is not in YYYY-MM-DD format`, d.Date)})
+		issues = append(issues, errIssue(rel, fmt.Sprintf(`"date:" value %q is not in YYYY-MM-DD format`, d.Date)))
 	}
 
 	related, err := ParseSidecarRelatedFiles(d.File)
 	if err != nil {
-		issues = append(issues, &LintIssue{File: rel, Message: fmt.Sprintf("error reading related: %v", err)})
+		issues = append(issues, errIssue(rel, fmt.Sprintf("error reading related: %v", err)))
 		return issues
 	}
 	if len(related) == 0 {
-		issues = append(issues, &LintIssue{File: rel, Message: `"related:" list is missing or empty`})
+		// Sidecar files exist solely to annotate other files, so an empty related: list is always an error.
+		issues = append(issues, errIssue(rel, `"related:" list is missing or empty`))
 	} else {
 		for _, path := range related {
 			if _, statErr := os.Stat(filepath.Join(repoRoot, path)); os.IsNotExist(statErr) {
-				issues = append(issues, &LintIssue{File: rel, Message: fmt.Sprintf("related: path does not exist: %s", path)})
+				issues = append(issues, errIssue(rel, fmt.Sprintf("related: path does not exist: %s", path)))
 			}
 		}
 	}

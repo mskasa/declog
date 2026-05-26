@@ -417,120 +417,67 @@ Claude:
 
 ---
 
-## 実装状況
+## ロードマップ
 
-<!-- 作業が進むたびにここを更新する -->
+kizami はチームで実運用中。以下のロードマップはOSS公開に向けた目標と、実運用フィードバックから生まれる改善の両方を反映している。
 
-### MVP (v0.1.0) ✅
+### Phase 1 — 法的・信頼性の基盤整備
 
-- [x] .github/workflows/ci.yml（PR毎にgo test + go vet）
-- [x] go.mod + cobraセットアップ（`module github.com/mskasa/kizami`）
-- [x] cmd/root.go（`kizami` コマンドのルート）
-- [x] internal/decision/generate.go（自動採番・ファイル生成）
-- [x] internal/template/template.go（Markdownテンプレート）
-- [x] cmd/log.go（`kizami adr` / `kizami design`）
-- [x] cmd/list.go（`kizami list`）
-- [x] cmd/search.go（`kizami search`）
-- [x] cmd/show.go（`kizami show`）
-- [x] cmd/status.go（`kizami status`）
-- [x] docs/decisions/ 初期ADR（0001〜0006）
-- [x] README.md
-- [x] GoReleaser設定
+*より広いユーザーへ告知する前に必ず整えておくべき項目。*
 
-### v0.1.0（残り）
+- [ ] `LICENSE` ファイルの追加（MIT）— ないと企業での利用が法務上ブロックされるケースが多い
+- [ ] `SECURITY.md` — 脆弱性の非公開報告手順を明記する
+- [ ] `CODE_OF_CONDUCT.md` — Contributor Covenant などの標準規約を採用する
+- [ ] `.github/ISSUE_TEMPLATE/` — バグ報告・機能要望のテンプレートを用意する
+- [ ] `.github/PULL_REQUEST_TEMPLATE.md` — 現在 CLAUDE.md 内にある PR テンプレートを正式化する
+- [ ] `CONTRIBUTING.md` の更新 — golangci-lint のバージョンとセットアップ手順が実態と乖離している
 
-- [x] ロゴ画像作成
-- [x] cmd/blame.go（`kizami blame <file>` — ADR内のファイルパス記述を全文検索）
-- [x] `kizami --version`
+### Phase 2 — 品質と発見性の向上
 
-### v0.2.0
+*品質の底上げと、プロジェクトを見つけやすく・信頼されやすくする。*
 
-- [x] `kizami init`（`--yes` フラグで非対話実行に対応）
-- [x] `kizami adr` のエディタ自動起動
-- [x] `kizami adr` 実行時にステージング済み・未ステージングの両方の変更ファイルを候補としてRelated Filesに提示する
-- [x] `kizami adr` 実行時の類似ADR提示（キーワード部分一致）
-- [x] `kizami list --status`
-- [x] `kizami supersede`
-- [x] `kizami review`（長期未更新ADRの検出）
-- [x] git hookでADR追加を促す仕組み
-- [x] GitHub Actions連携（`kizami init` でワークフロー生成）
+**テストカバレッジ**
+- [ ] `cmd/` パッケージ: 41.5% → 70% 以上（インテグレーションテスト追加）
+- [ ] `internal/ai/` パッケージ: 38.2% → モックを導入してカバレッジを引き上げる
 
-### v0.3.0
+**CI**
+- [ ] テストマトリクスに macOS と Windows を追加（現在は Linux のみ）
 
-- [x] `kizami audit`（Related Filesのコードとの乖離検出）
-- [x] `kizami audit` のCI定期実行（週次・GitHub Issue自動作成）
-- [x] LLM連携によるADRドラフト自動生成
-- [x] `kizami init` 実行時に `~/.config/kizami/config.toml` をデフォルト値で生成する
+**GitHub リポジトリ整備**
+- [ ] Topics の設定（`cli`、`golang`、`documentation`、`adr`、`decision-record`、`living-documentation`）
+- [ ] README にバッジを追加（CI・カバレッジ・Go Report Card・ライセンス）
+- [ ] README にチームでの活用事例や導入前後の比較を追記する
 
-### kizami へのリネーム ✅
+**機能：長期運用時のノイズ低減**
+- [ ] `kizami archive` — `Inactive` / `Superseded` なドキュメントを `docs/archive/` に移動し、`kizami list`・`kizami audit`・`kizami review` の対象から除外する
 
-- [x] GitHub リポジトリのリネーム: `mskasa/declog` → `mskasa/kizami`
-- [x] `go.mod` モジュールパスの更新: `github.com/mskasa/declog` → `github.com/mskasa/kizami`
-- [x] コードベース全体のインポートパス更新
-- [x] バイナリ名の変更: `why` → `kizami`（cmd/root.go, .goreleaser.yaml）
-- [x] 設定パスの変更: `~/.config/declog/` → `~/.config/kizami/`
-- [x] README.md / README.ja.md の更新
-- [x] CLAUDE.md / CLAUDE.ja.md の更新（新アイデンティティを反映）
-- [x] `why` コマンドを参照している既存 ADR の更新
+### Phase 3 — 配布とエコシステムの拡張
 
-### v0.4.0（スコープ拡張）
+*より多様なチームに採用してもらえるよう、配布経路と拡張性を整える。*
 
-- [x] `kizami adr` / `kizami design` — 作成コマンドの分離（`kizami log --type` の代替）
-- [x] 設計書テンプレートの追加（保存先 `docs/design/`、デフォルト `Status: Draft`）
-- [x] ADR テンプレートのデフォルトを `Status: Active` → `Status: Draft` に変更
-- [x] `kizami audit` で `Draft` ドキュメントをスキップ（`Active` のみ対象）
-- [x] `kizami init` にオプションで auto-promote ワークフロー（`kizami-promote.yml`）を生成する機能を追加：デフォルトブランチ（git で自動検出）へのプッシュ時に `Draft` → `Active` へ自動昇格
-- [x] `kizami audit` で複数ディレクトリをスキャン可能に（config の `audit.dirs`）
-- [x] 汎用メッセージから ADR 固有の表現を除去
-- [x] `kizami design --ai` — 設計書向け AI ドラフト生成
-- [x] golangci-lint を CI に追加
-- [x] mise ツールチェーン設定（Go と golangci-lint のバージョンをローカル環境でも固定）
-- [x] cmd/ パッケージのテスト追加
-- [x] Related Files にディレクトリパスを指定可能にする（配下のファイルすべてが関連ファイルとして扱われる）
-- [x] `documents.dirs` config の追加 — list/search/show 等の全コマンドで設計書もサポート
-- [x] `kizami design` の作成先ディレクトリを config で変更可能にする（`[design] dir`）
-- [x] このリポジトリ自体に `kizami init` を実行する（ドッグフーディング）
-- [x] このリポジトリ自体に設計書を作成する（ドッグフーディング） — docs/design/0001-audit-and-drift-detection.md
-- [x] ドキュメントのファイル名から数値IDを廃止（`NNNN-slug.md` → `YYYY-MM-DD-slug.md`）
-- [x] `List` / `FindBySlug` のサブディレクトリ再帰スキャン（`docs/decisions/ja/` 等も対象に）
-
-### v1.0.0（パブリックリリース）
-
-- [x] ドキュメントサイト（GitHub Pages）
+**パッケージマネージャー**
 - [ ] Homebrew formula
-- [ ] カラー出力（kizami list / kizami search）
+- [ ] Scoop（Windows ユーザー向け）
 
-### v1.1.0
+**GitHub Actions**
+- [ ] GitHub Actions Marketplace 公開（`kizami audit`・`kizami lint` を再利用可能な Action として）
 
-- [x] `.kizami` サイドカーファイルサポート — CSV・YAML・SQLなど任意の拡張子のファイルをファイル自体を変更せずに管理可能；`kizami blame`・`audit`・`list`・`show` がサイドカーを自動的にサポート
+**拡張性**
+- [ ] テンプレートのユーザー定義 — `kizami.toml` でテンプレートパスを指定可能にする
 
-### v0.8.0
+**ドキュメントサイト**
+- [ ] チーム導入ガイド
+- [ ] 移行ガイド（adr-tools・素の Markdown・Confluence/Notion からの移行）
 
-- [x] `--ai` フラグの AWS Bedrock 対応 — モデルIDからバックエンドを自動検出；`kizami.toml` に Bedrock モデルIDを設定するだけで追加環境変数不要
-- [x] モデル選択に `ANTHROPIC_MODEL` 環境変数を対応
-- [x] `kizami hook pre-commit` Go コマンド — シェルスクリプトのロジックを置き換え；config 認識・Related Files チェック・クロスプラットフォーム対応
+---
 
-### バックログ（優先度順）
+### チームフィードバック
 
-#### 🔴 High — バグ修正・品質問題
+kizami はチームで実運用中。実際の使用から得られるフィードバックがロードマップを動かす。
 
-- [x] **[Bug]** ディレクトリをまたいだ slug 衝突 — 複数ディレクトリ（例：`docs/decisions/` と `docs/design/`）に同じ slug が存在する場合、`kizami show <slug>` は最初に見つかったものを黙って返す。エラーにするか全件表示するかを検討
-- [x] ファイル名制約の緩和 — `YYYY-MM-DD-*.md` 以外のファイルでも、kizami 形式のフロントマター（`- Status:`、`## Related Files`）を含む `.md` ファイルを管理対象として認識する。既存ドキュメントを持つチームの移行コストを下げる（`kizami list` のソート順の再設計が必要）
-- [x] VSCode 拡張機能 — [mskasa/kizami-vscode](https://github.com/mskasa/kizami-vscode)；VS Code Marketplace に公開済み。`kizami blame` を呼び出すサイドバー TreeView・クリックプレビュー・エクスプローラーコンテキストメニューを実装。ドキュメント：[docs/site/ja/editor-integration.md](docs/site/ja/editor-integration.md)
-- [x] GitHub PR 自動コメント — PR が Related Files に記載されたファイルを変更した場合、CI が関連ドキュメントのリンクを自動コメントする。既存の `kizami-check.yml` は「ADR がコミットされているか」を見るだけで、既存 ADR と PR の関連は検出しない
-- [x] `kizami lint` — CI 向けのドキュメント健全性検証コマンド。`- Status:` フィールドの欠落・Related Files が空・フロントマターの形式不正・存在しないパスの記載などを `kizami audit` より早い段階で検出する
-
-#### 🟡 Medium — 使いやすさ・発見性
-
-- [ ] `kizami list --type <type>` — Type フィールドでの絞り込み（例：`--type adr`、`--type design`）
-- [x] Windows の hook サポート — hook ロジックを `kizami hook pre-commit` Go バイナリに移行。シェルスクリプトは薄いラッパーとして機能
-- [ ] `kizami archive` — `Inactive` / `Superseded` なドキュメントを `docs/archive/` に移動し、`kizami list`・`kizami audit`・`kizami review` の対象から除外する。長期運用でノイズが増えるのを防ぐ
-
-#### 🟢 Low — あると嬉しい
-
-- [ ] `kizami import` — adr-tools 形式や Confluence/Notion エクスポートから kizami 形式への一括変換。ファイル名制約の緩和完成後に設計するのが自然
-- [ ] テンプレートのユーザー定義（config でテンプレートパスを指定可能に。Related Files セクションの必須化については要検討）
-- [ ] GitHub Actions Marketplace 公開
+- GitHub Issues に `feedback` ラベルをつけて起票する
+- `kizami lint` / `kizami audit` のエラーメッセージに関するフィードバックは特に価値が高い
+- チーム利用中に発見した使いにくさは `docs/decisions/` に ADR として記録する（ドッグフーディング）
 
 ---
 

@@ -421,16 +421,16 @@ Claude:
 
 kizami はチームで実運用中。以下のロードマップはOSS公開に向けた目標と、実運用フィードバックから生まれる改善の両方を反映している。
 
-### Phase 1 — 法的・信頼性の基盤整備
+### Phase 1 — 法的・信頼性の基盤整備 ✅
 
 *より広いユーザーへ告知する前に必ず整えておくべき項目。*
 
-- [ ] `LICENSE` ファイルの追加（MIT）— ないと企業での利用が法務上ブロックされるケースが多い
-- [ ] `SECURITY.md` — 脆弱性の非公開報告手順を明記する
-- [ ] `CODE_OF_CONDUCT.md` — Contributor Covenant などの標準規約を採用する
-- [ ] `.github/ISSUE_TEMPLATE/` — バグ報告・機能要望のテンプレートを用意する
-- [ ] `.github/PULL_REQUEST_TEMPLATE.md` — 現在 CLAUDE.md 内にある PR テンプレートを正式化する
-- [ ] `CONTRIBUTING.md` の更新 — golangci-lint のバージョンとセットアップ手順が実態と乖離している
+- [x] `LICENSE` ファイルの追加（MIT）— ないと企業での利用が法務上ブロックされるケースが多い
+- [x] `SECURITY.md` — 脆弱性の非公開報告手順を明記する
+- [x] `CODE_OF_CONDUCT.md` — Contributor Covenant などの標準規約を採用する
+- [x] `.github/ISSUE_TEMPLATE/` — バグ報告・機能要望のテンプレートを用意する
+- [x] `.github/PULL_REQUEST_TEMPLATE.md` — 現在 CLAUDE.md 内にある PR テンプレートを正式化する
+- [x] `CONTRIBUTING.md` の更新 — golangci-lint のバージョンとセットアップ手順が実態と乖離している
 
 ### Phase 2 — 品質と発見性の向上
 

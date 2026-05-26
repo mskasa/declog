@@ -26,7 +26,7 @@ func GenerateDraftBedrock(prompt, model string) (string, error) {
 		return "", fmt.Errorf("loading AWS config: %w", err)
 	}
 	if cfg.Region == "" {
-		return "", fmt.Errorf("AWS region is not set.\nSet AWS_REGION or configure a default region in your AWS profile.")
+		return "", fmt.Errorf("AWS region is not set; set AWS_REGION or configure a default region in your AWS profile")
 	}
 
 	client := bedrockruntime.NewFromConfig(cfg)
@@ -56,7 +56,7 @@ func GenerateDraftBedrock(prompt, model string) (string, error) {
 	}
 
 	if apiResp.Error != nil {
-		return "", fmt.Errorf("Bedrock error: %s", apiResp.Error.Message)
+		return "", fmt.Errorf("bedrock error: %s", apiResp.Error.Message)
 	}
 
 	for _, c := range apiResp.Content {

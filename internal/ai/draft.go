@@ -67,7 +67,7 @@ func generateDraft(prompt, model, apiKey string, client *http.Client) (string, e
 	if err != nil {
 		return "", fmt.Errorf("calling Anthropic API: %w", err)
 	}
-	defer resp.Body.Close()
+	defer resp.Body.Close() //nolint:errcheck
 
 	var apiResp apiResponse
 	if err := json.NewDecoder(resp.Body).Decode(&apiResp); err != nil {
@@ -75,7 +75,7 @@ func generateDraft(prompt, model, apiKey string, client *http.Client) (string, e
 	}
 
 	if apiResp.Error != nil {
-		return "", fmt.Errorf("Anthropic API error: %s", apiResp.Error.Message)
+		return "", fmt.Errorf("anthropic API error: %s", apiResp.Error.Message)
 	}
 
 	for _, c := range apiResp.Content {

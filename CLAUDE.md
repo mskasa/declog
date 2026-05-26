@@ -454,16 +454,16 @@ Claude:
 
 kizami is in active team use. The roadmap below reflects both OSS readiness goals and improvements driven by real-world feedback.
 
-### Phase 1 — Legal & Trust Foundations
+### Phase 1 — Legal & Trust Foundations ✅
 
 *Prerequisites before promoting kizami to a wider audience.*
 
-- [ ] Add `LICENSE` file (MIT) — without it, use in many organizations is legally blocked
-- [ ] `SECURITY.md` — define how to report vulnerabilities privately
-- [ ] `CODE_OF_CONDUCT.md` — adopt Contributor Covenant or similar standard
-- [ ] `.github/ISSUE_TEMPLATE/` — bug report and feature request templates
-- [ ] `.github/PULL_REQUEST_TEMPLATE.md` — formalize the PR template currently in CLAUDE.md
-- [ ] Update `CONTRIBUTING.md` — golangci-lint version and setup instructions are out of date
+- [x] Add `LICENSE` file (MIT) — without it, use in many organizations is legally blocked
+- [x] `SECURITY.md` — define how to report vulnerabilities privately
+- [x] `CODE_OF_CONDUCT.md` — adopt Contributor Covenant or similar standard
+- [x] `.github/ISSUE_TEMPLATE/` — bug report and feature request templates
+- [x] `.github/PULL_REQUEST_TEMPLATE.md` — formalize the PR template currently in CLAUDE.md
+- [x] Update `CONTRIBUTING.md` — golangci-lint version and setup instructions are out of date
 
 ### Phase 2 — Quality & Discoverability
 

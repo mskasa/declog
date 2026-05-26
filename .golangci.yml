@@ -17,8 +17,6 @@ linters:
         - fmt.Fprint
         - fmt.Fprintf
         - fmt.Fprintln
-
-issues:
   exclusions:
     rules:
       # Test files are allowed to use t.Fatal without checking errors

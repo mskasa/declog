@@ -9,6 +9,11 @@
 
 **`kizami`** — A minimal CLI tool to maintain living documentation alongside code, with automatic drift detection.
 
+[![CI](https://github.com/mskasa/kizami/actions/workflows/ci.yml/badge.svg)](https://github.com/mskasa/kizami/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Go Report Card](https://goreportcard.com/badge/github.com/mskasa/kizami)](https://goreportcard.com/report/github.com/mskasa/kizami)
+[![GitHub release](https://img.shields.io/github/v/release/mskasa/kizami)](https://github.com/mskasa/kizami/releases/latest)
+
 [日本語版 README はこちら](README.ja.md)
 
 ---

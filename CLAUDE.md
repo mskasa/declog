@@ -252,8 +252,20 @@ Before writing any code, manually create the following ADRs:
 - uses: actions/checkout@v4
 
 # After (run: pinact run)
-- uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+- uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 ```
+
+#### Updating action versions
+
+Run `pinact run --update` to update all actions in `.github/workflows/` to their latest versions:
+
+```bash
+pinact run --update
+```
+
+> **Note:** `pinact` only scans `.github/workflows/`. The workflow templates embedded in
+> `internal/initializer/templates/` are **not** updated automatically — update them manually
+> whenever the versions in `.github/workflows/` change.
 
 ### Testing Policy
 

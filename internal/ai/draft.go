@@ -75,7 +75,7 @@ func generateDraft(prompt, model, apiKey string, client *http.Client) (string, e
 	}
 
 	if apiResp.Error != nil {
-		return "", fmt.Errorf("Anthropic API error: %s", apiResp.Error.Message)
+		return "", fmt.Errorf("anthropic API error: %s", apiResp.Error.Message)
 	}
 
 	for _, c := range apiResp.Content {

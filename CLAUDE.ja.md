@@ -253,8 +253,20 @@ func AuthorFromGit() string {
 - uses: actions/checkout@v4
 
 # 変換後（pinact run を実行）
-- uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+- uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 ```
+
+#### アクションバージョンの更新
+
+`pinact run --update` を実行すると、`.github/workflows/` 内の全アクションを最新バージョンに一括更新できる：
+
+```bash
+pinact run --update
+```
+
+> **注意：** `pinact` が走査するのは `.github/workflows/` のみ。
+> `internal/initializer/templates/` に埋め込まれたワークフローテンプレートは自動更新の対象外。
+> `.github/workflows/` のバージョンを変更したときは、テンプレート側も手動で合わせること。
 
 ### テスト方針
 

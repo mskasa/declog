@@ -479,7 +479,7 @@ kizami is in active team use. The roadmap below reflects both OSS readiness goal
 **GitHub repository**
 - [x] Set repository Topics (`cli`, `golang`, `documentation`, `adr`, `decision-record`, `living-documentation`)
 - [x] Add README badges (CI, Go Report Card, License, release)
-- [ ] Expand README with team use-case stories and before/after examples
+- [x] Expand README with team use-case stories and before/after examples
 
 **Feature: noise reduction for long-running teams**
 - [ ] `kizami archive` — move `Inactive` / `Superseded` documents to `docs/archive/` and exclude them from `kizami list`, `kizami audit`, and `kizami review`

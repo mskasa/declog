@@ -446,7 +446,7 @@ kizami はチームで実運用中。以下のロードマップはOSS公開に�
 **GitHub リポジトリ整備**
 - [x] Topics の設定（`cli`、`golang`、`documentation`、`adr`、`decision-record`、`living-documentation`）
 - [x] README にバッジを追加（CI・Go Report Card・ライセンス・リリース）
-- [ ] README にチームでの活用事例や導入前後の比較を追記する
+- [x] README にチームでの活用事例や導入前後の比較を追記する
 
 **機能：長期運用時のノイズ低減**
 - [ ] `kizami archive` — `Inactive` / `Superseded` なドキュメントを `docs/archive/` に移動し、`kizami list`・`kizami audit`・`kizami review` の対象から除外する

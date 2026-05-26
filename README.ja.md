@@ -105,6 +105,74 @@ kizami status use-postgresql-over-sqlite inactive
 kizami status use-sqlite superseded --by use-postgresql-over-sqlite
 ```
 
+## ユースケース
+
+### 新メンバーのオンボーディング
+
+「なぜこの設計になっているのか」をシニアエンジニアに聞く代わりに、新メンバーが自分で調べられます。
+
+```bash
+$ kizami list
+Slug                            Date        Status    Title
+----                            ----        ------    -----
+use-postgresql-over-sqlite      2025-09-01  Active    Use PostgreSQL over SQLite
+auth-jwt-strategy               2025-10-15  Active    Auth JWT strategy
+connection-pool-design          2025-11-20  Active    Connection pool design
+...
+
+$ kizami show use-postgresql-over-sqlite
+# Use PostgreSQL over SQLite
+- Date: 2025-09-01
+- Status: Active
+
+## Context
+負荷テストで500同時接続時にSQLiteの書き込みロックがボトルネックとなった。
+
+## Decision
+PostgreSQLへ移行する。運用コストを受け入れ、書き込みスケーラビリティを確保する。
+```
+
+入社したばかりのメンバーでも、過去の意思決定の背景をコードと並べて把握できます。
+
+### コードレビューで「なぜ？」に答える
+
+コードレビューで設計の背景を問われたとき、口頭で再説明する代わりに ADR を示せます。
+
+```bash
+$ kizami blame internal/db/db.go
+docs/decisions/2025-09-01-use-postgresql-over-sqlite.md
+```
+
+レビュアーがコンテキストを即座に把握でき、議論がより本質的になります。
+
+### 定期的な陳腐化チェック
+
+`kizami review` で長期間更新されていないドキュメントを定期的に洗い出し、実態と乖離したドキュメントを放置しません。
+
+```bash
+$ kizami review
+docs/decisions/2025-08-20-redis-caching-strategy.md
+  Last updated 9 months ago — worth revisiting?
+```
+
+### AI コーディングアシスタントへのコンテキスト提供
+
+意思決定が Markdown ファイルとして残っているため、AI に過去の判断をそのまま渡せます。
+
+```bash
+$ kizami show use-postgresql-over-sqlite
+# Use PostgreSQL over SQLite
+- Status: Active
+
+## Context
+負荷テストで500同時接続時にSQLiteの書き込みロックがボトルネックとなった。
+
+## Decision
+PostgreSQLへ移行する。運用コストを受け入れ、書き込みスケーラビリティを確保する。
+```
+
+この内容を AI に渡すことで、「なぜ PostgreSQL なのか」「どんなトレードオフがあったのか」を踏まえた提案を得られます。設計の背景を毎回口頭で説明する手間がなくなります。
+
 ## コマンド一覧
 
 | コマンド | 説明 |

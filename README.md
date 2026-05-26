@@ -105,6 +105,74 @@ kizami status use-postgresql-over-sqlite inactive
 kizami status use-sqlite superseded --by use-postgresql-over-sqlite
 ```
 
+## Use Cases
+
+### Onboarding new team members
+
+Instead of asking a senior engineer "why is the code structured this way?", new members can look it up themselves.
+
+```bash
+$ kizami list
+Slug                            Date        Status    Title
+----                            ----        ------    -----
+use-postgresql-over-sqlite      2025-09-01  Active    Use PostgreSQL over SQLite
+auth-jwt-strategy               2025-10-15  Active    Auth JWT strategy
+connection-pool-design          2025-11-20  Active    Connection pool design
+...
+
+$ kizami show use-postgresql-over-sqlite
+# Use PostgreSQL over SQLite
+- Date: 2025-09-01
+- Status: Active
+
+## Context
+Load tests at 500 concurrent users revealed SQLite's write lock as a bottleneck.
+
+## Decision
+Switch to PostgreSQL. Accepted the operational overhead in exchange for write scalability.
+```
+
+Even a new team member can understand the reasoning behind past decisions right alongside the code.
+
+### Answering "why?" in code reviews
+
+When a reviewer asks about a design choice, point to the ADR instead of re-explaining from scratch.
+
+```bash
+$ kizami blame internal/db/db.go
+docs/decisions/2025-09-01-use-postgresql-over-sqlite.md
+```
+
+Reviewers get the context instantly, and discussions stay focused on what matters.
+
+### Catching stale documentation
+
+`kizami review` surfaces documents that haven't been updated in a long time, so outdated docs don't get quietly ignored.
+
+```bash
+$ kizami review
+docs/decisions/2025-08-20-redis-caching-strategy.md
+  Last updated 9 months ago — worth revisiting?
+```
+
+### Providing context to AI coding assistants
+
+Because decisions are stored as plain Markdown files, you can feed past decisions directly to an AI assistant.
+
+```bash
+$ kizami show use-postgresql-over-sqlite
+# Use PostgreSQL over SQLite
+- Status: Active
+
+## Context
+Load tests at 500 concurrent users revealed SQLite's write lock as a bottleneck.
+
+## Decision
+Switch to PostgreSQL. Accepted the operational overhead in exchange for write scalability.
+```
+
+Pass this to your AI assistant and it can make suggestions that respect your existing constraints and trade-offs — no need to re-explain the background every time.
+
 ## Commands
 
 | Command | Description |

@@ -1,3 +1,5 @@
+version: "2"
+
 run:
   timeout: 5m
 
@@ -7,17 +9,14 @@ linters:
     - govet
     - errcheck
     - staticcheck
-    - unused
-    - gosimple
     - ineffassign
-
-linters-settings:
-  errcheck:
-    # Don't require error checks on fmt.Fprint* (CLI output)
-    exclude-functions:
-      - fmt.Fprint
-      - fmt.Fprintf
-      - fmt.Fprintln
+  settings:
+    errcheck:
+      # Don't require error checks on fmt.Fprint* (CLI output)
+      exclude-functions:
+        - fmt.Fprint
+        - fmt.Fprintf
+        - fmt.Fprintln
 
 issues:
   exclude-rules:

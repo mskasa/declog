@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"path/filepath"
 	"strings"
 	"testing"
 )
@@ -47,7 +48,7 @@ func TestShowCmd_SlugCollision_ShowsAll(t *testing.T) {
 	if strings.Count(out, "Use Go") < 2 {
 		t.Errorf("expected both docs in output, got: %q", out)
 	}
-	if !strings.Contains(out, "docs/decisions") || !strings.Contains(out, "docs/design") {
+	if !strings.Contains(out, filepath.Join("docs", "decisions")) || !strings.Contains(out, filepath.Join("docs", "design")) {
 		t.Errorf("expected file path headers in output, got: %q", out)
 	}
 }

@@ -470,8 +470,7 @@ kizami is in active team use. The roadmap below reflects both OSS readiness goal
 *Raise the quality bar and make the project easier to find and trust.*
 
 **Test coverage**
-- [ ] `cmd/` package: 41.5% → 70%+ (integration-style tests)
-- [ ] `internal/ai/` package: 38.2% → introduce mocks and raise coverage
+- [ ] Add regression tests as bugs are discovered from team usage
 
 **CI**
 - [ ] Add macOS and Windows to the test matrix (currently Linux only)

@@ -450,120 +450,67 @@ Claude:
 
 ---
 
-## Implementation Progress
+## Roadmap
 
-<!-- Update this checklist as work proceeds -->
+kizami is in active team use. The roadmap below reflects both OSS readiness goals and improvements driven by real-world feedback.
 
-### MVP (v0.1.0) ✅
+### Phase 1 — Legal & Trust Foundations
 
-- [x] .github/workflows/ci.yml (go test + go vet on every PR)
-- [x] go.mod + cobra setup (`module github.com/mskasa/kizami`)
-- [x] cmd/root.go (root `kizami` command)
-- [x] internal/decision/generate.go (auto-numbering and file generation)
-- [x] internal/template/template.go (Markdown template)
-- [x] cmd/log.go (`kizami adr` / `kizami design`)
-- [x] cmd/list.go (`kizami list`)
-- [x] cmd/search.go (`kizami search`)
-- [x] cmd/show.go (`kizami show`)
-- [x] cmd/status.go (`kizami status`)
-- [x] docs/decisions/ initial ADRs (0001–0006)
-- [x] README.md
-- [x] GoReleaser configuration
+*Prerequisites before promoting kizami to a wider audience.*
 
-### v0.1.0 (remaining)
+- [ ] Add `LICENSE` file (MIT) — without it, use in many organizations is legally blocked
+- [ ] `SECURITY.md` — define how to report vulnerabilities privately
+- [ ] `CODE_OF_CONDUCT.md` — adopt Contributor Covenant or similar standard
+- [ ] `.github/ISSUE_TEMPLATE/` — bug report and feature request templates
+- [ ] `.github/PULL_REQUEST_TEMPLATE.md` — formalize the PR template currently in CLAUDE.md
+- [ ] Update `CONTRIBUTING.md` — golangci-lint version and setup instructions are out of date
 
-- [x] Logo image for README
-- [x] cmd/blame.go (`kizami blame <file>` — full-text search for file path mentions in ADRs)
-- [x] `kizami --version` — print version string
+### Phase 2 — Quality & Discoverability
 
-### v0.2.0
+*Raise the quality bar and make the project easier to find and trust.*
 
-- [x] `kizami init` — initialize decisions directory (`--yes` flag for non-interactive use)
-- [x] Auto-open editor after `kizami adr`
-- [x] Suggest changed files (staged and unstaged) as Related Files candidates on `kizami adr`
-- [x] Show similar ADR suggestions on `kizami adr` (keyword partial match)
-- [x] `kizami list --status <status>` — filter list by status
-- [x] `kizami supersede` — mark an ADR as superseded
-- [x] `kizami review` — detect long-stale ADRs
-- [x] Git hook to prompt ADR creation
-- [x] GitHub Actions integration (`kizami init` generates workflow)
+**Test coverage**
+- [ ] `cmd/` package: 41.5% → 70%+ (integration-style tests)
+- [ ] `internal/ai/` package: 38.2% → introduce mocks and raise coverage
 
-### v0.3.0
+**CI**
+- [ ] Add macOS and Windows to the test matrix (currently Linux only)
 
-- [x] `kizami audit` — detect drift between Related Files and actual code
-- [x] Scheduled CI run of `kizami audit` (weekly + auto GitHub Issue creation)
-- [x] LLM-assisted ADR draft generation
-- [x] `kizami init` generates `~/.config/kizami/config.toml` with default values
+**GitHub repository**
+- [ ] Set repository Topics (`cli`, `golang`, `documentation`, `adr`, `decision-record`, `living-documentation`)
+- [ ] Add README badges (CI, coverage, Go Report Card, License)
+- [ ] Expand README with team use-case stories and before/after examples
 
-### Rename to kizami ✅
+**Feature: noise reduction for long-running teams**
+- [ ] `kizami archive` — move `Inactive` / `Superseded` documents to `docs/archive/` and exclude them from `kizami list`, `kizami audit`, and `kizami review`
 
-- [x] Rename GitHub repository: `mskasa/declog` → `mskasa/kizami`
-- [x] Update `go.mod` module path: `github.com/mskasa/declog` → `github.com/mskasa/kizami`
-- [x] Update all import paths across the codebase
-- [x] Rename binary: `why` → `kizami` (cmd/root.go, .goreleaser.yaml)
-- [x] Update config path: `~/.config/declog/` → `~/.config/kizami/`
-- [x] Update README.md and README.ja.md
-- [x] Update CLAUDE.md and CLAUDE.ja.md (reflect new identity)
-- [x] Update existing ADRs that reference `why` command
+### Phase 3 — Distribution & Ecosystem
 
-### v0.4.0 (scope expansion)
+*Broaden reach and make kizami adoptable by diverse teams.*
 
-- [x] `kizami adr` / `kizami design` — separate creation commands (replaces `kizami log --type`)
-- [x] Design document template (saved under `docs/design/`, default `Status: Draft`)
-- [x] Change ADR template default from `Status: Active` to `Status: Draft`
-- [x] `kizami audit` skips `Draft` documents (only checks `Active`)
-- [x] `kizami init` generates optional auto-promote workflow (`kizami-promote.yml`): auto-promotes `Draft` → `Active` on push to default branch (auto-detected via git)
-- [x] `kizami audit` supports multiple directories (`audit.dirs` in config)
-- [x] Remove ADR-specific language from generic output messages
-- [x] `kizami design --ai` — AI draft for design documents
-- [x] golangci-lint in CI
-- [x] mise toolchain configuration (pin Go and golangci-lint versions for local development)
-- [x] Tests for `cmd/` package
-- [x] Allow directory path in Related Files (all files under the directory are treated as related)
-- [x] Add `documents.dirs` config — all read/write commands now support design docs
-- [x] Make `kizami design` creation directory configurable (`[design] dir` in config)
-- [x] Run `kizami init` on this repository (dogfooding)
-- [x] Create design documents for this repository (dogfooding) — docs/design/0001-audit-and-drift-detection.md
-- [x] Remove numeric IDs from document filenames (`NNNN-slug.md` → `YYYY-MM-DD-slug.md`)
-- [x] Recursive directory scanning in `List` and `FindBySlug` (subdirectories like `docs/decisions/ja/` are included)
-
-### v1.0.0 (public release)
-
-- [x] Documentation site (GitHub Pages)
+**Package managers**
 - [ ] Homebrew formula
-- [ ] Color output for `kizami list` and `kizami search`
+- [ ] Scoop (Windows)
 
-### v1.1.0
+**GitHub Actions**
+- [ ] GitHub Actions Marketplace release (`kizami audit`, `kizami lint` as reusable actions)
 
-- [x] `.kizami` sidecar file support — manage any file type (CSV, YAML, SQL, etc.) without modifying the file itself; `kizami blame`, `audit`, `list`, `show` all support sidecars automatically
+**Extensibility**
+- [ ] User-defined templates — configurable template path in `kizami.toml`
 
-### v0.8.0
+**Documentation site**
+- [ ] Team onboarding guide
+- [ ] Migration guide (from adr-tools, plain Markdown, Confluence/Notion)
 
-- [x] AWS Bedrock support for `--ai` flag — auto-detected from model ID; set a Bedrock model ID in `kizami.toml` and no extra env var is needed
-- [x] `ANTHROPIC_MODEL` env var support for model selection
-- [x] `kizami hook pre-commit` Go command — replaces shell script logic; config-aware, Related Files check, cross-platform
+---
 
-### Backlog (prioritized)
+### Team Feedback
 
-#### 🔴 High — Fix or quality issue
+kizami is in active team use. Feedback from real-world usage drives the roadmap.
 
-- [x] **[Bug]** slug collision across directories — `kizami show <slug>` silently returns the first match when the same slug exists in multiple dirs (e.g. `docs/decisions/` and `docs/design/`); should error or list all matches
-- [x] Relax filename constraint — accept any `.md` file containing kizami-style front-matter (`- Status:`, `## Related Files`) regardless of filename; reduces migration cost for teams with existing docs (requires rethinking `kizami list` sort order)
-- [x] VSCode extension — [mskasa/kizami-vscode](https://github.com/mskasa/kizami-vscode); published to VS Code Marketplace; sidebar TreeView calling `kizami blame`, click-to-preview, Explorer context menu; documented at [docs/site/editor-integration.md](docs/site/editor-integration.md)
-- [x] GitHub PR auto-comment — when a PR modifies files listed in any document's Related Files section, CI automatically comments with the related document links; the existing `kizami-check.yml` only checks whether an ADR was committed, not whether existing ADRs are relevant to the PR
-- [x] `kizami lint` — validate document health for CI; catch missing `- Status:` field, empty Related Files section, malformed front-matter, and unresolvable paths before `kizami audit` runs
-
-#### 🟡 Medium — Usability and discoverability
-
-- [ ] `kizami list --type <type>` — filter list by document Type field (e.g. `--type adr`, `--type design`)
-- [x] Windows hook support — hook logic moved into `kizami hook pre-commit` Go binary; shell script is now a thin wrapper
-- [ ] `kizami archive` — move `Inactive` / `Superseded` documents to `docs/archive/` and exclude them from `kizami list`, `kizami audit`, and `kizami review`; prevents noise accumulation over time
-
-#### 🟢 Low — Nice to have
-
-- [ ] `kizami import` — batch-convert documents from adr-tools format or Confluence/Notion exports into kizami format; best designed after the filename constraint relaxation is complete
-- [ ] User-defined templates (configurable template path; whether Related Files section is required is TBD)
-- [ ] GitHub Actions Marketplace release
+- File issues with the `feedback` label on GitHub
+- Pain points in `kizami lint` / `kizami audit` error messages are especially valuable
+- Usability issues discovered during team use should be recorded as ADRs in `docs/decisions/` (dogfooding)
 
 ---
 

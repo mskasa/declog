@@ -444,8 +444,8 @@ kizami はチームで実運用中。以下のロードマップはOSS公開に�
 - [ ] テストマトリクスに macOS と Windows を追加（現在は Linux のみ）
 
 **GitHub リポジトリ整備**
-- [ ] Topics の設定（`cli`、`golang`、`documentation`、`adr`、`decision-record`、`living-documentation`）
-- [ ] README にバッジを追加（CI・カバレッジ・Go Report Card・ライセンス）
+- [x] Topics の設定（`cli`、`golang`、`documentation`、`adr`、`decision-record`、`living-documentation`）
+- [x] README にバッジを追加（CI・Go Report Card・ライセンス・リリース）
 - [ ] README にチームでの活用事例や導入前後の比較を追記する
 
 **機能：長期運用時のノイズ低減**

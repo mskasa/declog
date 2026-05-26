@@ -477,8 +477,8 @@ kizami is in active team use. The roadmap below reflects both OSS readiness goal
 - [ ] Add macOS and Windows to the test matrix (currently Linux only)
 
 **GitHub repository**
-- [ ] Set repository Topics (`cli`, `golang`, `documentation`, `adr`, `decision-record`, `living-documentation`)
-- [ ] Add README badges (CI, coverage, Go Report Card, License)
+- [x] Set repository Topics (`cli`, `golang`, `documentation`, `adr`, `decision-record`, `living-documentation`)
+- [x] Add README badges (CI, Go Report Card, License, release)
 - [ ] Expand README with team use-case stories and before/after examples
 
 **Feature: noise reduction for long-running teams**

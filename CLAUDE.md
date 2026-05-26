@@ -499,6 +499,12 @@ kizami is in active team use. The roadmap below reflects both OSS readiness goal
 - [ ] Team onboarding guide
 - [ ] Migration guide (from adr-tools, plain Markdown, Confluence/Notion)
 
+### Backlog — Candidate Features
+
+*Ideas that emerged from real usage but are not yet scheduled into a phase.*
+
+- [ ] `kizami list --status <status>` — filter list output by status (e.g. `--status active`) to reduce noise as documents accumulate over time
+
 ---
 
 ### Team Feedback

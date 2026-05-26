@@ -9,6 +9,11 @@
 
 **`kizami`** — ADRや設計ドキュメントをコードと並べて管理し、乖離を自動検出するGo製のCLIツールです。
 
+[![CI](https://github.com/mskasa/kizami/actions/workflows/ci.yml/badge.svg)](https://github.com/mskasa/kizami/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Go Report Card](https://goreportcard.com/badge/github.com/mskasa/kizami)](https://goreportcard.com/report/github.com/mskasa/kizami)
+[![GitHub release](https://img.shields.io/github/v/release/mskasa/kizami)](https://github.com/mskasa/kizami/releases/latest)
+
 [English README](README.md)
 
 ---

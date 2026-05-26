@@ -481,9 +481,6 @@ kizami is in active team use. The roadmap below reflects both OSS readiness goal
 - [x] Add README badges (CI, Go Report Card, License, release)
 - [x] Expand README with team use-case stories and before/after examples
 
-**Feature: noise reduction for long-running teams**
-- [ ] `kizami archive` — move `Inactive` / `Superseded` documents to `docs/archive/` and exclude them from `kizami list`, `kizami audit`, and `kizami review`
-
 ### Phase 3 — Distribution & Ecosystem
 
 *Broaden reach and make kizami adoptable by diverse teams.*

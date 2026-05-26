@@ -109,8 +109,13 @@ func TestLint_EmptyRelatedFiles(t *testing.T) {
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
-	if findIssue(issues, "Related Files") == nil {
-		t.Error("expected empty Related Files issue")
+	issue := findIssue(issues, "Related Files")
+	if issue == nil {
+		t.Fatal("expected empty Related Files issue")
+	}
+	// Empty Related Files in a Markdown document is a warning, not an error.
+	if issue.Severity != "warning" {
+		t.Errorf("expected severity %q, got %q", "warning", issue.Severity)
 	}
 }
 
@@ -207,8 +212,13 @@ func TestLint_Sidecar_EmptyRelated(t *testing.T) {
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
-	if findIssue(issues, "related") == nil {
-		t.Error("expected empty related issue for sidecar")
+	issue := findIssue(issues, "related")
+	if issue == nil {
+		t.Fatal("expected empty related issue for sidecar")
+	}
+	// Sidecar files exist solely to annotate other files, so empty related: is always an error.
+	if issue.Severity != "error" {
+		t.Errorf("expected severity %q, got %q", "error", issue.Severity)
 	}
 }
 

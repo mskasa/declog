@@ -36,11 +36,31 @@ var lintCmd = &cobra.Command{
 			return nil
 		}
 
+		var errCount, warnCount int
 		for _, issue := range issues {
-			fmt.Fprintf(os.Stdout, "%s: %s\n", issue.File, issue.Message)
+			if issue.Severity == "warning" {
+				fmt.Fprintf(os.Stdout, "[warn]  %s: %s\n", issue.File, issue.Message)
+				warnCount++
+			} else {
+				fmt.Fprintf(os.Stdout, "[error] %s: %s\n", issue.File, issue.Message)
+				errCount++
+			}
 		}
-		fmt.Fprintf(os.Stdout, "\n%d issue(s) found.\n", len(issues))
-		return fmt.Errorf("lint failed: %d issue(s) found", len(issues))
+
+		fmt.Fprintln(os.Stdout)
+		switch {
+		case errCount > 0 && warnCount > 0:
+			fmt.Fprintf(os.Stdout, "%d error(s), %d warning(s) found.\n", errCount, warnCount)
+		case errCount > 0:
+			fmt.Fprintf(os.Stdout, "%d error(s) found.\n", errCount)
+		default:
+			fmt.Fprintf(os.Stdout, "%d warning(s) found. ⚠️\n", warnCount)
+		}
+
+		if errCount > 0 {
+			return fmt.Errorf("lint failed: %d error(s) found", errCount)
+		}
+		return nil
 	},
 }
 

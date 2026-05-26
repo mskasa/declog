@@ -440,7 +440,8 @@ kizami はチームで実運用中。以下のロードマップはOSS公開に�
 - [ ] チーム実運用で発見されたバグをリグレッションテストとして追加する
 
 **CI**
-- [ ] テストマトリクスに macOS と Windows を追加（現在は Linux のみ）
+- [x] テストマトリクスに Windows を追加
+- [ ] テストマトリクスに macOS を追加（現時点では意図的にスキップ。Linux + Windows で十分と判断）
 
 **GitHub リポジトリ整備**
 - [x] Topics の設定（`cli`、`golang`、`documentation`、`adr`、`decision-record`、`living-documentation`）

@@ -473,7 +473,8 @@ kizami is in active team use. The roadmap below reflects both OSS readiness goal
 - [ ] Add regression tests as bugs are discovered from team usage
 
 **CI**
-- [ ] Add macOS and Windows to the test matrix (currently Linux only)
+- [x] Add Windows to the test matrix
+- [ ] Add macOS to the test matrix (intentionally skipped for now; Linux + Windows is sufficient)
 
 **GitHub repository**
 - [x] Set repository Topics (`cli`, `golang`, `documentation`, `adr`, `decision-record`, `living-documentation`)

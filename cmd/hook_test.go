@@ -120,6 +120,25 @@ func TestHookPreCommit_OnlyMDFiles_NoWarning(t *testing.T) {
 	}
 }
 
+func TestHookPreCommit_NonASCIIFilename_NoWarning(t *testing.T) {
+	root := newTestRepo(t)
+	setTestRoot(t, root)
+
+	// Filenames with non-ASCII characters (e.g. Japanese) are quoted by git
+	// when core.quotepath=true (the default). This test ensures the hook does
+	// not produce a false warning for such files.
+	writeFile(t, root, "docs/日本語ファイル名.md", "# test\n")
+	stageFile(t, root, "docs/日本語ファイル名.md")
+
+	out, err := executeCmd(t, "hook", "pre-commit")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if strings.Contains(out, "⚠️") {
+		t.Errorf("expected no warning for non-ASCII MD filename, got: %q", out)
+	}
+}
+
 func TestHookPreCommit_DocInDecisionsDirStaged_NoCheck2(t *testing.T) {
 	root := newTestRepo(t)
 	dir := decisionsPath(root)

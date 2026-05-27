@@ -30,7 +30,9 @@ func init() {
 
 // stagedFilesFn is a variable to allow injection in tests.
 var stagedFilesFn = func(root string) ([]string, error) {
-	out, err := exec.Command("git", "-C", root, "diff", "--cached", "--name-only").Output()
+	// -c core.quotepath=false prevents git from quoting non-ASCII filenames
+	// (e.g. Japanese), which would break suffix and prefix matching downstream.
+	out, err := exec.Command("git", "-C", root, "-c", "core.quotepath=false", "diff", "--cached", "--name-only").Output()
 	if err != nil {
 		return nil, fmt.Errorf("getting staged files: %w", err)
 	}

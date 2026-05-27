@@ -25,9 +25,11 @@ func ChangedFiles(dir string) []string {
 }
 
 func gitDiffFiles(dir, flag string) []string {
-	args := []string{"diff", "--name-only"}
+	// -c core.quotepath=false prevents git from quoting non-ASCII filenames
+	// (e.g. Japanese), which would otherwise appear as escaped octal sequences.
+	args := []string{"-c", "core.quotepath=false", "diff", "--name-only"}
 	if flag != "" {
-		args = []string{"diff", flag, "--name-only"}
+		args = []string{"-c", "core.quotepath=false", "diff", flag, "--name-only"}
 	}
 	cmd := exec.Command("git", args...)
 	cmd.Dir = dir

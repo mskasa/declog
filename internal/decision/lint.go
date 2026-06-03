@@ -18,9 +18,6 @@ func errIssue(file, message string) *LintIssue {
 	return &LintIssue{File: file, Message: message, Severity: "error"}
 }
 
-func warnIssue(file, message string) *LintIssue {
-	return &LintIssue{File: file, Message: message, Severity: "warning"}
-}
 
 var lintDatePattern = regexp.MustCompile(`^\d{4}-\d{2}-\d{2}$`)
 
@@ -60,11 +57,7 @@ func lintMarkdown(d *Decision, repoRoot string) []*LintIssue {
 		issues = append(issues, errIssue(rel, fmt.Sprintf("error reading Related Files: %v", err)))
 		return issues
 	}
-	if len(related) == 0 {
-		// Empty Related Files is a warning: the document may not yet have related code.
-		// kizami audit and kizami blame simply skip documents with no entries.
-		issues = append(issues, warnIssue(rel, `"## Related Files" section is missing or empty`))
-	} else {
+	if len(related) > 0 {
 		for _, path := range related {
 			if _, statErr := os.Stat(filepath.Join(repoRoot, path)); os.IsNotExist(statErr) {
 				issues = append(issues, errIssue(rel, fmt.Sprintf("Related Files: path does not exist: %s", path)))

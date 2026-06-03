@@ -109,13 +109,8 @@ func TestLint_EmptyRelatedFiles(t *testing.T) {
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
-	issue := findIssue(issues, "Related Files")
-	if issue == nil {
-		t.Fatal("expected empty Related Files issue")
-	}
-	// Empty Related Files in a Markdown document is a warning, not an error.
-	if issue.Severity != "warning" {
-		t.Errorf("expected severity %q, got %q", "warning", issue.Severity)
+	if len(issues) != 0 {
+		t.Errorf("expected no issues for empty Related Files, got: %v", issues)
 	}
 }
 

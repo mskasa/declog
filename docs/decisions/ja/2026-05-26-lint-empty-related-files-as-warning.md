@@ -1,7 +1,7 @@
 # kizami lint における空の Related Files をエラーではなく警告として扱う
 
 - Date: 2026-05-26
-- Status: Active
+- Status: Superseded by remove-empty-related-files-lint-warning
 - Author: masahiro.kasatani
 
 ## Context

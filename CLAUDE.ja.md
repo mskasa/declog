@@ -239,6 +239,7 @@ func AuthorFromGit() string {
 ### コーディング規約
 
 - コミット前に必ず `gofmt` / `goimports` を通す
+- プッシュ前に `golangci-lint run` を実行し、指摘された問題をすべて修正する
 - エラーはwrapする（`fmt.Errorf("...: %w", err)`）
 - CLIの出力メッセージは**英語**に統一する
 - コードコメントは**英語**に統一する

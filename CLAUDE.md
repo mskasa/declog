@@ -238,6 +238,7 @@ Before writing any code, manually create the following ADRs:
 ### Coding Conventions
 
 - Always run `gofmt` / `goimports` before committing
+- Run `golangci-lint run` before pushing and fix all reported issues
 - Wrap errors using `fmt.Errorf("...: %w", err)`
 - All CLI output messages must be in **English**
 - Code comments must be written in **English**

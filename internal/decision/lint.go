@@ -18,7 +18,6 @@ func errIssue(file, message string) *LintIssue {
 	return &LintIssue{File: file, Message: message, Severity: "error"}
 }
 
-
 var lintDatePattern = regexp.MustCompile(`^\d{4}-\d{2}-\d{2}$`)
 
 // Lint checks all kizami documents in dir for structural issues and returns all findings.

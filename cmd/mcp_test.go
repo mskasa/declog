@@ -3,6 +3,8 @@ package cmd
 import (
 	"context"
 	"encoding/json"
+	"os"
+	"strings"
 	"testing"
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
@@ -11,12 +13,19 @@ import (
 
 // connectTestMCPSession wires up an in-process client/server pair over an in-memory
 // transport (no real stdio/subprocess) so tool calls can be exercised end-to-end,
-// including the SDK's own schema validation and JSON-RPC dispatch.
+// including the SDK's own schema validation and JSON-RPC dispatch. Read-only (allowWrite=false).
 func connectTestMCPSession(t *testing.T, root string, dirs []string) *mcp.ClientSession {
+	t.Helper()
+	return connectTestMCPSessionWithWrite(t, root, dirs, dirs[0], dirs[0], false)
+}
+
+// connectTestMCPSessionWithWrite is like connectTestMCPSession but lets tests control the
+// write-path directories and --allow-write gate directly.
+func connectTestMCPSessionWithWrite(t *testing.T, root string, dirs []string, decisionsDir, designDir string, allowWrite bool) *mcp.ClientSession {
 	t.Helper()
 	ctx := context.Background()
 
-	server := newMCPServer(root, dirs)
+	server := newMCPServer(root, dirs, decisionsDir, designDir, allowWrite)
 	client := mcp.NewClient(&mcp.Implementation{Name: "test-client", Version: "v0"}, nil)
 
 	serverTransport, clientTransport := mcp.NewInMemoryTransports()
@@ -159,4 +168,74 @@ func TestMCP_GetDecision_NotFound(t *testing.T) {
 	if !result.IsError {
 		t.Error("expected a tool error for a missing slug")
 	}
+}
+
+func TestMCP_RecordDecision_NotRegisteredByDefault(t *testing.T) {
+	root := newTestRepo(t)
+	dir := decisionsPath(root)
+
+	session := connectTestMCPSession(t, root, []string{dir}) // allowWrite=false
+
+	_, err := session.CallTool(context.Background(), &mcp.CallToolParams{
+		Name:      "kizami_record_decision",
+		Arguments: map[string]any{"title": "Should Not Work"},
+	})
+	if err == nil {
+		t.Fatal("expected an error calling an unregistered tool")
+	}
+}
+
+func TestMCP_RecordDecision_CreatesDraftADR(t *testing.T) {
+	root := newTestRepo(t)
+	dir := decisionsPath(root)
+	designDir := designPath(root)
+
+	session := connectTestMCPSessionWithWrite(t, root, []string{dir}, dir, designDir, true)
+
+	var out getDecisionOutputForRecord
+	callToolJSON(t, session, "kizami_record_decision", map[string]any{
+		"title":         "Use PostgreSQL",
+		"context":       "SQLite hit write-lock limits under load.",
+		"decision":      "Switch to PostgreSQL.",
+		"related_files": []string{"internal/db/db.go"},
+	}, &out)
+
+	if out.Slug != "use-postgresql" {
+		t.Errorf("unexpected slug: %s", out.Slug)
+	}
+	content, err := os.ReadFile(out.Path)
+	if err != nil {
+		t.Fatalf("expected the recorded file to exist: %v", err)
+	}
+	if !strings.Contains(string(content), "- Status: Draft") {
+		t.Errorf("expected Status: Draft, got:\n%s", content)
+	}
+}
+
+func TestMCP_RecordDecision_RejectsMissingRelatedFiles(t *testing.T) {
+	root := newTestRepo(t)
+	dir := decisionsPath(root)
+	designDir := designPath(root)
+
+	session := connectTestMCPSessionWithWrite(t, root, []string{dir}, dir, designDir, true)
+
+	result, err := session.CallTool(context.Background(), &mcp.CallToolParams{
+		Name: "kizami_record_decision",
+		Arguments: map[string]any{
+			"title":    "No Files",
+			"context":  "x",
+			"decision": "y",
+		},
+	})
+	if err != nil {
+		t.Fatalf("CallTool: %v", err)
+	}
+	if !result.IsError {
+		t.Error("expected a tool error when related_files is missing")
+	}
+}
+
+type getDecisionOutputForRecord struct {
+	Path string `json:"path"`
+	Slug string `json:"slug"`
 }

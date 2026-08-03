@@ -188,7 +188,7 @@ PostgreSQLへ移行する。運用コストを受け入れ、書き込みスケ�
 | `kizami blame <ファイル>` | 指定ファイルを参照しているドキュメントを逆引きする |
 | `kizami context <ファイル...>` | 指定ファイル群を縛るドキュメントとドリフト状態を表示する（`--json`、`--full`） |
 | `kizami agents sync` | 決定のポインタ表を CLAUDE.md / AGENTS.md に同期する（CI用に `--check`） |
-| `kizami mcp` | AIエージェント向けに決定を公開するMCPサーバーをstdioで起動する |
+| `kizami mcp` | AIエージェント向けに決定を公開するMCPサーバーをstdioで起動する（`--allow-write` で決定を記録するツールも追加） |
 | `kizami audit` | Related Filesセクションとコードの乖離を検出する |
 | `kizami lint` | CIでドキュメント構造を検証する |
 | `kizami review` | 長期未更新のドキュメントを検出する |

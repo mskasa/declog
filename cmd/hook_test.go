@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"encoding/json"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -136,6 +137,115 @@ func TestHookPreCommit_NonASCIIFilename_NoWarning(t *testing.T) {
 	}
 	if strings.Contains(out, "⚠️") {
 		t.Errorf("expected no warning for non-ASCII MD filename, got: %q", out)
+	}
+}
+
+// buildPreToolUseEvent JSON-encodes a PreToolUse event, which matters on Windows: cwd/
+// file_path can contain backslashes, and naive string concatenation into a JSON literal
+// (rather than proper marshaling) produces invalid JSON there even though it happens to
+// look fine on POSIX paths.
+func buildPreToolUseEvent(t *testing.T, cwd, filePath string) string {
+	t.Helper()
+	event := map[string]any{
+		"cwd": cwd,
+		"tool_input": map[string]any{
+			"file_path": filePath,
+		},
+	}
+	data, err := json.Marshal(event)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return string(data)
+}
+
+func TestHookPreToolUse_NoMatch_NoOutput(t *testing.T) {
+	root := newTestRepo(t)
+	dir := decisionsPath(root)
+	seedDecision(t, dir, 1, "Use Go", "Active")
+	setTestRoot(t, root)
+
+	event := buildPreToolUseEvent(t, root, "internal/other/file.go")
+	out, err := executeCmdWithStdin(t, event, "hook", "pre-tool-use")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if out != "" {
+		t.Errorf("expected no output when nothing governs the file, got: %q", out)
+	}
+}
+
+func TestHookPreToolUse_Match_InjectsAdditionalContext(t *testing.T) {
+	root := newTestRepo(t)
+	dir := decisionsPath(root)
+	path := seedDecision(t, dir, 1, "Use connection pooling", "Active")
+	appendRelatedFile(t, path, "internal/db/db.go")
+	setTestRoot(t, root)
+
+	event := buildPreToolUseEvent(t, root, "internal/db/db.go")
+	out, err := executeCmdWithStdin(t, event, "hook", "pre-tool-use")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	var resp struct {
+		HookSpecificOutput struct {
+			HookEventName     string `json:"hookEventName"`
+			AdditionalContext string `json:"additionalContext"`
+		} `json:"hookSpecificOutput"`
+	}
+	if err := json.Unmarshal([]byte(out), &resp); err != nil {
+		t.Fatalf("expected valid JSON, got error %v for output: %q", err, out)
+	}
+	if resp.HookSpecificOutput.HookEventName != "PreToolUse" {
+		t.Errorf("unexpected hookEventName: %s", resp.HookSpecificOutput.HookEventName)
+	}
+	if !strings.Contains(resp.HookSpecificOutput.AdditionalContext, "use-connection-pooling") {
+		t.Errorf("expected slug in additionalContext, got: %q", resp.HookSpecificOutput.AdditionalContext)
+	}
+}
+
+func TestHookPreToolUse_AbsoluteFilePath(t *testing.T) {
+	root := newTestRepo(t)
+	dir := decisionsPath(root)
+	path := seedDecision(t, dir, 1, "Use connection pooling", "Active")
+	appendRelatedFile(t, path, "internal/db/db.go")
+	setTestRoot(t, root)
+
+	absPath := filepath.Join(root, "internal/db/db.go")
+	event := buildPreToolUseEvent(t, root, absPath)
+	out, err := executeCmdWithStdin(t, event, "hook", "pre-tool-use")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if !strings.Contains(out, "use-connection-pooling") {
+		t.Errorf("expected slug in output for absolute file_path, got: %q", out)
+	}
+}
+
+func TestHookPreToolUse_MissingFilePath_NoOutput(t *testing.T) {
+	root := newTestRepo(t)
+	setTestRoot(t, root)
+
+	out, err := executeCmdWithStdin(t, `{"tool_input":{}}`, "hook", "pre-tool-use")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if out != "" {
+		t.Errorf("expected no output for a missing file_path, got: %q", out)
+	}
+}
+
+func TestHookPreToolUse_MalformedJSON_NoErrorNoOutput(t *testing.T) {
+	root := newTestRepo(t)
+	setTestRoot(t, root)
+
+	out, err := executeCmdWithStdin(t, `not json`, "hook", "pre-tool-use")
+	if err != nil {
+		t.Fatalf("expected the hook to never error out, got: %v", err)
+	}
+	if out != "" {
+		t.Errorf("expected no output for malformed input, got: %q", out)
 	}
 }
 

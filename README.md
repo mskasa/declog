@@ -187,6 +187,7 @@ Pass this to your AI assistant and it can make suggestions that respect your exi
 | `kizami supersede <slug> "<title>"` | Supersede an existing document and create a new one |
 | `kizami blame <file>` | Find documents that reference a given file |
 | `kizami context <files...>` | Show which documents govern the given files, with drift status (`--json`, `--full`) |
+| `kizami agents sync` | Sync a decisions pointer table into CLAUDE.md / AGENTS.md (`--check` for CI) |
 | `kizami audit` | Detect drift between Related Files sections and actual code |
 | `kizami lint` | Validate document structure for CI |
 | `kizami review` | Detect long-stale documents |

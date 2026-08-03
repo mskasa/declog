@@ -20,36 +20,24 @@ func Resolve(dirs []string, repoRoot string, files []string, full bool) (*Result
 		Query:   files,
 	}
 
+	docs, err := collectGoverningDocs(dirs)
+	if err != nil {
+		return nil, err
+	}
+
 	matched := make(map[string]struct{})
-	seen := make(map[string]struct{})
-
-	for _, dir := range dirs {
-		docs, err := decision.List(dir)
+	for _, d := range docs {
+		dr, ok, err := resolveDecision(d, repoRoot, files, full)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("resolving %s: %w", d.File, err)
 		}
-		for _, d := range docs {
-			if _, already := seen[d.File]; already {
-				continue
-			}
-			seen[d.File] = struct{}{}
-
-			if !governs(d) {
-				continue
-			}
-
-			dr, ok, err := resolveDecision(d, repoRoot, files, full)
-			if err != nil {
-				return nil, fmt.Errorf("resolving %s: %w", d.File, err)
-			}
-			if !ok {
-				continue
-			}
-			for _, m := range dr.Matched {
-				matched[m.File] = struct{}{}
-			}
-			result.Decisions = append(result.Decisions, dr)
+		if !ok {
+			continue
 		}
+		for _, m := range dr.Matched {
+			matched[m.File] = struct{}{}
+		}
+		result.Decisions = append(result.Decisions, dr)
 	}
 
 	sort.Slice(result.Decisions, func(i, j int) bool {
@@ -70,6 +58,30 @@ func Resolve(dirs []string, repoRoot string, files []string, full bool) (*Result
 // Draft and Inactive decisions are excluded.
 func governs(d *decision.Decision) bool {
 	return strings.EqualFold(d.Status, "Active") || d.SupersededBy() != ""
+}
+
+// collectGoverningDocs returns every decision across dirs that governs (see governs),
+// deduplicated by file. Shared by Resolve and Manifest — both start from the same set of
+// documents, they just do different things with them afterward.
+func collectGoverningDocs(dirs []string) ([]*decision.Decision, error) {
+	seen := make(map[string]struct{})
+	var docs []*decision.Decision
+	for _, dir := range dirs {
+		list, err := decision.List(dir)
+		if err != nil {
+			return nil, err
+		}
+		for _, d := range list {
+			if _, already := seen[d.File]; already {
+				continue
+			}
+			seen[d.File] = struct{}{}
+			if governs(d) {
+				docs = append(docs, d)
+			}
+		}
+	}
+	return docs, nil
 }
 
 // resolveDecision builds a DecisionResult for d if at least one of files matches its

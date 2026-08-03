@@ -25,6 +25,7 @@ type Config struct {
 	Audit     AuditConfig
 	Review    ReviewConfig
 	Editor    EditorConfig
+	Agents    AgentsConfig
 }
 
 // AIConfig holds AI-related configuration.
@@ -62,6 +63,11 @@ type ReviewConfig struct {
 // EditorConfig holds editor configuration.
 type EditorConfig struct {
 	Command string
+}
+
+// AgentsConfig holds `kizami agents sync` target file configuration.
+type AgentsConfig struct {
+	Targets []string
 }
 
 // Load reads the config for the given project root.
@@ -145,6 +151,9 @@ func merge(base, local *Config) {
 	}
 	if local.Editor.Command != "" {
 		base.Editor.Command = local.Editor.Command
+	}
+	if len(local.Agents.Targets) > 0 {
+		base.Agents.Targets = local.Agents.Targets
 	}
 }
 
@@ -257,6 +266,10 @@ func parse(r io.Reader) (*Config, error) {
 		case "editor":
 			if key == "command" {
 				cfg.Editor.Command = val
+			}
+		case "agents":
+			if key == "targets" {
+				cfg.Agents.Targets = parseStringArray(parts[1])
 			}
 		}
 	}

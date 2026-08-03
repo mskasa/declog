@@ -95,10 +95,12 @@ ADR Update Policy に従い、各ステップのファイルが着地するた�
 
 ## Related Files
 
-- `internal/context/`（新規 — Step 1）
-- `cmd/context.go`（新規 — Step 1）
-- `internal/decision/match.go`（新規 — Step 1）
-- `internal/decision/decision.go`（Step 1：`SupersededBy`）
+- `internal/context/`
+- `cmd/context.go`
+- `cmd/agents.go`
+- `internal/decision/match.go`
+- `internal/decision/decision.go`
 - `internal/decision/audit.go`
 - `internal/decision/hook.go`
 - `internal/search/blame.go`
+- `internal/config/config.go`

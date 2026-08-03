@@ -89,6 +89,24 @@ func auditDirs(root string, cfg *config.Config) []string {
 	return documentDirs(root, cfg)
 }
 
+// defaultAgentsTargets are the agent-instructions filenames kizami syncs into when
+// cfg.Agents.Targets is not set: docs/decisions/2026-08-03-agent-manifest-sync-format.md
+var defaultAgentsTargets = []string{"CLAUDE.md", "AGENTS.md"}
+
+// agentsTargets returns the absolute paths `kizami agents sync` writes into.
+// Uses cfg.Agents.Targets if set, otherwise defaultAgentsTargets.
+func agentsTargets(root string, cfg *config.Config) []string {
+	names := defaultAgentsTargets
+	if cfg != nil && len(cfg.Agents.Targets) > 0 {
+		names = cfg.Agents.Targets
+	}
+	targets := make([]string, len(names))
+	for i, n := range names {
+		targets[i] = filepath.Join(root, n)
+	}
+	return targets
+}
+
 // findAllBySlug searches for a decision by slug across all document directories
 // and returns all matches.
 func findAllBySlug(root string, cfg *config.Config, slug string) ([]*decision.Decision, error) {

@@ -59,8 +59,8 @@ Would handle `**` more robustly and cover more glob syntax, but the subset actua
 
 ## Related Files
 
-- `internal/decision/match.go` (new)
+- `internal/decision/match.go`
 - `internal/decision/audit.go`
 - `internal/decision/hook.go`
 - `internal/search/blame.go`
-- `internal/context/` (new)
+- `internal/context/`

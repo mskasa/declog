@@ -59,8 +59,8 @@ kizami は現在、「Related Filesのエントリが指定ファイルにマッ
 
 ## Related Files
 
-- `internal/decision/match.go`（新規）
+- `internal/decision/match.go`
 - `internal/decision/audit.go`
 - `internal/decision/hook.go`
 - `internal/search/blame.go`
-- `internal/context/`（新規）
+- `internal/context/`

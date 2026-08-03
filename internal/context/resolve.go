@@ -84,6 +84,39 @@ func collectGoverningDocs(dirs []string) ([]*decision.Decision, error) {
 	return docs, nil
 }
 
+// collectAllDocs returns every decision across dirs, deduplicated by file, regardless of
+// status. Used where status filtering doesn't apply — e.g. Search, which should surface a
+// Draft decision too if it matches, unlike Resolve/Manifest which only surface what governs.
+func collectAllDocs(dirs []string) ([]*decision.Decision, error) {
+	seen := make(map[string]struct{})
+	var docs []*decision.Decision
+	for _, dir := range dirs {
+		list, err := decision.List(dir)
+		if err != nil {
+			return nil, err
+		}
+		for _, d := range list {
+			if _, already := seen[d.File]; already {
+				continue
+			}
+			seen[d.File] = struct{}{}
+			docs = append(docs, d)
+		}
+	}
+	return docs, nil
+}
+
+// relPath returns file relative to repoRoot with forward slashes, or file itself if it
+// isn't under repoRoot. Repo-relative paths are meaningful outside the local filesystem
+// (e.g. to an agent that only knows the repo tree), unlike an absolute path.
+func relPath(file, repoRoot string) string {
+	rel, err := filepath.Rel(repoRoot, file)
+	if err != nil {
+		return file
+	}
+	return filepath.ToSlash(rel)
+}
+
 // resolveDecision builds a DecisionResult for d if at least one of files matches its
 // Related Files. ok is false if none matched (d should be skipped, not included empty).
 func resolveDecision(d *decision.Decision, repoRoot string, files []string, full bool) (*DecisionResult, bool, error) {
@@ -131,17 +164,12 @@ func resolveDecision(d *decision.Decision, repoRoot string, files []string, full
 		lastUpdated = t.Format(time.RFC3339)
 	}
 
-	path := d.File
-	if rel, err := filepath.Rel(repoRoot, d.File); err == nil {
-		path = filepath.ToSlash(rel)
-	}
-
 	return &DecisionResult{
 		Slug:         d.Slug,
 		Title:        d.Title,
 		Status:       d.Status,
 		Date:         d.Date,
-		Path:         path,
+		Path:         relPath(d.File, repoRoot),
 		Decision:     summary,
 		SupersededBy: d.SupersededBy(),
 		Matched:      matchedFiles,

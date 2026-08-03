@@ -59,7 +59,7 @@ kizami/
 | 検索              | ripgrep（外部コマンド）＋フォールバック | 高速検索。未インストール時は標準ライブラリで代替 |
 | 配布              | GoReleaser + GitHub Actions             | シングルバイナリ配布                             |
 
-- Goバージョン：1.22以上
+- Goバージョン：1.25以上
 - 対応OS：Linux / macOS / Windows（シングルバイナリ前提）
 
 ---
@@ -471,18 +471,18 @@ kizami はチームで実運用中。以下のロードマップはOSS公開に�
 
 *kizami の重心を「人間が能動的にCLIを打つ」から「必要な瞬間に決定が自動で現れる」へ移す。AIエージェントは既に `docs/decisions/` を直接読めるため、到達性そのものは課題ではない。真の課題は、決定が下された瞬間に確実に書かれないこと、そして必要な瞬間に確実に提示されないことにある。*
 
-**Step 1 — コンテキストリゾルバ**
-- [ ] `internal/context` パッケージ：既存の2つの「関連ファイル」実装（`search.Blame` の全文検索と `decision.CheckHook` の構造化 `## Related Files` パース）を単一の定義に統合する
-- [ ] Related Files のエントリに glob 記法（例：`internal/**/*_test.go`）を追加し、既存の完全一致・ディレクトリ前置マッチと併用可能にする
-- [ ] `kizami context <files...> [--json] [--full]` — 変更ファイル群を渡すと、それらを縛るActiveな決定（および `supersededBy` を含むSuperseded決定）と、ファイルごとのドリフト状態を返す
+**Step 1 — コンテキストリゾルバ** ✅
+- [x] `internal/context` パッケージ：既存の2つの「関連ファイル」実装（`search.Blame` の全文検索と `decision.CheckHook` の構造化 `## Related Files` パース）を単一の定義に統合する
+- [x] Related Files のエントリに glob 記法（例：`internal/**/*_test.go`）を追加し、既存の完全一致・ディレクトリ前置マッチと併用可能にする
+- [x] `kizami context <files...> [--json] [--full]` — 変更ファイル群を渡すと、それらを縛るActiveな決定（および `supersededBy` を含むSuperseded決定）と、ファイルごとのドリフト状態を返す
 
-**Step 2 — エージェント向けマニフェスト同期**
-- [ ] `kizami agents sync` — CLAUDE.md / AGENTS.md 内にマーカー区間を維持し、どのパスがどの決定に縛られているかを一覧化する（ADR全文ではなくポインタの表）
-- [ ] `kizami agents sync --check` — ADRのRelated Filesがマニフェストに反映されていない場合に失敗するCIチェック
+**Step 2 — エージェント向けマニフェスト同期** ✅
+- [x] `kizami agents sync` — CLAUDE.md / AGENTS.md 内にマーカー区間を維持し、どのパスがどの決定に縛られているかを一覧化する（ADR全文ではなくポインタの表）
+- [x] `kizami agents sync --check` — ADRのRelated Filesがマニフェストに反映されていない場合に失敗するCIチェック
 
-**Step 3 — MCPサーバー**
-- [ ] `kizami mcp` — リゾルバをMCPツールとして公開する。CLIの動詞をそのまま移植するのではなく、エージェントが問う「問い」の形にする：`kizami_decisions_for_files`、`kizami_search_decisions`、`kizami_get_decision`
-- [ ] ツールの応答は既定で `## Decision` の要約のみを返す（`full` パラメータで全文取得にエスカレーション可能）とし、エージェントの文脈予算を制御する
+**Step 3 — MCPサーバー** ✅
+- [x] `kizami mcp` — リゾルバをMCPツールとして公開する。CLIの動詞をそのまま移植するのではなく、エージェントが問う「問い」の形にする：`kizami_decisions_for_files`、`kizami_search_decisions`、`kizami_get_decision`
+- [x] ツールの応答は既定で `## Decision` の要約のみを返す（`full` パラメータで全文取得にエスカレーション可能）とし、エージェントの文脈予算を制御する
 
 **Step 4 — エージェントによる決定の記録**
 - [ ] `kizami_record_decision` MCPツール（書き込み系）— エージェントが判断を下した直後にその場で記録できるようにする。常に `Status: Draft` として生成し、新規ファイル作成のみ（既存文書・コードの編集や削除は不可）。`kizami mcp --allow-write` で明示的にオプトインした場合のみ有効化

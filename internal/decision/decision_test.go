@@ -336,6 +336,79 @@ func TestFindBySlug(t *testing.T) {
 	}
 }
 
+func TestFindAllBySlug_SingleMatch(t *testing.T) {
+	dir := t.TempDir()
+	content := "# Use Cobra\n\n- Date: 2026-03-12\n- Status: Active\n- Author: alice\n"
+	if err := os.WriteFile(filepath.Join(dir, "2026-03-12-use-cobra.md"), []byte(content), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	docs, err := FindAllBySlug(dir, "use-cobra")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if len(docs) != 1 {
+		t.Fatalf("expected 1 match, got %d", len(docs))
+	}
+}
+
+// TestFindAllBySlug_NestedLanguageVariant is a regression test: FindBySlug stops at the
+// first match within a directory tree, so it would miss a slug's ja/ counterpart nested
+// under the same configured directory (this repository's own convention). FindAllBySlug
+// must not have that early-exit gap: docs/decisions/2026-08-03-findbyslug-recursive-language-variants.md
+func TestFindAllBySlug_NestedLanguageVariant(t *testing.T) {
+	dir := t.TempDir()
+	en := "# Use Cobra\n\n- Date: 2026-03-12\n- Status: Active\n- Author: alice\n"
+	ja := "# コブラを使う\n\n- Date: 2026-03-12\n- Status: Active\n- Author: alice\n"
+	if err := os.WriteFile(filepath.Join(dir, "2026-03-12-use-cobra.md"), []byte(en), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.MkdirAll(filepath.Join(dir, "ja"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(dir, "ja", "2026-03-12-use-cobra.md"), []byte(ja), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	docs, err := FindAllBySlug(dir, "use-cobra")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if len(docs) != 2 {
+		t.Fatalf("expected 2 matches (EN+JA), got %d", len(docs))
+	}
+
+	// FindBySlug, by contrast, only finds one — documenting the gap FindAllBySlug closes.
+	single, err := FindBySlug(dir, "use-cobra")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if single == nil {
+		t.Fatal("expected a single match from FindBySlug")
+	}
+}
+
+func TestFindAllBySlug_NoMatch(t *testing.T) {
+	dir := t.TempDir()
+	docs, err := FindAllBySlug(dir, "does-not-exist")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if len(docs) != 0 {
+		t.Fatalf("expected 0 matches, got %d", len(docs))
+	}
+}
+
+func TestFindAllBySlug_DirDoesNotExist(t *testing.T) {
+	docs, err := FindAllBySlug(filepath.Join(t.TempDir(), "missing"), "use-cobra")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if len(docs) != 0 {
+		t.Fatalf("expected 0 matches, got %d", len(docs))
+	}
+}
+
 func TestFindBySlug_Legacy(t *testing.T) {
 	dir := t.TempDir()
 	content := "# 0002: Use Cobra\n\n- Date: 2026-03-12\n- Status: Accepted\n- Author: alice\n"

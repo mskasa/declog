@@ -209,6 +209,58 @@ func FindBySlug(dir, slug string) (*Decision, error) {
 	return found, nil
 }
 
+// FindAllBySlug returns every decision under dir (searched recursively) whose slug matches
+// the given slug. Unlike FindBySlug, it does not stop at the first match — this repository's
+// own EN/JA document pairs (e.g. docs/decisions/ja/) share a slug and are both legitimate
+// matches nested under the same configured directory, which FindBySlug's early exit would
+// miss entirely:
+// docs/decisions/2026-08-03-findbyslug-recursive-language-variants.md
+// Returns an empty slice without error if dir does not exist or nothing matches.
+func FindAllBySlug(dir, slug string) ([]*Decision, error) {
+	if _, err := os.Stat(dir); os.IsNotExist(err) {
+		return nil, nil
+	}
+	var found []*Decision
+	err := filepath.WalkDir(dir, func(path string, d os.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+		if d.IsDir() {
+			return nil
+		}
+		if IsSidecarFile(d.Name()) {
+			if slugFromSidecar(d.Name()) != slug {
+				return nil
+			}
+			doc, parseErr := ParseSidecar(path)
+			if parseErr != nil {
+				return parseErr
+			}
+			found = append(found, doc)
+			return nil
+		}
+		if !strings.HasSuffix(d.Name(), ".md") {
+			return nil
+		}
+		if slugFromFilename(d.Name()) != slug {
+			return nil
+		}
+		if !isDocumentFile(d.Name()) && !isKizamiDocument(path) {
+			return nil
+		}
+		doc, parseErr := Parse(path)
+		if parseErr != nil {
+			return parseErr
+		}
+		found = append(found, doc)
+		return nil
+	})
+	if err != nil {
+		return nil, fmt.Errorf("reading decisions dir: %w", err)
+	}
+	return found, nil
+}
+
 // CreateFromDraft creates an ADR file using AI-generated draft sections.
 // The standard header (Date, Status, Author, Supersedes) is prepended to the draft.
 func CreateFromDraft(dir, title, draft, supersededSlug string) (string, error) {

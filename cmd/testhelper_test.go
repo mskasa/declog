@@ -64,6 +64,26 @@ func executeCmd(t *testing.T, args ...string) (string, error) {
 	return buf.String(), execErr
 }
 
+// executeCmdWithStdin is like executeCmd but feeds stdin into the command (e.g. for
+// `kizami hook pre-tool-use`, which reads a JSON event from stdin).
+func executeCmdWithStdin(t *testing.T, stdin string, args ...string) (string, error) {
+	t.Helper()
+
+	origStdin := os.Stdin
+	r, w, err := os.Pipe()
+	if err != nil {
+		t.Fatalf("os.Pipe: %v", err)
+	}
+	go func() {
+		defer w.Close()
+		w.WriteString(stdin)
+	}()
+	os.Stdin = r
+	t.Cleanup(func() { os.Stdin = origStdin })
+
+	return executeCmd(t, args...)
+}
+
 // seedDecision writes a minimal decision file into dir and returns its path.
 func seedDecision(t *testing.T, dir string, _ int, title, status string) string {
 	t.Helper()

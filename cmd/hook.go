@@ -1,19 +1,21 @@
 package cmd
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
 
+	kizamicontext "github.com/mskasa/kizami/internal/context"
 	"github.com/mskasa/kizami/internal/decision"
 	"github.com/spf13/cobra"
 )
 
 var hookCmd = &cobra.Command{
 	Use:   "hook",
-	Short: "Commands for use in git hooks",
+	Short: "Commands for use in git hooks and AI agent tool hooks",
 }
 
 var hookPreCommitCmd = &cobra.Command{
@@ -23,9 +25,125 @@ var hookPreCommitCmd = &cobra.Command{
 	RunE:  runHookPreCommit,
 }
 
+var hookPreToolUseCmd = &cobra.Command{
+	Use:   "pre-tool-use",
+	Short: "Inject governing decisions into Claude Code's context (called by the PreToolUse hook)",
+	Long: `Reads a Claude Code PreToolUse hook event from stdin and, if the file being edited is
+governed by any decision, prints hookSpecificOutput.additionalContext naming them — without
+blocking the edit. See docs/decisions/2026-08-03-pre-tool-use-hook-context-injection.md.
+
+Configure in .claude/settings.json:
+
+  {
+    "hooks": {
+      "PreToolUse": [
+        { "matcher": "Edit|Write", "hooks": [{ "type": "command", "command": "kizami hook pre-tool-use" }] }
+      ]
+    }
+  }`,
+	Args: cobra.NoArgs,
+	RunE: runHookPreToolUse,
+}
+
 func init() {
 	hookCmd.AddCommand(hookPreCommitCmd)
+	hookCmd.AddCommand(hookPreToolUseCmd)
 	rootCmd.AddCommand(hookCmd)
+}
+
+// preToolUseEvent holds the subset of Claude Code's PreToolUse hook JSON this command needs.
+// Unknown fields (session_id, transcript_path, tool_use_id, etc.) are ignored.
+type preToolUseEvent struct {
+	Cwd       string `json:"cwd"`
+	ToolInput struct {
+		FilePath string `json:"file_path"`
+	} `json:"tool_input"`
+}
+
+type hookSpecificOutput struct {
+	HookEventName     string `json:"hookEventName"`
+	AdditionalContext string `json:"additionalContext"`
+}
+
+type preToolUseResponse struct {
+	HookSpecificOutput hookSpecificOutput `json:"hookSpecificOutput"`
+}
+
+// runHookPreToolUse never blocks the tool call and never errors out to the caller — a
+// broken or unexpected event, a missing git root, or a config-load failure all just result
+// in no output, mirroring runHookPreCommit's existing silent-skip convention. This hook's
+// only job is to add context; it must never be the reason an edit fails.
+func runHookPreToolUse(cmd *cobra.Command, _ []string) error {
+	var event preToolUseEvent
+	if err := json.NewDecoder(cmd.InOrStdin()).Decode(&event); err != nil {
+		return nil
+	}
+	if event.ToolInput.FilePath == "" {
+		return nil
+	}
+
+	root, err := gitRepoRootFn()
+	if err != nil {
+		return nil
+	}
+	relPath := hookRelPath(root, event.Cwd, event.ToolInput.FilePath)
+	if relPath == "" {
+		return nil
+	}
+
+	cfg := loadCfg()
+	dirs := documentDirs(root, cfg)
+	result, err := kizamicontext.Resolve(dirs, root, []string{relPath}, false)
+	if err != nil || len(result.Decisions) == 0 {
+		return nil
+	}
+
+	additionalContext := renderPreToolUseContext(result)
+	resp := preToolUseResponse{HookSpecificOutput: hookSpecificOutput{
+		HookEventName:     "PreToolUse",
+		AdditionalContext: additionalContext,
+	}}
+	enc := json.NewEncoder(cmd.OutOrStdout())
+	if err := enc.Encode(resp); err != nil {
+		return nil
+	}
+	return nil
+}
+
+// hookRelPath resolves filePath (from the hook event, possibly relative to cwd) to a
+// repo-relative, slash-separated path. Returns "" if it can't be resolved under root.
+func hookRelPath(root, cwd, filePath string) string {
+	if !filepath.IsAbs(filePath) {
+		base := cwd
+		if base == "" {
+			base = root
+		}
+		filePath = filepath.Join(base, filePath)
+	}
+	rel, err := filepath.Rel(root, filePath)
+	if err != nil || strings.HasPrefix(rel, "..") {
+		return ""
+	}
+	return filepath.ToSlash(rel)
+}
+
+// renderPreToolUseContext renders one line per governing decision — slug, title, and a
+// drift flag if any — deliberately without the decision body text. This fires on every
+// Edit/Write of a governed file, far more often than the agent manifest or an MCP tool call,
+// so even the manifest's summary-only default would be too expensive here:
+// docs/decisions/2026-08-03-pre-tool-use-hook-context-injection.md
+func renderPreToolUseContext(result *kizamicontext.Result) string {
+	var sb strings.Builder
+	sb.WriteString("This file is governed by recorded decisions:\n")
+	for _, d := range result.Decisions {
+		sb.WriteString("- [" + d.Slug + "] " + d.Title)
+		if d.Drift.State == "drift" {
+			sb.WriteString(" (drift: a Related Files entry no longer exists)")
+		}
+		sb.WriteString("\n")
+	}
+	sb.WriteString("Run `kizami show <slug>` for details before proceeding.\n")
+	return sb.String()
 }
 
 // stagedFilesFn is a variable to allow injection in tests.

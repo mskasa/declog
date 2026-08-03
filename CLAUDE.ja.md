@@ -467,7 +467,7 @@ kizami はチームで実運用中。以下のロードマップはOSS公開に�
 - [ ] チーム導入ガイド
 - [ ] 移行ガイド（adr-tools・素の Markdown・Confluence/Notion からの移行）
 
-### Phase 4 — Agent Context Layer（エージェント文脈層）
+### Phase 4 — Agent Context Layer（エージェント文脈層） ✅
 
 *kizami の重心を「人間が能動的にCLIを打つ」から「必要な瞬間に決定が自動で現れる」へ移す。AIエージェントは既に `docs/decisions/` を直接読めるため、到達性そのものは課題ではない。真の課題は、決定が下された瞬間に確実に書かれないこと、そして必要な瞬間に確実に提示されないことにある。*
 
@@ -484,9 +484,9 @@ kizami はチームで実運用中。以下のロードマップはOSS公開に�
 - [x] `kizami mcp` — リゾルバをMCPツールとして公開する。CLIの動詞をそのまま移植するのではなく、エージェントが問う「問い」の形にする：`kizami_decisions_for_files`、`kizami_search_decisions`、`kizami_get_decision`
 - [x] ツールの応答は既定で `## Decision` の要約のみを返す（`full` パラメータで全文取得にエスカレーション可能）とし、エージェントの文脈予算を制御する
 
-**Step 4 — エージェントによる決定の記録**
-- [ ] `kizami_record_decision` MCPツール（書き込み系）— エージェントが判断を下した直後にその場で記録できるようにする。常に `Status: Draft` として生成し、新規ファイル作成のみ（既存文書・コードの編集や削除は不可）。`kizami mcp --allow-write` で明示的にオプトインした場合のみ有効化
-- [ ] `kizami hook pre-tool-use` — Claude CodeのツールフックでEdit/Writeの直前に対象ファイルを縛る `kizami context` の出力を注入する。エージェントがマニフェストを読まない・MCPツールを呼ばない場合の決定論的なフォールバックとして機能する
+**Step 4 — エージェントによる決定の記録** ✅
+- [x] `kizami_record_decision` MCPツール（書き込み系）— エージェントが判断を下した直後にその場で記録できるようにする。常に `Status: Draft` として生成し、新規ファイル作成のみ（既存文書・コードの編集や削除は不可）。`kizami mcp --allow-write` で明示的にオプトインした場合のみ有効化
+- [x] `kizami hook pre-tool-use` — Claude CodeのツールフックでEdit/Writeの直前に対象ファイルを縛る `kizami context` の出力を注入する。エージェントがマニフェストを読まない・MCPツールを呼ばない場合の決定論的なフォールバックとして機能する
 
 *複数のADRにまたがることを想定（ドッグフーディング方針を参照）。最低限、リゾルバ／注入戦略、「動詞ではなく問い」というMCPツール設計、Related Files定義の統合の3本は記録する。*
 

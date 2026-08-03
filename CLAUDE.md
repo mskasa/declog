@@ -500,6 +500,29 @@ kizami is in active team use. The roadmap below reflects both OSS readiness goal
 - [ ] Team onboarding guide
 - [ ] Migration guide (from adr-tools, plain Markdown, Confluence/Notion)
 
+### Phase 4 — Agent Context Layer
+
+*Move kizami's center of gravity from "a human actively runs the CLI" to "the right decision surfaces automatically at the right moment." AI agents can already read `docs/decisions/` directly, so reachability was never the gap — the gap is that decisions aren't reliably written at the moment they're made, and aren't reliably surfaced at the moment they matter.*
+
+**Step 1 — Context resolver**
+- [ ] `internal/context` package: unify the two existing "related files" implementations (`search.Blame`'s full-text search and `decision.CheckHook`'s structured `## Related Files` parsing) into a single definition
+- [ ] Add glob support (e.g. `internal/**/*_test.go`) to Related Files entries, alongside the existing exact-path and directory-prefix matching
+- [ ] `kizami context <files...> [--json] [--full]` — given a set of changed files, return the Active decisions that govern them (plus Superseded decisions with their `supersededBy` target), and per-file drift state
+
+**Step 2 — Agent manifest sync**
+- [ ] `kizami agents sync` — maintain a marker-delimited section in CLAUDE.md / AGENTS.md listing which paths are governed by which decision (a pointer table, not full ADR text)
+- [ ] `kizami agents sync --check` — CI check that fails when an ADR's Related Files aren't reflected in the manifest
+
+**Step 3 — MCP server**
+- [ ] `kizami mcp` — expose the resolver as MCP tools framed as questions an agent asks, not 1:1 mirrors of CLI verbs: `kizami_decisions_for_files`, `kizami_search_decisions`, `kizami_get_decision`
+- [ ] Default tool responses to the `## Decision` summary only (`full` param to escalate to full text) to keep agent context budget under control
+
+**Step 4 — Agent-authored decisions**
+- [ ] `kizami_record_decision` MCP tool (write path) — lets an agent record a decision immediately after making it, always as `Status: Draft`, new-file-only (no edits/deletes of existing docs or code), gated behind `kizami mcp --allow-write`
+- [ ] `kizami hook pre-tool-use` — Claude Code tool hook that injects `kizami context` output before an Edit/Write on a governed file, as a deterministic fallback when an agent doesn't proactively read the manifest or call the MCP tools
+
+*Expected to span multiple ADRs (see dogfooding policy) — at minimum: the resolver/injection strategy, the "questions not verbs" MCP tool design, and the Related Files definition unification.*
+
 ### Backlog — Candidate Features
 
 *Ideas that emerged from real usage but are not yet scheduled into a phase.*

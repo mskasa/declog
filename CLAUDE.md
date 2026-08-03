@@ -529,6 +529,15 @@ kizami is in active team use. The roadmap below reflects both OSS readiness goal
 
 - [ ] `kizami list --status <status>` — filter list output by status (e.g. `--status active`) to reduce noise as documents accumulate over time
 
+### Deferred Simplification (from the pre-main-merge audit of Phase 4)
+
+*Identified during a "simple is best" audit before merging `feature/agent-context-layer` into `main`. Deferred by the owner, not forgotten — action items, not just observations.*
+
+- [ ] Remove `decision.FindBySlug`; have its two remaining callers (`cmd/log.go`'s `--supersedes` resolution) use `FindAllBySlug` and take the first result. The two functions are near-duplicate ~35-line `filepath.WalkDir` implementations differing only in early-exit behavior.
+- [ ] Remove the dead `[warn]` severity branch in `kizami lint` (`cmd/lint.go`'s `warnCount` tracking and printing, `internal/decision/lint.go`'s `Severity` field/comment) — left over from the `lint-empty-related-files-as-warning` → `remove-empty-related-files-lint-warning` flip-flop; nothing sets `Severity: "warning"` anymore.
+- [ ] Remove `--ai` draft generation entirely (`cmd/log.go`'s `--ai`/`--model`/`--dry-run` flags, `internal/ai/` package — both Anthropic and Bedrock backends, `[ai]` config section). Rationale: its whole job (produce a decision draft informed by code context) is now done strictly better by an AI coding agent working in the repo directly — richer context (full session, not a 2000-char diff truncation), zero extra API call, zero extra backend to maintain. Predates the Agent Context Layer (Phase 4) and was designed for a world without an agent already in the loop.
+- [ ] Remove `kizami_record_decision` and the `--allow-write` flag/gate from `kizami mcp` (`internal/context/record.go`, the tool registration in `cmd/mcp.go`, and `docs/decisions/2026-08-03-agent-authored-decision-write-path.md`'s implementation — keep the ADR itself as a record of why it was tried and retired). Rationale: its safety model (new-file-only, Draft-only) isn't actually enforced — an agent with normal file-write access (which it needs anyway) can bypass it entirely by writing directly, which is exactly what happened throughout the session that built it. Everything it provides is already achieved by a CLAUDE.md/AGENTS.md convention ("write new decisions as `Status: Draft`, following the template") plus the agent's native Write tool, at zero additional operational cost (no `kizami mcp --allow-write` to run). Keep the 3 read-only MCP tools — they survive the same scrutiny because the underlying matching/resolution logic is genuinely error-prone to hand-roll (five real bugs were found while building it) and is cheaper in tokens than an agent re-deriving it from raw file reads each time.
+
 ---
 
 ### Team Feedback

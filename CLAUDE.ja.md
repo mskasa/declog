@@ -496,6 +496,15 @@ kizami はチームで実運用中。以下のロードマップはOSS公開に�
 
 - [ ] `kizami list --status <status>` — ステータスでリストを絞り込む（例：`--status active`）。ドキュメントが蓄積してきた際のノイズ低減に。
 
+### 先送りにした簡素化(main マージ前のPhase 4監査より)
+
+*`feature/agent-context-layer` を `main` にマージする前の「simple is best」監査で見つかったもの。オーナーの判断で先送りにしただけで、忘れたわけではない——単なる所見ではなく実行項目。*
+
+- [ ] `decision.FindBySlug` を削除する。残る2つの呼び出し元（`cmd/log.go` の `--supersedes` 解決）は `FindAllBySlug` を呼んで先頭の結果を使うようにする。両関数は早期終了の有無だけが違う、ほぼ同一の約35行の `filepath.WalkDir` 実装。
+- [ ] `kizami lint` の死んだ `[warn]` 分岐を削除する（`cmd/lint.go` の `warnCount` 集計・表示、`internal/decision/lint.go` の `Severity` フィールド／コメント）——`lint-empty-related-files-as-warning` → `remove-empty-related-files-lint-warning` の変遷で残った死んだコード。`Severity: "warning"` を設定する箇所はもう存在しない。
+- [ ] AIドラフト生成機能全体を削除する（`cmd/log.go` の `--ai`／`--model`／`--dry-run` フラグ、`internal/ai/` パッケージ——Anthropic・Bedrock両バックエンド、`[ai]` 設定セクション）。理由：この機能の仕事（コードの文脈を踏まえた決定のドラフト生成）は、今やリポジトリ内で直接作業するAIコーディングエージェントの方が厳密に上手くやれる——文脈が豊富（2000文字に切り詰めたdiffではなく、セッション全体）、追加のAPI呼び出しも追加のバックエンド保守も不要。Agent Context Layer（Phase 4）より前の設計で、エージェントが既にループの中にいない世界を前提にしていた。
+- [ ] `kizami mcp` から `kizami_record_decision` と `--allow-write` フラグ／ゲートを削除する（`internal/context/record.go`、`cmd/mcp.go` 内のツール登録、`docs/decisions/2026-08-03-agent-authored-decision-write-path.md` の実装——ADR自体は「試して撤退した記録」として残す）。理由：この安全設計（新規ファイル限定、Draft限定）は実際には強制できていない——通常のファイル書き込み権限を持つエージェント（どのみち必要）は、直接書き込むことでこれを丸ごとバイパスできる。これはまさに、この機能を構築したセッション全体で実際に起きていたことである。この機能が提供するものはすべて、CLAUDE.md／AGENTS.mdの規約（「新しい決定はテンプレートに従い`Status: Draft`で書く」）とエージェントのネイティブなWriteツールで、追加の運用コストなし（`kizami mcp --allow-write`を起動する必要もなし）に既に達成されている。読み取り専用のMCPツール3本は残す——これらは同じ吟味に耐える。根底のマッチング／解決ロジックは自前で実装すると実際に間違えやすく（構築中に5つの実バグが見つかった）、エージェントが毎回生ファイルから再導出するよりトークン的にも安い。
+
 ---
 
 ### チームフィードバック

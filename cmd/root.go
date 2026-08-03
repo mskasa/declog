@@ -108,14 +108,16 @@ func agentsTargets(root string, cfg *config.Config) []string {
 }
 
 // findAllBySlug searches for a decision by slug across all document directories
-// and returns all matches.
+// and returns all matches, including nested language variants (e.g. docs/decisions/ja/)
+// within the same configured directory.
 func findAllBySlug(root string, cfg *config.Config, slug string) ([]*decision.Decision, error) {
 	var matches []*decision.Decision
 	for _, dir := range documentDirs(root, cfg) {
-		d, err := decision.FindBySlug(dir, slug)
-		if err == nil {
-			matches = append(matches, d)
+		found, err := decision.FindAllBySlug(dir, slug)
+		if err != nil {
+			return nil, err
 		}
+		matches = append(matches, found...)
 	}
 	if len(matches) == 0 {
 		return nil, fmt.Errorf("document %q not found", slug)
@@ -124,7 +126,8 @@ func findAllBySlug(root string, cfg *config.Config, slug string) ([]*decision.De
 }
 
 // findBySlug searches for a decision by slug across all document directories.
-// Returns an error if the slug is ambiguous (found in multiple directories).
+// Returns an error if the slug is ambiguous (found in multiple documents, whether in
+// different configured directories or nested language variants of the same one).
 func findBySlug(root string, cfg *config.Config, slug string) (*decision.Decision, error) {
 	matches, err := findAllBySlug(root, cfg, slug)
 	if err != nil {

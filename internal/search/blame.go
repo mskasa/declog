@@ -68,9 +68,12 @@ func Blame(dir, filePath string) ([]*decision.Decision, error) {
 	return decisions, nil
 }
 
-// blameDirEntries returns document files whose Related Files section contains a
-// directory entry (ending with "/") that is a prefix of filePath.
-// Both .md and .kizami sidecar files are checked.
+// blameDirEntries returns document files whose Related Files section contains a directory or
+// glob entry (per decision.Match) matching filePath. Exact-path entries are intentionally
+// excluded here: they are already found by the full-text search above, so matching them again
+// would just be redundant work. Both .md and .kizami sidecar files are checked.
+// Decision to unify this against decision.CheckHook's matching logic:
+// docs/decisions/2026-08-03-related-files-single-definition.md
 func blameDirEntries(dir, filePath string) ([]string, error) {
 	var files []string
 	err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
@@ -88,13 +91,12 @@ func blameDirEntries(dir, filePath string) ([]string, error) {
 			return nil // non-fatal: skip unreadable files
 		}
 		for _, entry := range entries {
-			if !strings.HasSuffix(entry, "/") {
-				continue // not a directory entry
+			kind, ok := decision.Match(entry, filePath)
+			if !ok || kind == decision.MatchExact {
+				continue
 			}
-			if strings.HasPrefix(filePath, entry) {
-				files = append(files, path)
-				return nil // one match per file is enough
-			}
+			files = append(files, path)
+			return nil // one match per file is enough
 		}
 		return nil
 	})

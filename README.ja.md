@@ -186,6 +186,7 @@ PostgreSQLへ移行する。運用コストを受け入れ、書き込みスケ�
 | `kizami status <slug> <ステータス>` | ドキュメントのステータスを更新する |
 | `kizami supersede <slug> "<タイトル>"` | 既存のドキュメントを置き換え、新しいドキュメントを作成する |
 | `kizami blame <ファイル>` | 指定ファイルを参照しているドキュメントを逆引きする |
+| `kizami context <ファイル...>` | 指定ファイル群を縛るドキュメントとドリフト状態を表示する（`--json`、`--full`） |
 | `kizami audit` | Related Filesセクションとコードの乖離を検出する |
 | `kizami lint` | CIでドキュメント構造を検証する |
 | `kizami review` | 長期未更新のドキュメントを検出する |

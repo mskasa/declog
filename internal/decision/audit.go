@@ -3,7 +3,6 @@ package decision
 import (
 	"bufio"
 	"os"
-	"path/filepath"
 	"strings"
 )
 
@@ -91,7 +90,7 @@ func Audit(dir, repoRoot string) ([]*AuditResult, error) {
 
 		var missing []string
 		for _, rel := range relatedFiles {
-			if _, err := os.Stat(filepath.Join(repoRoot, rel)); os.IsNotExist(err) {
+			if !EntryExists(repoRoot, rel) {
 				missing = append(missing, rel)
 			}
 		}

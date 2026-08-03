@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"path/filepath"
 	"strings"
 	"testing"
 )
@@ -58,6 +59,27 @@ func TestStatusCmd_SlugCollision_Errors(t *testing.T) {
 	_, err := executeCmd(t, "status", "use-go", "accepted")
 	if err == nil {
 		t.Fatal("expected error when slug is ambiguous across directories")
+	}
+	if !strings.Contains(err.Error(), "multiple") {
+		t.Errorf("expected 'multiple' in error message, got: %v", err)
+	}
+}
+
+// TestStatusCmd_NestedLanguageVariant_ErrorsAmbiguous is a regression test: before
+// decision.FindAllBySlug, this ambiguity went undetected for EN/JA pairs nested under the
+// same configured directory (docs/decisions/ja/), and `kizami status` would silently update
+// only the EN document, leaving the JA one to quietly diverge:
+// docs/decisions/2026-08-03-findbyslug-recursive-language-variants.md
+func TestStatusCmd_NestedLanguageVariant_ErrorsAmbiguous(t *testing.T) {
+	root := newTestRepo(t)
+	dir := decisionsPath(root)
+	seedDecision(t, dir, 1, "Use Go", "Draft")
+	seedDecision(t, filepath.Join(dir, "ja"), 1, "Use Go", "Draft")
+	setTestRoot(t, root)
+
+	_, err := executeCmd(t, "status", "use-go", "accepted")
+	if err == nil {
+		t.Fatal("expected error when slug is ambiguous within a nested language variant")
 	}
 	if !strings.Contains(err.Error(), "multiple") {
 		t.Errorf("expected 'multiple' in error message, got: %v", err)

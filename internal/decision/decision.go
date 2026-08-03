@@ -62,3 +62,16 @@ func Parse(path string) (*Decision, error) {
 	}
 	return d, nil
 }
+
+// supersededByPrefix is the Status value prefix used by the "Superseded by <slug>" convention:
+// docs/decisions/2026-03-13-simplify-adr-status.md
+const supersededByPrefix = "Superseded by "
+
+// SupersededBy returns the slug this decision was superseded by, extracted from a Status
+// value of the form "Superseded by <slug>". Returns "" if Status does not have that form.
+func (d *Decision) SupersededBy() string {
+	if !strings.HasPrefix(d.Status, supersededByPrefix) {
+		return ""
+	}
+	return strings.TrimSpace(strings.TrimPrefix(d.Status, supersededByPrefix))
+}

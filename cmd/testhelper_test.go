@@ -103,6 +103,19 @@ dirs = ["docs/decisions", "docs/design"]
 	}
 }
 
+// writeRelatedFile creates a real (empty) file at rel (relative to root), so that
+// drift/existence checks against it report "exists".
+func writeRelatedFile(t *testing.T, root, rel string) {
+	t.Helper()
+	path := filepath.Join(root, filepath.FromSlash(rel))
+	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
+		t.Fatalf("MkdirAll: %v", err)
+	}
+	if err := os.WriteFile(path, []byte("x"), 0o644); err != nil {
+		t.Fatalf("WriteFile: %v", err)
+	}
+}
+
 // appendRelatedFile appends a file entry to the Related Files section of a decision.
 func appendRelatedFile(t *testing.T, decisionPath, file string) {
 	t.Helper()

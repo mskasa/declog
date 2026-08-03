@@ -154,8 +154,10 @@ func TestBlameDirEntries_NoMatch(t *testing.T) {
 	}
 }
 
-func TestBlameDirEntries_FileEntryIgnored(t *testing.T) {
-	// A file entry without trailing slash should NOT use prefix matching.
+func TestBlameDirEntries_BareDirEntryMatches(t *testing.T) {
+	// A directory-style entry without a trailing slash still uses prefix matching, matching
+	// what docs/site/adr-guide.md documents ("You can list directories too") and what
+	// CheckHook already did: docs/decisions/2026-08-03-related-files-single-definition.md
 	dir := t.TempDir()
 	content := "# 0011: No Dir\n\n- Date: 2025-04-01\n- Status: Active\n- Author: Alice\n\n## Related Files\n\n- database\n"
 	writeFile(t, dir, "0011-no-dir.md", content)
@@ -164,8 +166,8 @@ func TestBlameDirEntries_FileEntryIgnored(t *testing.T) {
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
-	if len(files) != 0 {
-		t.Errorf("expected no results for file entry without trailing slash, got %d", len(files))
+	if len(files) != 1 {
+		t.Errorf("expected 1 result for bare directory entry, got %d", len(files))
 	}
 }
 

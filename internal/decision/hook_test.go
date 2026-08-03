@@ -164,6 +164,10 @@ func TestCheckHook_MultipleDocsOnlyAffectedReturned(t *testing.T) {
 	}
 }
 
+// CheckHook's matching is now provided by the shared Match function (see match_test.go
+// for its own dedicated coverage); this locks in that CheckHook's specific matching cases
+// still behave as before the internal/decision/2026-08-03-related-files-single-definition.md
+// unification.
 func TestHookPathMatches(t *testing.T) {
 	cases := []struct {
 		related string
@@ -178,9 +182,9 @@ func TestHookPathMatches(t *testing.T) {
 		{"cmd/root.go", "internal/db/db.go", false},
 	}
 	for _, tc := range cases {
-		got := hookPathMatches(tc.related, tc.staged)
+		_, got := Match(tc.related, tc.staged)
 		if got != tc.want {
-			t.Errorf("hookPathMatches(%q, %q) = %v, want %v", tc.related, tc.staged, got, tc.want)
+			t.Errorf("Match(%q, %q) = %v, want %v", tc.related, tc.staged, got, tc.want)
 		}
 	}
 }

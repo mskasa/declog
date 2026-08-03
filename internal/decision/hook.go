@@ -55,7 +55,7 @@ func CheckHook(dirs []string, repoRoot string, stagedFiles []string) ([]*HookRes
 			var matched []string
 			for _, staged := range stagedFiles {
 				for _, rel := range relatedFiles {
-					if hookPathMatches(rel, staged) {
+					if _, ok := Match(rel, staged); ok {
 						matched = append(matched, staged)
 						break
 					}
@@ -67,12 +67,4 @@ func CheckHook(dirs []string, repoRoot string, stagedFiles []string) ([]*HookRes
 		}
 	}
 	return results, nil
-}
-
-// hookPathMatches reports whether staged (relative to repo root) matches a Related Files entry.
-// An entry is treated as a directory prefix when staged has it as a path component prefix.
-func hookPathMatches(related, staged string) bool {
-	rel := filepath.ToSlash(strings.TrimSuffix(related, "/"))
-	s := filepath.ToSlash(staged)
-	return s == rel || strings.HasPrefix(s, rel+"/")
 }

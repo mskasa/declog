@@ -140,13 +140,32 @@ func TestHookPreCommit_NonASCIIFilename_NoWarning(t *testing.T) {
 	}
 }
 
+// buildPreToolUseEvent JSON-encodes a PreToolUse event, which matters on Windows: cwd/
+// file_path can contain backslashes, and naive string concatenation into a JSON literal
+// (rather than proper marshaling) produces invalid JSON there even though it happens to
+// look fine on POSIX paths.
+func buildPreToolUseEvent(t *testing.T, cwd, filePath string) string {
+	t.Helper()
+	event := map[string]any{
+		"cwd": cwd,
+		"tool_input": map[string]any{
+			"file_path": filePath,
+		},
+	}
+	data, err := json.Marshal(event)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return string(data)
+}
+
 func TestHookPreToolUse_NoMatch_NoOutput(t *testing.T) {
 	root := newTestRepo(t)
 	dir := decisionsPath(root)
 	seedDecision(t, dir, 1, "Use Go", "Active")
 	setTestRoot(t, root)
 
-	event := `{"cwd":"` + root + `","tool_input":{"file_path":"internal/other/file.go"}}`
+	event := buildPreToolUseEvent(t, root, "internal/other/file.go")
 	out, err := executeCmdWithStdin(t, event, "hook", "pre-tool-use")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
@@ -163,7 +182,7 @@ func TestHookPreToolUse_Match_InjectsAdditionalContext(t *testing.T) {
 	appendRelatedFile(t, path, "internal/db/db.go")
 	setTestRoot(t, root)
 
-	event := `{"cwd":"` + root + `","tool_input":{"file_path":"internal/db/db.go"}}`
+	event := buildPreToolUseEvent(t, root, "internal/db/db.go")
 	out, err := executeCmdWithStdin(t, event, "hook", "pre-tool-use")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
@@ -193,8 +212,8 @@ func TestHookPreToolUse_AbsoluteFilePath(t *testing.T) {
 	appendRelatedFile(t, path, "internal/db/db.go")
 	setTestRoot(t, root)
 
-	absPath := filepath.ToSlash(filepath.Join(root, "internal/db/db.go"))
-	event := `{"cwd":"` + root + `","tool_input":{"file_path":"` + absPath + `"}}`
+	absPath := filepath.Join(root, "internal/db/db.go")
+	event := buildPreToolUseEvent(t, root, absPath)
 	out, err := executeCmdWithStdin(t, event, "hook", "pre-tool-use")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)

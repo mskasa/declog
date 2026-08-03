@@ -40,7 +40,7 @@ This installs the exact versions of Go and golangci-lint defined in `.mise.toml`
 ### 3. Verify
 
 ```bash
-go version           # go1.24
+go version           # go1.25
 golangci-lint version  # v2.12.2
 ```
 
